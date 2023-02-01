@@ -1,1 +1,2 @@
-# cc-437
+# CSE 437S - Craft Cache
+- Group 6
