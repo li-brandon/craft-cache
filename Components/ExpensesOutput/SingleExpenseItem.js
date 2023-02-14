@@ -5,11 +5,11 @@ import { useNavigation } from '@react-navigation/native'
 function SingleExpenseItem({ itemData }) {
     const navigation = useNavigation();
     function PressHandler() {
-        return navigation.navigate('Manage Page',
+        return navigation.navigate('Detail',
             {
 
                 id: itemData.item.id,
-                content: itemData.item.description
+
 
             }
         );
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
     outerView: {
         padding: 12,
         marginVertical: 8,
-        backgroundColor: GlobalStyles.colors.primary500,
+        backgroundColor: GlobalStyles.colors.primary50,
         flexDirection: 'row',
         justifyContent: 'space-between',
         borderRadius: 6,
@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.4,
     },
     textBase: {
-        color: GlobalStyles.colors.primary50
+        color: GlobalStyles.colors.gray500,
     },
     pressed: {
         opacity: 0.4,

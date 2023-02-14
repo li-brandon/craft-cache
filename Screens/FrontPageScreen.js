@@ -4,7 +4,7 @@ import { Dummy_expenses } from "../Data/ExpensesData";
 import { useSelector, useDispatch } from 'react-redux';
 import { useContext } from "react";
 import { ExpensesContext } from "../Data/expenses-context";
-function AllExpensesScreen({ navigation, route }) {
+function FrontPageScreen({ navigation, route }) {
     // const expenseData = useContext(ExpensesContext);
     const expenseData = useSelector((state) => state.itemList.expenses)
 
@@ -13,4 +13,4 @@ function AllExpensesScreen({ navigation, route }) {
     )
 }
 
-export default AllExpensesScreen;
+export default FrontPageScreen;
