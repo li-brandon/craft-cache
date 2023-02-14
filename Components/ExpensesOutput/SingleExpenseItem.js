@@ -5,11 +5,11 @@ import { useNavigation } from '@react-navigation/native'
 function SingleExpenseItem({ itemData }) {
     const navigation = useNavigation();
     function PressHandler() {
-        return navigation.navigate('Manage Page',
+        return navigation.navigate('Detail',
             {
 
                 id: itemData.item.id,
-                content: itemData.item.description
+
 
             }
         );
