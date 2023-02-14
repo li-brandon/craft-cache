@@ -5,6 +5,7 @@ import ExplorePageScreen from './Screens/ExplorePageScreen';
 import AddProjectScreen from './Screens/AddProjectScreen';
 import ManageExpensesScreen from './Screens/ManageExpensesScreen';
 import InventoryPageScreen from './Screens/InventoryPageScreen';
+import ItemDetailScreen from './Screens/ItemDetailScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
@@ -82,6 +83,8 @@ export default function App() {
             options={{
               presentation: 'modal'
             }}
+          />
+          <Stack.Screen name="Detail" component={ItemDetailScreen}
           />
         </Stack.Navigator>
       </NavigationContainer>
