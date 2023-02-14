@@ -1,9 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View } from 'react-native';
-// import { AllExpensesScreen, ManageExpensesScreen, RecentExpensesScreen } from './Screens/AllExpensesScreen';
-import AllExpensesScreen from './Screens/AllExpensesScreen';
+import FrontPageScreen from './Screens/FrontPageScreen';
+import ExplorePageScreen from './Screens/ExplorePageScreen';
+import AddProjectScreen from './Screens/AddProjectScreen';
 import ManageExpensesScreen from './Screens/ManageExpensesScreen';
-import RecentExpensesScreen from './Screens/RecentExpensesScreen';
+import InventoryPageScreen from './Screens/InventoryPageScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
@@ -13,35 +14,48 @@ import { store } from './Data/store';
 import { Provider } from 'react-redux';
 import IconButton from './Components/UI/IconButton';
 import ExpensesContextProvider from './Data/expenses-context';
+import ProjectsPageScreen from './Screens/ProjectsPageScreen';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 function ToManage(navigation) {
-  return navigation.navigate('Manage Page',
-    {
-    }
-  );
+  return navigation.navigate('Manage Page');
 }
 const FrontPage = function () {
   const isUser = true;
   return (
     <Tab.Navigator screenOptions={({ navigation }) => ({
-      headerStyle: { backgroundColor: GlobalStyles.colors.primary500, },
-      headerTintColor: 'white',
-      tabBarStyle: { backgroundColor: GlobalStyles.colors.primary500, },
-      tabBarActiveTintColor: GlobalStyles.colors.accent500,
+      headerStyle: { backgroundColor: GlobalStyles.colors.primary50, },
+      headerTintColor: GlobalStyles.colors.gray700,
+      tabBarStyle: { backgroundColor: GlobalStyles.colors.primary50, },
+      tabBarActiveTintColor: GlobalStyles.colors.gray700,
       headerRight: isUser ? ({ tintColor }) => (
         <IconButton icon="add" color={tintColor} size={24} onPress={ToManage.bind(this, navigation)} />
         // <IconButton name="add" color={tintColor} size={24} onPress={ToManage} />
       ) : null,
     })}>
-      <Tab.Screen name="AllExpenses" component={AllExpensesScreen}
+      <Tab.Screen name="Craft Cache" component={FrontPageScreen}
         options={{
-          tabBarIcon: ({ color, size }) => <Ionicons name='hourglass' size={size} color={color} />
+          tabBarIcon: ({ color, size }) => <Ionicons name='home-outline' size={size} color={color} />
         }}
       />
-      <Tab.Screen name="RecentExpenses" component={RecentExpensesScreen}
+      <Tab.Screen name="Explore" component={ExplorePageScreen}
         options={{
-          tabBarIcon: ({ color, size }) => <Ionicons name='calendar' size={size} color={color} />
+          tabBarIcon: ({ color, size }) => <Ionicons name='eye-outline' size={size} color={color} />
+        }}
+      />
+      <Tab.Screen name="AddProjectScreen" component={AddProjectScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => <Ionicons name='add-circle-outline' size={size} color={color} />
+        }}
+      />
+      <Tab.Screen name="ProjectsPageScreen" component={ProjectsPageScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => <Ionicons name='folder-outline' size={size} color={color} />
+        }}
+      />
+      <Tab.Screen name="InventoryPageScreen" component={InventoryPageScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => <Ionicons name='cube-outline' size={size} color={color} />
         }} />
 
     </Tab.Navigator>
