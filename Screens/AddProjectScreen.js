@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-const AddProjectScreen = ({ navigation, onAddProject }) => {
+const AddProjectScreen = () => {
   const [name, setName] = useState("");
   const [projectType, setProjectType] = useState("");
   const [tools, setTools] = useState("");
@@ -26,8 +26,8 @@ const AddProjectScreen = ({ navigation, onAddProject }) => {
       pattern: pattern,
       description: description,
     };
-    onAddProject(newProject);
-    navigation.goBack();
+    // TODO: save new project to database 
+    console.log(newProject);
   };
 
   return (
