@@ -1,110 +1,71 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useContext } from "react";
 import hat from "../assets/flower-bucket-hat.jpg";
+// import MyContext from "../Contexts/MyContext";
 
-const Project = ({ navigation, name, projectType, tools, materials, pattern, description }) => {
+const Project = ({ project, navigation }) => {
+  // const projects = useContext(MyContext);
   return (
     <View>
-
-<TouchableOpacity
+      <TouchableOpacity
         onPress={() => {
-          // TODO: navigate to Project Detail page
           navigation.navigate("Detail", {
-            id: 1,
+            id: project.id,
           });
         }}
       >
         <View style={styles.project}>
           <View>
             <View style={styles.projectName}>
-              <Text style={styles.projectNameText}>Flower Bucket Hat</Text>
+              <Text style={styles.projectNameText}>{project.name}</Text>
             </View>
             <View style={styles.projectInfoAndImage}>
               <View style={styles.projectInfo}>
-                <Text style={styles.projectInfoText}>Type: crochet</Text>
-                <Text style={styles.projectInfoText}>Tool(s): 5mm hook</Text>
                 <Text style={styles.projectInfoText}>
-                  Materials: cotton aran yarn
+                  Project Type: {project.type}
                 </Text>
                 <Text style={styles.projectInfoText}>
-                  Pattern: self drafted{" "}
+                  Tools: {project.tools}
                 </Text>
                 <Text style={styles.projectInfoText}>
-                  Description: Lorem ipsum dolor sit amet, consectetur
-                  adipiscing elit. Sed consequat sit amet eros nec egestas.
-                  Praesent quis rhoncus est.
+                  Materials: {project.materials}
+                </Text>
+                <Text style={styles.projectInfoText}>
+                  Pattern: {project.pattern}
+                </Text>
+                <Text style={styles.projectInfoText}>
+                  Description: {project.description}
                 </Text>
               </View>
               <View style={styles.imageContainer}>
+                {/* TODO: Must find a way to have image associated with its project */}
                 <Image style={styles.image} source={hat} />
               </View>
             </View>
             <View style={styles.projectStatusAndPostStatus}>
               <View style={styles.projectStatus}>
                 <Text style={styles.projectStatusText}>
-                  Started: mm/dd/yyyy
+                  Started: {project.startDate}
                 </Text>
                 <Text style={styles.projectStatusText}>
-                  Last Updated: mm/dd/yyyy
+                  Last Updated: {project.lastUpdated}
                 </Text>
                 <Text style={styles.projectStatusText}>
-                  Status: In progress
+                  Status: {project.status}
                 </Text>
               </View>
               <View style={styles.postStatus}>
-                <Text style={styles.postStatusText}>POSTED</Text>
+                {project.posted ? ( // If project is posted, show "POSTED" text
+                  <Text style={styles.postStatusText}>POSTED</Text>
+                ) : (
+                  // If project is not posted, show "NOT POSTED" text
+                  <Text style={styles.postStatusText}>NOT POSTED</Text>
+                )}
               </View>
             </View>
           </View>
         </View>
       </TouchableOpacity>
-
-{/*   TODO: Code below will render a single project using the data passed in from ProjectsPageScreen.js
-      <TouchableOpacity
-        onPress={() => {    
-            navigation.navigate("Detail", {
-                id: 1,
-            });
-        }}
-      >
-        <View style={styles.project}>
-          <View>
-            <View style={styles.projectName}>
-              <Text style={styles.projectNameText}>{name}</Text>
-            </View>
-            <View style={styles.projectInfoAndImage}>
-              <View style={styles.projectInfo}>
-                <Text style={styles.projectInfoText}>Project Type: {projectType}</Text>
-                <Text style={styles.projectInfoText}>Tools: {tools}</Text>
-                <Text style={styles.projectInfoText}>Materials: {materials}</Text>
-                <Text style={styles.projectInfoText}>Pattern: {pattern}</Text>
-                <Text style={styles.projectInfoText}>Description: {description}</Text>
-              </View>
-              <View style={styles.imageContainer}>
-                <Image style={styles.image} source={hat} />
-              </View>
-            </View>
-            <View style={styles.projectStatusAndPostStatus}>
-              <View style={styles.projectStatus}>
-                <Text style={styles.projectStatusText}>
-                  Started: mm/dd/yyyy
-                </Text>
-                <Text style={styles.projectStatusText}>
-                  Last Updated: mm/dd/yyyy
-                </Text>
-                <Text style={styles.projectStatusText}>
-                  Status: In progress
-                </Text>
-              </View>
-              <View style={styles.postStatus}>
-                <Text style={styles.postStatusText}>POSTED</Text>
-              </View>
-            </View>
-          </View>
-        </View>
-      </TouchableOpacity> */}
-
-
     </View>
   );
 };
