@@ -1,5 +1,3 @@
-// AddProjectScreen.js
-
 import React, { useState } from "react";
 import {
   View,
@@ -9,9 +7,9 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-const AddProjectScreen = () => {
+const AddProjectScreen = ({ navigation }) => {
   const [name, setName] = useState("");
-  const [projectType, setProjectType] = useState("");
+  const [type, setType] = useState("");
   const [tools, setTools] = useState("");
   const [materials, setMaterials] = useState("");
   const [pattern, setPattern] = useState("");
@@ -20,14 +18,33 @@ const AddProjectScreen = () => {
   const handleAddProject = () => {
     const newProject = {
       name: name,
-      projectType: projectType,
+      type: type,
       tools: tools,
       materials: materials,
       pattern: pattern,
       description: description,
     };
-    // TODO: save new project to database 
+    // TODO: save new project to database but right now it will just log it to the console
     console.log(newProject);
+    saveProject(newProject);
+    // clear input fields
+    clearFields();
+  };
+
+  const saveProject = (newProject) => {
+    // send project to ProjectsPageScreen.js using navigation
+    navigation.navigate("ProjectsPageScreen", {
+      newProject: newProject,
+    });
+  };
+
+  const clearFields = () => {
+    setName("");
+    setType("");
+    setTools("");
+    setMaterials("");
+    setPattern("");
+    setDescription("");
   };
 
   return (
@@ -43,8 +60,8 @@ const AddProjectScreen = () => {
         <TextInput
           style={styles.input}
           placeholder="Project type"
-          value={projectType}
-          onChangeText={(text) => setProjectType(text)}
+          value={type}
+          onChangeText={(text) => setType(text)}
         />
         <TextInput
           style={styles.input}
