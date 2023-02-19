@@ -1,9 +1,13 @@
-import { View, Text } from "react-native";
+import { View, Text, Button } from "react-native";
 
-function UserProfileScreen() {
+function UserProfileScreen({ navigation }) {
   return (
     <View>
       <Text>User Profile Screen</Text>
+      <Button
+        title="Edit Profile"
+        onPress={() => navigation.navigate("Edit Profile")}
+      />
     </View>
   );
 }

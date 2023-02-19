@@ -49,43 +49,30 @@ const EditProfileScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Add a new project</Text>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
-          placeholder="Name"
+          placeholder="Email"
           value={name}
           onChangeText={(text) => setName(text)}
         />
         <TextInput
           style={styles.input}
-          placeholder="Project type"
+          placeholder="Password"
           value={type}
           onChangeText={(text) => setType(text)}
         />
         <TextInput
           style={styles.input}
-          placeholder="Tools"
+          placeholder="Username"
           value={tools}
           onChangeText={(text) => setTools(text)}
         />
         <TextInput
           style={styles.input}
-          placeholder="Materials"
+          placeholder="Bio"
           value={materials}
           onChangeText={(text) => setMaterials(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Pattern"
-          value={pattern}
-          onChangeText={(text) => setPattern(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Description"
-          value={description}
-          onChangeText={(text) => setDescription(text)}
         />
       </View>
       <TouchableOpacity style={styles.button} onPress={handleAddProject}>
