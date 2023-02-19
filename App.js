@@ -6,6 +6,9 @@ import AddProjectScreen from "./Screens/AddProjectScreen";
 import ManageExpensesScreen from "./Screens/ManageExpensesScreen";
 import InventoryPageScreen from "./Screens/InventoryPageScreen";
 import ItemDetailScreen from "./Screens/ItemDetailScreen";
+import UserProfileScreen from "./Screens/UserProfileScreen";
+import EditProfileScreen from "./Screens/EditProfileScreen";
+
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
@@ -24,7 +27,7 @@ function ToManage(navigation) {
 }
 
 function ToProfile(navigation) {
-  return navigation.navigate("Edit Profile");
+  return navigation.navigate("User Profile");
 }
 
 const FrontPage = function () {
@@ -135,6 +138,8 @@ export default function App() {
             }}
           />
           <Stack.Screen name="Detail" component={ItemDetailScreen} />
+          <Stack.Screen name="User Profile" component={UserProfileScreen} />
+          <Stack.Screen name="Edit Profile" component={EditProfileScreen} />
         </Stack.Navigator>
       </NavigationContainer>
     </Provider>

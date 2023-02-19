@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
 } from "react-native";
 
-const AddProjectScreen = ({ navigation }) => {
+const EditProfileScreen = ({ navigation }) => {
   const [name, setName] = useState("");
   const [type, setType] = useState("");
   const [tools, setTools] = useState("");
@@ -89,7 +89,7 @@ const AddProjectScreen = ({ navigation }) => {
         />
       </View>
       <TouchableOpacity style={styles.button} onPress={handleAddProject}>
-        <Text style={styles.buttonText}>Add Project</Text>
+        <Text style={styles.buttonText}>Save Changes</Text>
       </TouchableOpacity>
     </View>
   );
@@ -129,4 +129,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddProjectScreen;
+export default EditProfileScreen;
