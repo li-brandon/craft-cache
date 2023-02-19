@@ -1,10 +1,8 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
-import React, { useContext } from "react";
+import React from "react";
 import hat from "../assets/flower-bucket-hat.jpg";
-// import MyContext from "../Contexts/MyContext";
 
 const Project = ({ project, navigation }) => {
-  // const projects = useContext(MyContext);
   return (
     <View>
       <TouchableOpacity

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useContext} from "react";
 import {
   View,
   Text,
@@ -6,8 +6,13 @@ import {
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
+import { MyContext } from "../Contexts/MyContext";
 
 const AddProjectScreen = ({ navigation }) => {
+
+  const { projects, setProjects } = useContext(MyContext);
+
+
   const [name, setName] = useState("");
   const [type, setType] = useState("");
   const [tools, setTools] = useState("");
@@ -24,19 +29,50 @@ const AddProjectScreen = ({ navigation }) => {
       pattern: pattern,
       description: description,
     };
-    // TODO: save new project to database but right now it will just log it to the console
-    console.log(newProject);
+
+    const date = getCurrentDate();
+
+    newProject.startDate = date;
+    newProject.lastUpdated = date;
+    newProject.status = "In progress";
+    newProject.posted = false;
+
+    // newProject's id the last project id + 1
+    if (!projects) {
+      newProject.id = 1;
+    } else {
+      newProject.id = projects[projects.length - 1].id + 1;
+    }
+
+    // TODO: save new project to database  
     saveProject(newProject);
     // clear input fields
     clearFields();
   };
 
   const saveProject = (newProject) => {
-    // send project to ProjectsPageScreen.js using navigation
-    navigation.navigate("ProjectsPageScreen", {
-      newProject: newProject,
-    });
+    if (!projects) {
+      setProjects([newProject]);
+    } else {
+      setProjects([...projects, newProject]); // add new project to projects array in Context
+    }
+  
+    // navigate to ProjectsPageScreen
+    navigation.navigate("ProjectsPageScreen");
   };
+
+  const getCurrentDate = () => {
+    const currentDate = new Date();
+    const month = currentDate.getMonth() + 1;
+    const day = currentDate.getDate();
+    const year = currentDate.getFullYear();
+    
+    const formattedDate = `${month}/${day}/${year}`;
+    
+    return formattedDate;
+  }
+
+  
 
   const clearFields = () => {
     setName("");
