@@ -1,8 +1,21 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { StyleSheet, Text, TouchableOpacity, View, Button } from 'react-native'
 import React from 'react'
 import { getAuth, signOut } from "firebase/auth";
 import { auth } from '../firebase';
 const UserProfileScreen = ({ navigation, route }) => {
+
+  function UserProfileScreen({ navigation }) {
+  return (
+    <View>
+      <Text>User Profile Screen</Text>
+      <Button
+        title="Edit Profile"
+        onPress={() => navigation.navigate("Edit Profile")}
+      />
+    </View>
+  );
+}
+
     // const email = route.params['email'];
     const signOutHandler = () => {
         signOut(auth).then(() => {

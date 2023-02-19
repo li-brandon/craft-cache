@@ -20,11 +20,19 @@ import ExpensesContextProvider from './Data/expenses-context';
 import ProjectsPageScreen from './Screens/ProjectsPageScreen';
 import LoginScreen from './Screens/LoginScreen';
 import UserProfileScreen from './Screens/UserProfileScreen';
+import EditProfileScreen from "./Screens/EditProfileScreen";
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+
 function ToManage(navigation) {
   return navigation.navigate('Login');
 }
+
+function ToProfile(navigation) {
+  return navigation.navigate("User Profile");
+}
+
 const FrontPage = function () {
   const isUser = true;
   return (
@@ -37,18 +45,27 @@ const FrontPage = function () {
         headerRight: isUser
           ? ({ tintColor }) => (
               <IconButton
-                icon="add"
+                icon="log-in-outline"
                 color={tintColor}
                 size={24}
                 onPress={ToManage.bind(this, navigation)}
               />
-              // <IconButton name="add" color={tintColor} size={24} onPress={ToManage} />
+            )
+          : null,
+        headerLeft: isUser
+          ? ({ tintColor }) => (
+              <IconButton
+                icon="person-circle-outline"
+                color={tintColor}
+                size={24}
+                onPress={ToProfile.bind(this, navigation)}
+              />
             )
           : null,
       })}
     >
       <Tab.Screen
-        name="Craft Cache"
+        name="Home"
         component={FrontPageScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
@@ -66,7 +83,7 @@ const FrontPage = function () {
         }}
       />
       <Tab.Screen
-        name="AddProjectScreen"
+        name="Add Project"
         component={AddProjectScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
@@ -75,7 +92,7 @@ const FrontPage = function () {
         }}
       />
       <Tab.Screen
-        name="ProjectsPageScreen"
+        name="Projects"
         component={ProjectsPageScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
@@ -84,7 +101,7 @@ const FrontPage = function () {
         }}
       />
       <Tab.Screen
-        name="InventoryPageScreen"
+        name="Inventory"
         component={InventoryPageScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
@@ -163,15 +180,14 @@ export default function App() {
             />
           <Stack.Screen name="Detail" component={ItemDetailScreen}
           />
-          <Stack.Screen name="Login" component={LoginScreen}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen name="UserProfile" component={UserProfileScreen}
-            options={{ headerShown: false }}
-          />
+          <Stack.Screen name="Detail" component={ItemDetailScreen} />
+          <Stack.Screen name="User Profile" component={UserProfileScreen} />
+          <Stack.Screen name="Edit Profile" component={EditProfileScreen} />
+          
           </Stack.Navigator>
         </NavigationContainer>
       </MyContext.Provider>
+
     </Provider>
     // {/* </ExpensesContextProvider> */ }
   );
