@@ -16,10 +16,12 @@ import { Provider } from 'react-redux';
 import IconButton from './Components/UI/IconButton';
 import ExpensesContextProvider from './Data/expenses-context';
 import ProjectsPageScreen from './Screens/ProjectsPageScreen';
+import LoginScreen from './Screens/LoginScreen';
+import UserProfileScreen from './Screens/UserProfileScreen';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 function ToManage(navigation) {
-  return navigation.navigate('Manage Page');
+  return navigation.navigate('Login');
 }
 const FrontPage = function () {
   const isUser = true;
@@ -85,6 +87,12 @@ export default function App() {
             }}
           />
           <Stack.Screen name="Detail" component={ItemDetailScreen}
+          />
+          <Stack.Screen name="Login" component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="UserProfile" component={UserProfileScreen}
+            options={{ headerShown: false }}
           />
         </Stack.Navigator>
       </NavigationContainer>
