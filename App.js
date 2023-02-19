@@ -1,27 +1,29 @@
 import React from "react";
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text, View } from "react-native";
-import FrontPageScreen from "./Screens/FrontPageScreen";
-import ExplorePageScreen from "./Screens/ExplorePageScreen";
-import AddProjectScreen from "./Screens/AddProjectScreen";
-import ManageExpensesScreen from "./Screens/ManageExpensesScreen";
-import InventoryPageScreen from "./Screens/InventoryPageScreen";
-import ItemDetailScreen from "./Screens/ItemDetailScreen";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer } from "@react-navigation/native";
-import { GlobalStyles } from "./Constants/styles";
-import { Ionicons } from "@expo/vector-icons";
-import { store } from "./Data/store";
-import { Provider } from "react-redux";
-import IconButton from "./Components/UI/IconButton";
-import ExpensesContextProvider from "./Data/expenses-context";
-import ProjectsPageScreen from "./Screens/ProjectsPageScreen";
-import { MyContext } from "./Contexts/MyContext";
+import { MyContext } from "./Contexts/MyContext"
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
+import FrontPageScreen from './Screens/FrontPageScreen';
+import ExplorePageScreen from './Screens/ExplorePageScreen';
+import AddProjectScreen from './Screens/AddProjectScreen';
+import ManageExpensesScreen from './Screens/ManageExpensesScreen';
+import InventoryPageScreen from './Screens/InventoryPageScreen';
+import ItemDetailScreen from './Screens/ItemDetailScreen';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import { GlobalStyles } from './Constants/styles';
+import { Ionicons } from '@expo/vector-icons';
+import { store } from './Data/store';
+import { Provider } from 'react-redux';
+import IconButton from './Components/UI/IconButton';
+import ExpensesContextProvider from './Data/expenses-context';
+import ProjectsPageScreen from './Screens/ProjectsPageScreen';
+import LoginScreen from './Screens/LoginScreen';
+import UserProfileScreen from './Screens/UserProfileScreen';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 function ToManage(navigation) {
-  return navigation.navigate("Manage Page");
+  return navigation.navigate('Login');
 }
 const FrontPage = function () {
   const isUser = true;
@@ -159,14 +161,14 @@ export default function App() {
                 headerBackVisible: false,
               }}
             />
-            <Stack.Screen
-              name="Manage Page"
-              component={ManageExpensesScreen}
-              options={{
-                presentation: "modal",
-              }}
-            />
-            <Stack.Screen name="Detail" component={ItemDetailScreen} />
+          <Stack.Screen name="Detail" component={ItemDetailScreen}
+          />
+          <Stack.Screen name="Login" component={LoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen name="UserProfile" component={UserProfileScreen}
+            options={{ headerShown: false }}
+          />
           </Stack.Navigator>
         </NavigationContainer>
       </MyContext.Provider>
