@@ -178,6 +178,11 @@ export default function App() {
                 headerBackVisible: false,
               }}
             />
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{ headerShown: false }}
+            />
             <Stack.Screen name="Detail" component={ItemDetailScreen} />
             <Stack.Screen name="User Profile" component={UserProfileScreen} />
             <Stack.Screen name="Edit Profile" component={EditProfileScreen} />
