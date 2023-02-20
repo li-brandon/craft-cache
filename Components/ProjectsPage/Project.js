@@ -23,10 +23,26 @@ const Project = ({ project, navigation }) => {
                   Project Type: {project.type}
                 </Text>
                 <Text style={styles.projectInfoText}>
-                  Tools: {project.tools}
+                  {/* Goes through array of tools and outputs them in a readable way */}
+                  Tools:{" "}
+                  {project.tools.map((tool, index) => {
+                    if (index === project.tools.length - 1) {
+                      return tool;
+                    } else {
+                      return tool + ", ";
+                    }
+                  })}
                 </Text>
                 <Text style={styles.projectInfoText}>
-                  Materials: {project.materials}
+                  {/* Goes through array of materials and outputs them in a readable way */}
+                  Materials:{" "}
+                  {project.materials.map((material, index) => {
+                    if (index === project.materials.length - 1) {
+                      return material;
+                    } else {
+                      return material + ", ";
+                    }
+                  })}
                 </Text>
                 <Text style={styles.projectInfoText}>
                   Pattern: {project.pattern}
@@ -49,7 +65,7 @@ const Project = ({ project, navigation }) => {
                   Last Updated: {project.lastUpdated}
                 </Text>
                 <Text style={styles.projectStatusText}>
-                  Status: {project.status}
+                  Status: {project.inProgress ? "In progress" : "Finished"}
                 </Text>
               </View>
               <View style={styles.postStatus}>

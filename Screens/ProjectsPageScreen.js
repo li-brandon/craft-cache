@@ -13,12 +13,17 @@ function ProjectsPageScreen({ navigation }) {
 
   useEffect(() => {
     // fetch projects from database for the current user
+    // create temp array to store projects
+    const tempProjects = [];
     const q = query(collection(db, "projects"), where("user", "==", user));
     getDocs(q).then((querySnapshot) => {
+      // push each project fetched from db to tempProjects including the id of the project
       querySnapshot.forEach((doc) => {
-        console.log(doc.data());
+        tempProjects.push({ ...doc.data(), id: doc.id });
       });
+      setProjects(tempProjects);
     });
+
   }, []);
 
   return (
