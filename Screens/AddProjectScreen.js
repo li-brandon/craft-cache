@@ -1,17 +1,19 @@
-import React, { useState, useContext} from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   View,
   Text,
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Alert
 } from "react-native";
 import { MyContext } from "../Contexts/MyContext";
+import { auth, db } from "../firebase";
+import { collection, addDoc } from "firebase/firestore";
 
 const AddProjectScreen = ({ navigation }) => {
 
-  const { projects, setProjects } = useContext(MyContext);
-
+  const [user, setUser] = useState(null);
 
   const [name, setName] = useState("");
   const [type, setType] = useState("");
@@ -20,46 +22,52 @@ const AddProjectScreen = ({ navigation }) => {
   const [pattern, setPattern] = useState("");
   const [description, setDescription] = useState("");
 
+  useEffect(() => {
+    // Listen for changes to the authentication state
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        setUser(user.uid);
+      } else {
+        // TODO: User is not logged in but we haven't handled yet. So 
+        // for now we will hardcode user id 
+        setUser("JzDTobXLRSPMIw7G86sjQxR9REd2");
+      }
+    });
+  
+    // Clean up the subscription on unmount
+    return unsubscribe;
+  }, []);
+
+
   const handleAddProject = () => {
     const newProject = {
       name: name,
       type: type,
-      tools: tools,
-      materials: materials,
+      tools: tools.split(","), // split tools string into array
+      materials: materials.split(","), // split materials string into array
       pattern: pattern,
       description: description,
+      userID: user,
     };
 
     const date = getCurrentDate();
 
     newProject.startDate = date;
     newProject.lastUpdated = date;
-    newProject.status = "In progress";
+    newProject.inProgress = true;
     newProject.posted = false;
 
-    // newProject's id the last project id + 1
-    if (!projects) {
-      newProject.id = 1;
-    } else {
-      newProject.id = projects[projects.length - 1].id + 1;
-    }
-
-    // TODO: save new project to database  
-    saveProject(newProject);
-    // clear input fields
-    clearFields();
+    // Add new project to db, then clear fields and show alert
+    addDoc(collection(db, "projects"), newProject)
+      .then(() => {
+        clearFields();
+        Alert.alert("Project added successfully");
+      })
+      .catch((error) => {
+        console.error("Error adding document: ", error);
+      });
   };
 
-  const saveProject = (newProject) => {
-    if (!projects) {
-      setProjects([newProject]);
-    } else {
-      setProjects([...projects, newProject]); // add new project to projects array in Context
-    }
-  
-    // navigate to ProjectsPageScreen
-    navigation.navigate("ProjectsPageScreen");
-  };
 
   const getCurrentDate = () => {
     const currentDate = new Date();
