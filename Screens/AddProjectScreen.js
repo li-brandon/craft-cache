@@ -5,6 +5,7 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
+  Alert
 } from "react-native";
 import { MyContext } from "../Contexts/MyContext";
 
@@ -57,8 +58,7 @@ const AddProjectScreen = ({ navigation }) => {
       setProjects([...projects, newProject]); // add new project to projects array in Context
     }
   
-    // navigate to ProjectsPageScreen
-    navigation.navigate("ProjectsPageScreen");
+    Alert.alert("Project added successfully!");
   };
 
   const getCurrentDate = () => {
