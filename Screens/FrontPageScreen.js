@@ -11,7 +11,7 @@ function FrontPageScreen({ navigation, route }) {
 
     return (
         // <ExpensesOutput expenses={expenseData} periodName="Total" />
-        <ProjectsPageScreen />
+        <ProjectsPageScreen navigation={navigation}/>
     )
 }
 
