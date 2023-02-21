@@ -68,7 +68,6 @@ const AddProjectScreen = ({ navigation }) => {
       });
   };
 
-
   const getCurrentDate = () => {
     const currentDate = new Date();
     const month = currentDate.getMonth() + 1;
