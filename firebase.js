@@ -31,5 +31,5 @@ async function getUser(db) {
     const list = snapshot.docs.map(doc => doc.data());
     console.log(list);
 }
-getUser(db);
+
 export { auth, db }
