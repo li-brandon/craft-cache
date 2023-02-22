@@ -13,10 +13,30 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import { GlobalStyles } from "../Constants/styles";
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  function outputErrorCode(code) {
+    console.log(code === 'auth/weak-password')
+    console.log(code)
+    switch (code) {
+      case 'auth/email-already-exists':
+        setErrorMessage("Email already exists!");
+        break
+      case 'auth/email-already-in-use':
+        setErrorMessage("Email already exists!");
+        break
+      case "auth/weak-password":
+        setErrorMessage('Password too short!password should be at least six number!')
+        break
+      default:
+        setErrorMessage(code.substring(5))
+    }
+
+  }
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
@@ -34,7 +54,7 @@ const LoginScreen = ({ navigation }) => {
         // ...
       })
       .catch((error) => {
-        console.log("Error:", error.message);
+        outputErrorCode(error.code);
       });
   };
   const handleSignUp = () => {
@@ -42,14 +62,12 @@ const LoginScreen = ({ navigation }) => {
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
-        console.log("reigisered:" + email);
-        // ...
+        console.log("reigisered successfully:" + email);
       })
       .catch((error) => {
         // const errorCode = error.code;
         // const errorMessage = error.message;
-        console.log("Error:", error.message);
-        // ..
+        outputErrorCode(error.code);
       });
   };
   const handleBack = function () {
@@ -57,15 +75,18 @@ const LoginScreen = ({ navigation }) => {
   };
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
+      <View>
+        <Text style={styles.textStyle}>{errorMessage}</Text>
+      </View>
       <View style={styles.inputContainer}>
         <TextInput
-          placeholder="Email"
+          placeholder="Please input your Email"
           value={email}
           onChangeText={(text) => setEmail(text)}
           style={styles.input}
         />
         <TextInput
-          placeholder="Password At least six characters"
+          placeholder="Password should be At least six characters"
           value={password}
           onChangeText={(text) => setPassword(text)}
           style={styles.input}
@@ -100,6 +121,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     flex: 1,
+  },
+  textStyle: {
+    fontSize: 14,
+    color: 'red',
+    fontWeight: 'bold'
   },
   inputContainer: {
     width: "80%",
