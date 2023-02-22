@@ -5,14 +5,16 @@ import {
   TextInput,
   StyleSheet,
   TouchableOpacity,
-  Alert
+  Alert,
+  Image,
+  Button
 } from "react-native";
 import { MyContext } from "../Contexts/MyContext";
 import { auth, db } from "../firebase";
 import { collection, addDoc } from "firebase/firestore";
+import * as ImagePicker from "expo-image-picker";
 
 const AddProjectScreen = ({ navigation }) => {
-
   const [user, setUser] = useState(null);
 
   const [name, setName] = useState("");
@@ -21,6 +23,7 @@ const AddProjectScreen = ({ navigation }) => {
   const [materials, setMaterials] = useState("");
   const [pattern, setPattern] = useState("");
   const [description, setDescription] = useState("");
+  const [image, setImage] = useState(null);
 
   useEffect(() => {
     // Get the user id from firebase auth
@@ -28,16 +31,15 @@ const AddProjectScreen = ({ navigation }) => {
       if (user) {
         setUser(user.uid);
       } else {
-        // TODO: User is not logged in if we reached here but we haven't handled yet. So 
-        // for now we will hardcode user id 
+        // TODO: User is not logged in if we reached here but we haven't handled yet. So
+        // for now we will hardcode user id
         setUser("JzDTobXLRSPMIw7G86sjQxR9REd2");
       }
     });
-  
+
     // Clean up the subscription on unmount
     return unsubscribe;
   }, []);
-
 
   const handleAddProject = () => {
     const newProject = {
@@ -73,13 +75,24 @@ const AddProjectScreen = ({ navigation }) => {
     const month = currentDate.getMonth() + 1;
     const day = currentDate.getDate();
     const year = currentDate.getFullYear();
-    
-    const formattedDate = `${month}/${day}/${year}`;
-    
-    return formattedDate;
-  }
 
-  
+    const formattedDate = `${month}/${day}/${year}`;
+
+    return formattedDate;
+  };
+
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.cancelled) {
+      setImage(result.uri);
+    }
+  };
 
   const clearFields = () => {
     setName("");
@@ -130,6 +143,12 @@ const AddProjectScreen = ({ navigation }) => {
           value={description}
           onChangeText={(text) => setDescription(text)}
         />
+        
+        {image && (
+          <Image source={{ uri: image }} style={styles.projectImage} />
+        )}
+        <Button title="Choose Image" onPress={pickImage} />
+
       </View>
       <TouchableOpacity style={styles.button} onPress={handleAddProject}>
         <Text style={styles.buttonText}>Add Project</Text>
@@ -169,6 +188,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  projectImage: {
+    width: 130,
+    height: 130,
+    alignSelf: "center",
   },
 });
 
