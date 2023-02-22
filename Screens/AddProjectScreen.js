@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   Alert,
   Image,
-  Button
+  Button,
 } from "react-native";
 import { MyContext } from "../Contexts/MyContext";
 import { auth, db } from "../firebase";
@@ -81,7 +81,7 @@ const AddProjectScreen = ({ navigation }) => {
     return formattedDate;
   };
 
-  const pickImage = async () => {
+  const choosePhoto = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.Images,
       allowsEditing: true,
@@ -89,8 +89,23 @@ const AddProjectScreen = ({ navigation }) => {
       quality: 1,
     });
 
-    if (!result.cancelled) {
+    if (!result.canceled) {
       setImage(result.uri);
+    }
+  };
+
+  const takePhoto = async () => {
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    if (!result.canceled) {
+      setImage(result.uri);
+    } else {
+      alert("Camera permission is required to take a photo.");
     }
   };
 
@@ -143,12 +158,13 @@ const AddProjectScreen = ({ navigation }) => {
           value={description}
           onChangeText={(text) => setDescription(text)}
         />
-        
-        {image && (
-          <Image source={{ uri: image }} style={styles.projectImage} />
-        )}
-        <Button title="Choose Image" onPress={pickImage} />
 
+        {image && <Image source={{ uri: image }} style={styles.projectImage} />}
+
+        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
+          <Button title="Choose Photo" onPress={choosePhoto} />
+          <Button title="Take Photo" onPress={takePhoto} />
+        </View>
       </View>
       <TouchableOpacity style={styles.button} onPress={handleAddProject}>
         <Text style={styles.buttonText}>Add Project</Text>
@@ -193,6 +209,8 @@ const styles = StyleSheet.create({
     width: 130,
     height: 130,
     alignSelf: "center",
+    marginTop: 10,
+    marginBottom: 10,
   },
 });
 
