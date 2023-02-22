@@ -23,12 +23,12 @@ const AddProjectScreen = ({ navigation }) => {
   const [description, setDescription] = useState("");
 
   useEffect(() => {
-    // Listen for changes to the authentication state
+    // Get the user id from firebase auth
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setUser(user.uid);
       } else {
-        // TODO: User is not logged in but we haven't handled yet. So 
+        // TODO: User is not logged in if we reached here but we haven't handled yet. So 
         // for now we will hardcode user id 
         setUser("JzDTobXLRSPMIw7G86sjQxR9REd2");
       }
