@@ -25,8 +25,6 @@ const LoginScreen = ({ navigation }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   function outputErrorCode(code) {
-    console.log(code === 'auth/weak-password')
-    console.log(code)
     switch (code) {
       case 'auth/email-already-exists':
         setErrorMessage("Email already exists!");
