@@ -6,7 +6,9 @@ import {
   TouchableOpacity,
   View,
   Alert,
+  ActivityIndicator
 } from "react-native";
+import LoadingOverLay from "../Components/UI/LoadingOverLay";
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../firebase";
 import {
@@ -15,11 +17,13 @@ import {
   signInWithEmailAndPassword,
 } from "firebase/auth";
 import { GlobalStyles } from "../Constants/styles";
+import { async } from "@firebase/util";
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   function outputErrorCode(code) {
     console.log(code === 'auth/weak-password')
     console.log(code)
@@ -46,23 +50,23 @@ const LoginScreen = ({ navigation }) => {
     });
     return unsubscribe;
   }, []);
-  const handleSignIn = () => {
-    signInWithEmailAndPassword(auth, email, password)
+  async function handleSignIn() {
+    setIsLoading(true);
+    await signInWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
         const user = userCredential.user;
         console.log(email + " logged in!");
-        // ...
       })
       .catch((error) => {
         outputErrorCode(error.code);
       });
+    setIsLoading(false);
   };
-  function firebaseSignUp() {
-    console.log('sign up!!')
-    createUserWithEmailAndPassword(auth, email, password)
+  async function firebaseSignUp() {
+    setIsLoading(true)
+    await createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        // Signed in
         const user = userCredential.user;
         console.log("reigisered successfully:" + email);
       })
@@ -71,10 +75,14 @@ const LoginScreen = ({ navigation }) => {
         // const errorMessage = error.message;
         outputErrorCode(error.code);
       });
+    setIsLoading(false)
   }
   const handleBack = function () {
     navigation.goBack("UserProfile");
   };
+  // if (isFetching) {
+  //   return <LoadingOverLay containerStyle={styles.container} />
+  // }
   const handleSignUp = () => {
     Alert.alert("Sign Up", "Are you sure to Sign up?",
       [{ text: 'cancel', style: 'cancel' },
@@ -82,6 +90,11 @@ const LoginScreen = ({ navigation }) => {
   };
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
+      {isLoading &&
+        <View style={styles.loading}>
+          <ActivityIndicator size='large' />
+        </View>
+      }
       <View>
         <Text style={styles.textStyle}>{errorMessage}</Text>
       </View>
@@ -162,7 +175,15 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 16,
   },
-
+  loading: {
+    position: 'absolute',
+    left: 100,
+    right: 100,
+    top: 40,
+    bottom: 100,
+    alignItems: 'center',
+    justifyContent: 'center'
+  },
   buttonOutline: {
     backgroundColor: "white",
     marginTop: 5,
