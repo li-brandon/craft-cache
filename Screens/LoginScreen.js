@@ -5,6 +5,7 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from "react-native";
 import React, { useEffect, useState } from "react";
 import { auth, db } from "../firebase";
@@ -57,7 +58,8 @@ const LoginScreen = ({ navigation }) => {
         outputErrorCode(error.code);
       });
   };
-  const handleSignUp = () => {
+  function firebaseSignUp() {
+    console.log('sign up!!')
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         // Signed in
@@ -69,9 +71,14 @@ const LoginScreen = ({ navigation }) => {
         // const errorMessage = error.message;
         outputErrorCode(error.code);
       });
-  };
+  }
   const handleBack = function () {
     navigation.goBack("UserProfile");
+  };
+  const handleSignUp = () => {
+    Alert.alert("Sign Up", "Are you sure to Sign up?",
+      [{ text: 'cancel', style: 'cancel' },
+      { text: 'yes', onPress: () => { firebaseSignUp() } }])
   };
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
