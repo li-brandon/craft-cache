@@ -50,6 +50,7 @@ const AddProjectScreen = ({ navigation }) => {
       pattern: pattern,
       description: description,
       userID: user,
+      image: image,
     };
 
     const date = getCurrentDate();
@@ -116,6 +117,7 @@ const AddProjectScreen = ({ navigation }) => {
     setMaterials("");
     setPattern("");
     setDescription("");
+    setImage(null);
   };
 
   return (
