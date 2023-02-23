@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React from "react";
+import hat from "../assets/flower-bucket-hat.jpg";
 
 const Project = ({ project, navigation }) => {
   return (
@@ -51,7 +52,8 @@ const Project = ({ project, navigation }) => {
                 </Text>
               </View>
               <View style={styles.imageContainer}>
-                <Image style={styles.image} source={{ uri: project.image }} />
+                {/* TODO: Must find a way to have image associated with its project */}
+                <Image style={styles.image} source={hat} />
               </View>
             </View>
             <View style={styles.projectStatusAndPostStatus}>
