@@ -10,13 +10,15 @@ import {
   Button,
 } from "react-native";
 import { MyContext } from "../Contexts/MyContext";
-import { auth, db } from "../firebase";
+import { auth, db, storage } from "../firebase";
 import { collection, addDoc } from "firebase/firestore";
+import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import * as ImagePicker from "expo-image-picker";
 
 const AddProjectScreen = ({ navigation }) => {
-  const [user, setUser] = useState(null);
 
+  // States
+  const [user, setUser] = useState(null);
   const [name, setName] = useState("");
   const [type, setType] = useState("");
   const [tools, setTools] = useState("");
@@ -24,9 +26,11 @@ const AddProjectScreen = ({ navigation }) => {
   const [pattern, setPattern] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
+  const [imageUri, setImageUri] = useState(null);
+  const [imageRef, setImageRef] = useState(null);
 
+  // Get the user id from firebase auth
   useEffect(() => {
-    // Get the user id from firebase auth
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setUser(user.uid);
@@ -41,7 +45,12 @@ const AddProjectScreen = ({ navigation }) => {
     return unsubscribe;
   }, []);
 
-  const handleAddProject = () => {
+  
+  // Helper functions 
+
+  // handleAddProject is called when the user clicks the "Add Project" button. It will
+  // upload the image to storage, add the project to Firestore, and clear the fields
+  const handleAddProject = async () => {
     const newProject = {
       name: name,
       type: type,
@@ -54,23 +63,77 @@ const AddProjectScreen = ({ navigation }) => {
     };
 
     const date = getCurrentDate();
-
     newProject.startDate = date;
     newProject.lastUpdated = date;
     newProject.inProgress = true;
     newProject.posted = false;
 
-    // Add new project to db, then clear fields and show alert
-    addDoc(collection(db, "projects"), newProject)
-      .then(() => {
-        clearFields();
-        Alert.alert("Project added successfully");
-      })
-      .catch((error) => {
-        console.error("Error adding document: ", error);
-      });
+    try {
+      // Upload the image to storage and get the download URL
+      if (imageUri) {
+        const snapshot = await uploadImageAsync(imageRef, imageUri);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        newProject.image = downloadURL;
+      }
+
+      // Add the new project to Firestore
+      await addDoc(collection(db, "projects"), newProject);
+      clearFields();
+      Alert.alert("Project added successfully");
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
   };
 
+  // uploadImageAsync uploads the image to storage and returns the snapshot of the upload
+  const uploadImageAsync = async (imageRef, uri) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    return uploadBytes(imageRef, blob);
+  };
+
+  // choosePhoto launches the image picker and allows the user to choose a photo
+  const choosePhoto = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+ 
+    // If the user didn't cancel the image picker, upload the image to storage and set the image in state
+    if (!result.canceled) { 
+      const uri = result.assets[0].uri; // Get the uri of the image
+      const imageRef = ref(storage, "projectImages/" + uri.split("/").pop());
+      setImageUri(uri);
+      setImageRef(imageRef);
+      setImage(uri);
+    }
+  };
+
+  // takePhoto launches the camera and allows the user to take a photo with the camera
+  const takePhoto = async () => {
+    const result = await ImagePicker.launchCameraAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    // If the user didn't cancel the camera, upload the image to storage and set the image in state
+    if (!result.canceled) {
+      const uri = result.assets[0].uri; // Get the uri of the image
+      const imageRef = ref(storage, "projectImages/" + uri.split("/").pop()); 
+      setImageUri(uri);
+      setImageRef(imageRef);
+      setImage(uri);
+    } else {
+      alert("Camera permission is required to take a photo.");
+    }
+  };
+
+
+  // getCurrentDate returns the current date in the format MM/DD/YYYY
   const getCurrentDate = () => {
     const currentDate = new Date();
     const month = currentDate.getMonth() + 1;
@@ -82,34 +145,7 @@ const AddProjectScreen = ({ navigation }) => {
     return formattedDate;
   };
 
-  const choosePhoto = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setImage(result.uri);
-    }
-  };
-
-  const takePhoto = async () => {
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setImage(result.uri);
-    } else {
-      alert("Camera permission is required to take a photo.");
-    }
-  };
-
+  // clearFields clears the fields in the form
   const clearFields = () => {
     setName("");
     setType("");
