@@ -1,6 +1,7 @@
 // Import the functions you need from the SDKs you need
 import * as firebase from "firebase/app";
 import { getAuth } from "firebase/auth";
+import { getStorage } from "firebase/storage";
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -25,6 +26,7 @@ if (firebase.getApps().length === 0) {
 // const auth = firebase.auth()
 const auth = getAuth();
 const db = getFirestore();
+const storage = getStorage();
 async function getUser(db) {
     const usercol = collection(db, 'projects');
     const snapshot = await getDocs(usercol);
@@ -32,4 +34,4 @@ async function getUser(db) {
     console.log(list);
 }
 
-export { auth, db }
+export { auth, db, storage }
