@@ -24,34 +24,27 @@ function ExplorePageScreen({ navigation }) {
 
   useFocusEffect(
     React.useCallback(() => {
-      if (currentUser) {
-        const userID = currentUser.uid;
-        // fetch all projects from database
-        const tempProjects = [];
-        // query database for projects that are posted and not projects of current user
-        const q = query(
-          collection(db, "projects"),
-          where("userID", "!=", userID),
-          where("posted", "==", true)
-        );
-        // handle promise as well
-        getDocs(q)
-          .then((querySnapshot) => {
-            querySnapshot.forEach((doc) => {
-              tempProjects.push({ ...doc.data(), id: doc.id });
-            });
-            setProjects(tempProjects);
-          })
-          .catch((error) => {
-            console.log("Error getting documents: ", error);
+
+      const tempProjects = [];
+      const q = query(collection(db, "projects"), where("posted", "==", true));
+
+      // get all projects that are posted and add to tempProjects
+      getDocs(q)
+        .then((querySnapshot) => {
+          querySnapshot.forEach((doc) => {
+            tempProjects.push({ ...doc.data(), id: doc.id });
           });
-      }
-    }, [currentUser])
+          setProjects(tempProjects);
+        })
+        .catch((error) => {
+          console.log("Error getting documents: ", error);
+        });
+    }, [])
   );
 
   function renderItem({ item }) {
     function pressHandler() {
-      // navigate to detail page
+      // navigate to detail page with project
       navigation.navigate("Detail", {
         project: item,
       });
