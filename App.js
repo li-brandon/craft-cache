@@ -73,7 +73,7 @@ const FrontPage = function () {
           ),
         }}
       />
-      {/* <Tab.Screen
+      <Tab.Screen
         name="Explore"
         component={ExplorePageScreen}
         options={{
@@ -81,7 +81,7 @@ const FrontPage = function () {
             <Ionicons name="eye-outline" size={size} color={color} />
           ),
         }}
-      /> */}
+      />
       <Tab.Screen
         name="Add Project"
         component={AddProjectScreen}
@@ -100,7 +100,7 @@ const FrontPage = function () {
           ),
         }}
       />
-      {/* <Tab.Screen
+      <Tab.Screen
         name="Inventory"
         component={InventoryPageScreen}
         options={{
@@ -108,7 +108,7 @@ const FrontPage = function () {
             <Ionicons name="cube-outline" size={size} color={color} />
           ),
         }}
-      /> */}
+      />
     </Tab.Navigator>
   );
 };
