@@ -1,26 +1,18 @@
 import { StyleSheet, Text, TouchableOpacity, View, Button } from 'react-native'
-import React from 'react'
+import React, { useContext } from 'react'
 import { getAuth, signOut } from "firebase/auth";
 import { auth } from '../firebase';
+import { LoginContext } from '../Contexts/LoginContext';
 const UserProfileScreen = ({ navigation, route }) => {
 
-  function UserProfileScreen({ navigation }) {
-  return (
-    <View>
-      <Text>User Profile Screen</Text>
-      <Button
-        title="Edit Profile"
-        onPress={() => navigation.navigate("Edit Profile")}
-      />
-    </View>
-  );
-}
 
     // const email = route.params['email'];
+    const { loggedIn, setloggedIn } = useContext(LoginContext);
     const signOutHandler = () => {
         signOut(auth).then(() => {
             console.log('Sign-out successful.');
             navigation.replace('Front Page');
+            setloggedIn(false);
         }).catch((error) => {
             // An error happened.
         });

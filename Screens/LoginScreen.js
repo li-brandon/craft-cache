@@ -9,7 +9,7 @@ import {
   ActivityIndicator
 } from "react-native";
 import LoadingOverLay from "../Components/UI/LoadingOverLay";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { auth, db } from "../firebase";
 import {
   getAuth,
@@ -18,12 +18,14 @@ import {
 } from "firebase/auth";
 import { GlobalStyles } from "../Constants/styles";
 import { async } from "@firebase/util";
+import { LoginContext } from "../Contexts/LoginContext";
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { loggedIn, setloggedIn } = useContext(LoginContext);
   function outputErrorCode(code) {
     switch (code) {
       case 'auth/email-already-exists':
@@ -43,7 +45,10 @@ const LoginScreen = ({ navigation }) => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
+        setloggedIn(true);
         navigation.replace("User Profile");
+      } else {
+        setloggedIn(false);
       }
     });
     return unsubscribe;

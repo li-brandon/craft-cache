@@ -7,21 +7,24 @@ import { ExpensesContext } from "../Data/expenses-context";
 import ProjectsPageScreen from "./ProjectsPageScreen";
 import { GlobalStyles } from "../Constants/styles";
 import { auth, db } from "../firebase";
+import { LoginContext } from "../Contexts/LoginContext";
 function FrontPageScreen({ navigation, route }) {
     // const expenseData = useContext(ExpensesContext);
-    const expenseData = useSelector((state) => state.itemList.expenses)
-    const [loggedIn, setloggedIn] = useState(true);
-    useEffect(() => {
-        const unsubscribe = auth.onAuthStateChanged((user) => {
-            if (user) {
-                setloggedIn(false);
-            }
-        });
-        return unsubscribe;
-    }, []);
+    // const expenseData = useSelector((state) => state.itemList.expenses)
+    // const [loggedIn, setloggedIn] = useState(true);
+    // useEffect(() => {
+    //     const unsubscribe = auth.onAuthStateChanged((user) => {
+    //         if (user) {
+    //             setloggedIn(false);
+    //         }
+    //     });
+    //     return unsubscribe;
+    // }, []);
+    const { loggedIn, setloggedIn } = useContext(LoginContext);
+    // console.log("loggedin: " + loggedIn);
     return (
         <View style={styles.container}>
-            {loggedIn &&
+            {!loggedIn &&
                 <View style={styles.textContainer} >
                     <Text style={styles.text}>Please log in first!</Text>
                 </View>
