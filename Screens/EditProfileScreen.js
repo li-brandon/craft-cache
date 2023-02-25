@@ -11,6 +11,7 @@ import {
 const EditProfileScreen = () => {
   const [userName, setUserName] = useState("");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
   const [avatar, setAvatar] = useState("");
 
@@ -48,6 +49,12 @@ const EditProfileScreen = () => {
         keyboardType="email-address"
         value={email}
         onChangeText={(text) => setEmail(text)}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        value={password}
+        onChangeText={(text) => setPassword(text)}
       />
       <TextInput
         style={styles.input}
