@@ -18,12 +18,13 @@ import { Provider } from "react-redux";
 import { LoginContext } from "./Contexts/LoginContext";
 import IconButton from "./Components/UI/IconButton";
 // import ExpensesContextProvider from "./Data/expenses-context";
+import { getAuth } from "firebase/auth";
 import ProjectsPageScreen from "./Screens/ProjectsPageScreen";
 import LoginScreen from "./Screens/LoginScreen";
 import UserProfileScreen from "./Screens/UserProfileScreen";
 import EditProfileScreen from "./Screens/EditProfileScreen";
 
-
+const auth = getAuth();
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -112,6 +113,15 @@ const FrontPage = function () {
 export default function App() {
   const [projects, setProjects] = useState([]);
   const [isloggedIn, setIsLoggedIn] = useState(false);
+  const getAuthState = function () {
+    auth.onAuthStateChanged((user) => {
+      if (user) {
+        setIsLoggedIn(true);
+      }
+    });
+  }
+  getAuthState();
+  // console.log(isloggedIn)
   const { loggedIn, setloggedIn } = useContext(LoginContext);
   return (
     <Provider store={store}>

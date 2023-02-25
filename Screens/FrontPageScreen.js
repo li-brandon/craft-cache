@@ -13,11 +13,11 @@ function FrontPageScreen({ navigation, route }) {
     // const expenseData = useSelector((state) => state.itemList.expenses)
     // const [loggedIn, setloggedIn] = useState(true);
     // useEffect(() => {
-    //     const unsubscribe = auth.onAuthStateChanged((user) => {
-    //         if (user) {
-    //             setloggedIn(false);
-    //         }
-    //     });
+    // const unsubscribe = auth.onAuthStateChanged((user) => {
+    //     if (user) {
+    //         setloggedIn(false);
+    //     }
+    // });
     //     return unsubscribe;
     // }, []);
     const { loggedIn, setloggedIn } = useContext(LoginContext);
