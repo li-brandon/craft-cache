@@ -67,7 +67,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5FCFF",
   },
   contentContainer: {
-    marginTop: 20,
     padding: 15,
   },
   profileImage: {
@@ -79,6 +78,7 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     alignItems: "center",
+    marginBottom: 20,
   },
   username: {
     fontSize: 28,
