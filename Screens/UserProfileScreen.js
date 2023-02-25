@@ -1,105 +1,3 @@
-// import {
-//   StyleSheet,
-//   Text,
-//   TouchableOpacity,
-//   View,
-//   Button,
-//   Image,
-//   ScrollView,
-//   FlatList,
-// } from "react-native";
-// import React, { useState, createContext, useContext } from "react";
-// import { getAuth, signOut } from "firebase/auth";
-// import { auth } from "../firebase";
-// import Project from "../Components/ProjectsPage/Project";
-// import { MyContext } from "../Contexts/MyContext";
-
-// import hat from "../Components/assets/flower-bucket-hat.jpg";
-
-// const UserProfileScreen = ({ navigation, route }) => {
-//   // TODO: Verify if the user is logged in or not and display appropriate screen
-
-//   const { projects, setProjects } = useContext(MyContext);
-
-//   return (
-//     <View>
-//       <Button
-//         title="Edit Profile"
-//         onPress={() => navigation.navigate("Edit Profile")}
-//       />
-//       <Image style={styles.image} source={hat} />
-//       <Text>Username</Text>
-//       <Text>Published Projects:</Text>
-
-//       <ScrollView contentContainerStyle={styles.wrapper}>
-//         {/* map over projects and render Project component */}
-//         {projects.map((project, index) => (
-//           <Project key={index} project={project} navigation={navigation} />
-//         ))}
-//       </ScrollView>
-//     </View>
-//   );
-
-//   // // const email = route.params['email'];
-//   // const signOutHandler = () => {
-//   //     signOut(auth).then(() => {
-//   //         console.log('Sign-out successful.');
-//   //         navigation.replace('Front Page');
-//   //     }).catch((error) => {
-//   //         // An error happened.
-//   //     });
-//   // }
-//   // const handleBack = function () {
-//   //     navigation.goBack();
-//   // }
-//   // return (
-//   //     <View style={styles.container}>
-//   //         <Text>email:{auth.currentUser?.email}</Text>
-//   //         <TouchableOpacity
-//   //             onPress={signOutHandler}
-//   //             style={styles.button}
-//   //         >
-//   //             <Text style={styles.buttonText}>sign out</Text>
-//   //         </TouchableOpacity>
-//   //         <TouchableOpacity
-//   //             onPress={handleBack}
-//   //             style={styles.button}
-//   //         >
-//   //             <Text style={styles.buttonText}>To Front Page</Text>
-//   //         </TouchableOpacity>
-
-//   //     </View >
-//   // )
-// };
-
-// export default UserProfileScreen;
-
-// const styles = StyleSheet.create({
-//   container: {
-//     justifyContent: "center",
-//     alignItems: "center",
-//     flex: 1,
-//   },
-//   button: {
-//     backgroundColor: "#0728f9",
-//     width: "100%",
-//     padding: 15,
-//     margin: 10,
-//     borderRadius: 10,
-//     alignItems: "center",
-//   },
-//   buttonText: {
-//     color: "white",
-//     fontWeight: "700",
-//     fontSize: 16,
-//   },
-//   image: {
-//     width: 200,
-//     height: 200,
-//     borderRadius: 100,
-//   },
-// });
-
 import React from "react";
 import {
   StyleSheet,
@@ -108,9 +6,20 @@ import {
   Image,
   TouchableOpacity,
   Button,
+  ScrollView,
+  FlatList,
 } from "react-native";
 
+import { getAuth, signOut } from "firebase/auth";
+import { auth } from "../firebase";
+import Project from "../Components/ProjectsPage/Project";
+import { MyContext } from "../Contexts/MyContext";
+
+import hat from "../Components/assets/flower-bucket-hat.jpg";
+
 const UserProfileScreen = ({ navigation, route }) => {
+  const { projects, setProjects } = React.useContext(MyContext);
+
   return (
     <View style={styles.container}>
       <TouchableOpacity
@@ -120,16 +29,11 @@ const UserProfileScreen = ({ navigation, route }) => {
         <Text style={styles.editProfileButtonText}>Edit Profile</Text>
       </TouchableOpacity>
 
-      <Image
-        style={styles.profileImage}
-        source={{ uri: "https://picsum.photos/200" }}
-      />
+      <Image style={styles.profileImage} source={hat} />
 
       <View style={styles.userInfo}>
-        <Text style={styles.username}>John Doe</Text>
-        <Text style={styles.bio}>
-          Software Developer | React Native Enthusiast
-        </Text>
+        <Text style={styles.username}>Test User</Text>
+        <Text style={styles.bio}>Craft Cache Member</Text>
         <View style={styles.stats}>
           <Text style={styles.stat}>150 Posts</Text>
           <Text style={styles.stat}>10k Followers</Text>
@@ -144,6 +48,12 @@ const UserProfileScreen = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
       </View>
+
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        {projects.map((project, index) => (
+          <Project key={index} project={project} navigation={navigation} />
+        ))}
+      </ScrollView>
     </View>
   );
 };
@@ -151,15 +61,21 @@ const UserProfileScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#F5FCFF",
+  },
+  contentContainer: {
+    marginTop: 20,
+    padding: 15,
   },
   profileImage: {
     width: 150,
     height: 150,
     borderRadius: 75,
     marginBottom: 20,
+    marginTop: 80,
   },
   userInfo: {
     alignItems: "center",
@@ -223,7 +139,7 @@ const styles = StyleSheet.create({
   editProfileButtonText: {
     color: "#fff",
     fontWeight: "bold",
-    fontSize: 16,
+    fontSize: 14,
   },
 });
 
