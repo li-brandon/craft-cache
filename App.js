@@ -44,23 +44,23 @@ const FrontPage = function () {
         tabBarActiveTintColor: GlobalStyles.colors.gray700,
         headerRight: isUser
           ? ({ tintColor }) => (
-              <IconButton
-                icon="log-in-outline"
-                color={tintColor}
-                size={24}
-                onPress={ToManage.bind(this, navigation)}
-              />
-            )
+            <IconButton
+              icon="log-in-outline"
+              color={tintColor}
+              size={24}
+              onPress={ToManage.bind(this, navigation)}
+            />
+          )
           : null,
         headerLeft: isUser
           ? ({ tintColor }) => (
-              <IconButton
-                icon="person-circle-outline"
-                color={tintColor}
-                size={24}
-                onPress={ToProfile.bind(this, navigation)}
-              />
-            )
+            <IconButton
+              icon="person-circle-outline"
+              color={tintColor}
+              size={24}
+              onPress={ToProfile.bind(this, navigation)}
+            />
+          )
           : null,
       })}
     >
@@ -114,7 +114,7 @@ const FrontPage = function () {
 };
 export default function App() {
   const [projects, setProjects] = React.useState([]);
-  
+
   return (
     <Provider store={store}>
       <MyContext.Provider value={{ projects, setProjects }}>
