@@ -152,13 +152,14 @@ export default function App() {
                 component={LoginScreen}
                 options={{ headerShown: false }}
               />
-             <Stack.Screen
-              name="Register"
-              component={RegisterScreen}
-              options={{ headerShown: false }}
-            />
+              <Stack.Screen
+                name="Register"
+                component={RegisterScreen}
+                options={{ headerShown: false }}
+              />
               <Stack.Screen name="Detail" component={ItemDetailScreen} />
-              <Stack.Screen name="User Profile" component={UserProfileScreen} />
+              <Stack.Screen name="User Profile" component={UserProfileScreen}
+              />
               <Stack.Screen name="Edit Profile" component={EditProfileScreen} />
               <Stack.Screen name="Reset Password" component={ResetPasswordScreen} />
             </Stack.Navigator>
