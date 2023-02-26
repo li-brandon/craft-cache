@@ -1,7 +1,9 @@
 import { StyleSheet, Text, View, Image } from "react-native";
 import React from "react";
+// import hat from "../assets/flower-bucket-hat.jpg";
 
 const ProjectDetail = ({ project }) => {
+  // console.log(project);
   return (
     <View>
       <View style={styles.project}>
@@ -11,8 +13,7 @@ const ProjectDetail = ({ project }) => {
           </View>
           <View style={styles.projectInfoAndImage}>
             <View style={styles.imageContainer}>
-              {/* TODO: Must find a way to have image associated with its project */}
-              <Image style={styles.image} source={{uri: project.image}} />
+              <Image style={styles.image} source={{ uri: project.image }} />
             </View>
             <View style={styles.postStatus}>
               {project.posted ? ( // If project is posted, show "POSTED" text
@@ -31,7 +32,7 @@ const ProjectDetail = ({ project }) => {
                   Last Updated: {project.lastUpdated}
                 </Text>
                 <Text style={styles.projectStatusText}>
-                  Status: {project.status}
+                  Status: {project.inProgress ? "In progress" : "Finished"}
                 </Text>
               </View>
               <View style={styles.projectInfo}>

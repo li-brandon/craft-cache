@@ -102,7 +102,7 @@ const AddProjectScreen = ({ navigation }) => {
 
     // If the user didn't cancel the image picker, convert the image to JPEG, upload the image to storage, and set the image in state
     if (!result.canceled) {
-      const uri = result.uri; // Get the uri of the image
+      const uri = result.assets[0].uri; // Get the uri of the image
       try {
       const manipResult = await manipulateAsync(
         uri,

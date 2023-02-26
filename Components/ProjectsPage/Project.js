@@ -1,5 +1,6 @@
 import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React from "react";
+// import hat from "../assets/flower-bucket-hat.jpg";
 
 const Project = ({ project, navigation }) => {
   return (
@@ -7,7 +8,7 @@ const Project = ({ project, navigation }) => {
       <TouchableOpacity
         onPress={() => {
           navigation.navigate("Detail", {
-            id: project.id,
+            project: project,
           });
         }}
       >
