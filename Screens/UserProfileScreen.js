@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   StyleSheet,
@@ -17,8 +18,10 @@ import { MyContext } from "../Contexts/MyContext";
 
 import hat from "../Components/assets/flower-bucket-hat.jpg";
 
+
 const UserProfileScreen = ({ navigation, route }) => {
   const { projects, setProjects } = React.useContext(MyContext);
+
 
   return (
     <View style={styles.container}>
@@ -30,6 +33,7 @@ const UserProfileScreen = ({ navigation, route }) => {
       </TouchableOpacity>
 
       <Image style={styles.profileImage} source={hat} />
+
 
       <View style={styles.userInfo}>
         <Text style={styles.username}>Test User</Text>
