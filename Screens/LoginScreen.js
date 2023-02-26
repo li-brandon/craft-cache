@@ -116,19 +116,21 @@ const LoginScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.inputContainer}>
+        <Text style={styles.inputTitle}>Email</Text>
         <TextInput
           style={styles.input}
-          placeholder="Email"
+          placeholder="email@example.com"
           keyboardType="email-address"
           value={email}
           onChangeText={(text) => setEmail(text)}
           autoCapitalize="none"
         />
+        <Text style={styles.inputTitle}>Password</Text>
         <TextInput
-          placeholder="Password"
-          value={password}
           onChangeText={(text) => setPassword(text)}
           style={styles.input}
+          placeholder="Strong Password"
+          value={password}
           secureTextEntry
         />
       </View>
@@ -185,6 +187,11 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 10,
     marginTop: 5,
+    marginBottom: 20,
+  },
+  inputTitle: {
+    fontWeight: "700",
+    fontSize: 16,
   },
   buttonContainer: {
     width: "60%",
@@ -198,6 +205,7 @@ const styles = StyleSheet.create({
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
+    marginBottom: 10,
   },
   buttonText: {
     color: "white",
@@ -236,112 +244,3 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
-
-// import React, { useState } from "react";
-// import {
-//   StyleSheet,
-//   View,
-//   TextInput,
-//   TouchableOpacity,
-//   Text,
-// } from "react-native";
-
-// const LoginScreen = ({ navigation }) => {
-//   const [email, setEmail] = useState("");
-//   const [password, setPassword] = useState("");
-
-//   const handleBack = function () {
-//     navigation.goBack("UserProfile");
-//   };
-
-//   const handleLogin = () => {
-//     // TODO: Implement login logic
-//   };
-
-//   const handleRegister = () => {
-//     // TODO: Implement registration logic
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <View style={styles.logoContainer}>
-//         <Text style={styles.logo}>My App</Text>
-//       </View>
-//       <TextInput
-//         style={styles.input}
-//         placeholder="Email"
-//         keyboardType="email-address"
-//         value={email}
-//         onChangeText={(text) => setEmail(text)}
-//       />
-//       <TextInput
-//         style={styles.input}
-//         placeholder="Password"
-//         secureTextEntry={true}
-//         value={password}
-//         onChangeText={(text) => setPassword(text)}
-//       />
-//       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
-//         <Text style={styles.loginButtonText}>Login</Text>
-//       </TouchableOpacity>
-//       <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
-//         <Text style={styles.registerButtonText}>Create an account</Text>
-//       </TouchableOpacity>
-//       <TouchableOpacity style={styles.registerButton} onPress={handleBack}>
-//         <Text style={styles.registerButtonText}>Cancel</Text>
-//       </TouchableOpacity>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     padding: 20,
-//     alignItems: "center",
-//     justifyContent: "center",
-//   },
-//   logoContainer: {
-//     marginBottom: 50,
-//   },
-//   logo: {
-//     fontSize: 36,
-//     fontWeight: "bold",
-//     color: "#1E90FF",
-//   },
-//   input: {
-//     width: "100%",
-//     height: 40,
-//     backgroundColor: "#FFFFFF",
-//     borderRadius: 5,
-//     paddingHorizontal: 10,
-//     marginBottom: 10,
-//   },
-//   loginButton: {
-//     width: "100%",
-//     height: 40,
-//     backgroundColor: "#1E90FF",
-//     borderRadius: 5,
-//     alignItems: "center",
-//     justifyContent: "center",
-//     marginBottom: 10,
-//   },
-//   loginButtonText: {
-//     fontSize: 16,
-//     color: "#FFFFFF",
-//   },
-//   registerButton: {
-//     width: "100%",
-//     height: 40,
-//     backgroundColor: "#FFFFFF",
-//     borderRadius: 5,
-//     alignItems: "center",
-//     justifyContent: "center",
-//   },
-//   registerButtonText: {
-//     fontSize: 16,
-//     color: "#1E90FF",
-//   },
-// });
-
-// export default LoginScreen;
