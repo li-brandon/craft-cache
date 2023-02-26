@@ -83,6 +83,9 @@ const LoginScreen = ({ navigation }) => {
   const handleBack = function () {
     navigation.goBack("UserProfile");
   };
+  const handleResetPassword = function () {
+    navigation.navigate("Reset Password")
+  }
   // if (isFetching) {
   //   return <LoadingOverLay containerStyle={styles.container} />
   // }
@@ -118,7 +121,8 @@ const LoginScreen = ({ navigation }) => {
         />
       </View>
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={handleSignIn} style={styles.button}>
+        <TouchableOpacity onPress={handleSignIn}
+          style={styles.button}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -126,6 +130,12 @@ const LoginScreen = ({ navigation }) => {
           style={[styles.button, styles.buttonOutline]}
         >
           <Text style={styles.buttonOutlineText}>Register</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleResetPassword}
+          style={[styles.button, styles.buttonOutline]}
+        >
+          <Text style={styles.buttonOutlineText}>Reset Password</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={handleBack}

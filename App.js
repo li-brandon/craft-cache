@@ -23,7 +23,7 @@ import ProjectsPageScreen from "./Screens/ProjectsPageScreen";
 import LoginScreen from "./Screens/LoginScreen";
 import UserProfileScreen from "./Screens/UserProfileScreen";
 import EditProfileScreen from "./Screens/EditProfileScreen";
-
+import ResetPasswordScreen from "./Screens/ResetPasswordScreen";
 const auth = getAuth();
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -152,6 +152,7 @@ export default function App() {
               <Stack.Screen name="Detail" component={ItemDetailScreen} />
               <Stack.Screen name="User Profile" component={UserProfileScreen} />
               <Stack.Screen name="Edit Profile" component={EditProfileScreen} />
+              <Stack.Screen name="Reset Password" component={ResetPasswordScreen} />
             </Stack.Navigator>
           </NavigationContainer>
         </LoginContext.Provider>
