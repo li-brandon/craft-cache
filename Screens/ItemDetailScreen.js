@@ -3,21 +3,15 @@ import React, { useEffect, useState, createContext, useContext } from "react";
 import ProjectDetail from "../Components/ProjectDetailPage/ProjectDetail";
 import { MyContext } from "../Contexts/MyContext";
 
-function ItemDetailScreen({ navigation, route }) {
-  const { projects } = useContext(MyContext);
-  const id = route.params["id"];
-  const proj = findArrayElementById(projects, id);
+function ItemDetailScreen({ route }) {
+
+  const { project } = route.params;
+
   return (
     <View>
-      <ProjectDetail project={proj} />
+      <ProjectDetail project={project}/>
     </View>
   );
-}
-
-function findArrayElementById(array, id) {
-  return array.find((element) => {
-    return element.id === id;
-  });
 }
 
 const styles = StyleSheet.create({

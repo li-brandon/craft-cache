@@ -1,7 +1,7 @@
 import React from "react";
-import { StyleSheet, View, Pressable, Text } from "react-native";
+import { StyleSheet, View, Pressable, Text, Image } from "react-native";
 import { useRoute } from "@react-navigation/native";
-function CategoryGrids({ title, color, onPress }) {
+function CategoryGrids({ imageUri, color, onPress }) {
   return (
     <View style={[styles.grid]}>
       <Pressable
@@ -11,8 +11,8 @@ function CategoryGrids({ title, color, onPress }) {
         ]}
         onPress={onPress}
       >
-        <View style={[styles.gridInner, { backgroundColor: color }]}>
-          <Text style={styles.title}>{title}</Text>
+        <View style={[styles.gridInner]}>
+          <Image source={{ uri: imageUri }} style={styles.image} />
         </View>
       </Pressable>
     </View>
@@ -40,9 +40,10 @@ const styles = StyleSheet.create({
   buttonPressed: {
     opacity: 0.2,
   },
-  title: {
-    fontWeight: "bold",
-    fontSize: 24,
+  image: {
+    width: 120,
+    height: 120,
+    borderRadius: 8,
   },
 });
 export default CategoryGrids;
