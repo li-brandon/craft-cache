@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import LoadingOverLay from "../Components/UI/LoadingOverLay";
 import React, { useEffect, useState } from "react";
@@ -24,22 +24,25 @@ const LoginScreen = ({ navigation }) => {
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+
   function outputErrorCode(code) {
     switch (code) {
-      case 'auth/email-already-exists':
+      case "auth/email-already-exists":
         setErrorMessage("Email already exists!");
-        break
-      case 'auth/email-already-in-use':
+        break;
+      case "auth/email-already-in-use":
         setErrorMessage("Email already exists!");
-        break
+        break;
       case "auth/weak-password":
-        setErrorMessage('Password too short!password should be at least six number!')
-        break
+        setErrorMessage(
+          "Password too short!password should be at least six number!"
+        );
+        break;
       default:
-        setErrorMessage(code.substring(5))
+        setErrorMessage(code.substring(5));
     }
-
   }
+
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
@@ -48,6 +51,7 @@ const LoginScreen = ({ navigation }) => {
     });
     return unsubscribe;
   }, []);
+
   async function handleSignIn() {
     setIsLoading(true);
     await signInWithEmailAndPassword(auth, email, password)
@@ -60,9 +64,10 @@ const LoginScreen = ({ navigation }) => {
         outputErrorCode(error.code);
       });
     setIsLoading(false);
-  };
+  }
+
   async function firebaseSignUp() {
-    setIsLoading(true)
+    setIsLoading(true);
     await createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
@@ -73,48 +78,64 @@ const LoginScreen = ({ navigation }) => {
         // const errorMessage = error.message;
         outputErrorCode(error.code);
       });
-    setIsLoading(false)
+    setIsLoading(false);
   }
+
   const handleBack = function () {
     navigation.goBack("UserProfile");
   };
+
   // if (isFetching) {
   //   return <LoadingOverLay containerStyle={styles.container} />
   // }
   const handleSignUp = () => {
-    Alert.alert("Sign Up", "Are you sure to Sign up?",
-      [{ text: 'cancel', style: 'cancel' },
-      { text: 'yes', onPress: () => { firebaseSignUp() } }])
+    Alert.alert("Sign Up", "Are you sure to Sign up?", [
+      { text: "cancel", style: "cancel" },
+      {
+        text: "yes",
+        onPress: () => {
+          firebaseSignUp();
+        },
+      },
+    ]);
   };
+
   return (
     <KeyboardAvoidingView style={styles.container} behavior="padding">
-      {isLoading &&
+      {isLoading && (
         <View style={styles.loading}>
-          <ActivityIndicator size='large' />
+          <ActivityIndicator size="large" />
         </View>
-      }
+      )}
+
+      <View style={styles.logoContainer}>
+        <Text style={styles.logo}>Sign In</Text>
+      </View>
       <View>
         <Text style={styles.textStyle}>{errorMessage}</Text>
       </View>
+
       <View style={styles.inputContainer}>
         <TextInput
-          placeholder="Please input your Email"
+          style={styles.input}
+          placeholder="Email"
+          keyboardType="email-address"
           value={email}
           onChangeText={(text) => setEmail(text)}
-          autoCapitalize='none'
-          style={styles.input}
+          autoCapitalize="none"
         />
         <TextInput
-          placeholder="Password should be At least six characters"
+          placeholder="Password"
           value={password}
           onChangeText={(text) => setPassword(text)}
           style={styles.input}
           secureTextEntry
         />
       </View>
+
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={handleSignIn} style={styles.button}>
-          <Text style={styles.buttonText}>Login</Text>
+          <Text style={styles.buttonText}>Sign In</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={handleSignUp}
@@ -124,9 +145,9 @@ const LoginScreen = ({ navigation }) => {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={handleBack}
-          style={[styles.button, styles.buttonOutline]}
+          style={[styles.button, styles.cancelButtonOutline]}
         >
-          <Text style={styles.buttonOutlineText}>Cancel</Text>
+          <Text style={styles.cancelButtonOutlineText}>Cancel</Text>
         </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
@@ -137,14 +158,23 @@ export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {
-    justifyContent: "center",
-    alignItems: "center",
     flex: 1,
+    padding: 20,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  logoContainer: {
+    marginBottom: 20,
+  },
+  logo: {
+    fontSize: 36,
+    fontWeight: "bold",
+    color: "#0728f9",
   },
   textStyle: {
     fontSize: 14,
-    color: 'red',
-    fontWeight: 'bold'
+    color: "red",
+    fontWeight: "bold",
   },
   inputContainer: {
     width: "80%",
@@ -175,13 +205,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   loading: {
-    position: 'absolute',
+    position: "absolute",
     left: 100,
     right: 100,
     top: 40,
     bottom: 100,
-    alignItems: 'center',
-    justifyContent: 'center'
+    alignItems: "center",
+    justifyContent: "center",
   },
   buttonOutline: {
     backgroundColor: "white",
@@ -194,4 +224,124 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     fontSize: 16,
   },
+  cancelButtonOutline: {
+    backgroundColor: "white",
+    marginTop: 5,
+    borderColor: "red",
+    borderWidth: 2,
+  },
+  cancelButtonOutlineText: {
+    color: "red",
+    fontWeight: "700",
+    fontSize: 16,
+  },
 });
+
+// import React, { useState } from "react";
+// import {
+//   StyleSheet,
+//   View,
+//   TextInput,
+//   TouchableOpacity,
+//   Text,
+// } from "react-native";
+
+// const LoginScreen = ({ navigation }) => {
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+
+//   const handleBack = function () {
+//     navigation.goBack("UserProfile");
+//   };
+
+//   const handleLogin = () => {
+//     // TODO: Implement login logic
+//   };
+
+//   const handleRegister = () => {
+//     // TODO: Implement registration logic
+//   };
+
+//   return (
+//     <View style={styles.container}>
+//       <View style={styles.logoContainer}>
+//         <Text style={styles.logo}>My App</Text>
+//       </View>
+//       <TextInput
+//         style={styles.input}
+//         placeholder="Email"
+//         keyboardType="email-address"
+//         value={email}
+//         onChangeText={(text) => setEmail(text)}
+//       />
+//       <TextInput
+//         style={styles.input}
+//         placeholder="Password"
+//         secureTextEntry={true}
+//         value={password}
+//         onChangeText={(text) => setPassword(text)}
+//       />
+//       <TouchableOpacity style={styles.loginButton} onPress={handleLogin}>
+//         <Text style={styles.loginButtonText}>Login</Text>
+//       </TouchableOpacity>
+//       <TouchableOpacity style={styles.registerButton} onPress={handleRegister}>
+//         <Text style={styles.registerButtonText}>Create an account</Text>
+//       </TouchableOpacity>
+//       <TouchableOpacity style={styles.registerButton} onPress={handleBack}>
+//         <Text style={styles.registerButtonText}>Cancel</Text>
+//       </TouchableOpacity>
+//     </View>
+//   );
+// };
+
+// const styles = StyleSheet.create({
+//   container: {
+//     flex: 1,
+//     padding: 20,
+//     alignItems: "center",
+//     justifyContent: "center",
+//   },
+//   logoContainer: {
+//     marginBottom: 50,
+//   },
+//   logo: {
+//     fontSize: 36,
+//     fontWeight: "bold",
+//     color: "#1E90FF",
+//   },
+//   input: {
+//     width: "100%",
+//     height: 40,
+//     backgroundColor: "#FFFFFF",
+//     borderRadius: 5,
+//     paddingHorizontal: 10,
+//     marginBottom: 10,
+//   },
+//   loginButton: {
+//     width: "100%",
+//     height: 40,
+//     backgroundColor: "#1E90FF",
+//     borderRadius: 5,
+//     alignItems: "center",
+//     justifyContent: "center",
+//     marginBottom: 10,
+//   },
+//   loginButtonText: {
+//     fontSize: 16,
+//     color: "#FFFFFF",
+//   },
+//   registerButton: {
+//     width: "100%",
+//     height: 40,
+//     backgroundColor: "#FFFFFF",
+//     borderRadius: 5,
+//     alignItems: "center",
+//     justifyContent: "center",
+//   },
+//   registerButtonText: {
+//     fontSize: 16,
+//     color: "#1E90FF",
+//   },
+// });
+
+// export default LoginScreen;
