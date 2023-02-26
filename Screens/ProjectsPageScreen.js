@@ -21,7 +21,7 @@ function ProjectsPageScreen({ navigation }) {
       unsubscribe();
     };
   }, []);
-
+  
   // useFocusEffect is similar to useEffect, but it is called when the screen is focused
   useFocusEffect(
     React.useCallback(() => {
