@@ -1,82 +1,70 @@
 import React, { useState } from "react";
 import {
-  View,
-  Text,
-  TextInput,
   StyleSheet,
+  View,
+  TextInput,
   TouchableOpacity,
+  Text,
+  Image,
 } from "react-native";
 
-const EditProfileScreen = ({ navigation }) => {
-  const [name, setName] = useState("");
-  const [type, setType] = useState("");
-  const [tools, setTools] = useState("");
-  const [materials, setMaterials] = useState("");
-  const [pattern, setPattern] = useState("");
-  const [description, setDescription] = useState("");
+const EditProfileScreen = () => {
+  const [userName, setUserName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [avatar, setAvatar] = useState("");
 
-  const handleAddProject = () => {
-    const newProject = {
-      name: name,
-      type: type,
-      tools: tools,
-      materials: materials,
-      pattern: pattern,
-      description: description,
-    };
-    // TODO: save new project to database but right now it will just log it to the console
-    console.log(newProject);
-    saveProject(newProject);
-    // clear input fields
-    clearFields();
+  const handleSave = () => {
+    // TODO: Save changes to user profile
   };
 
-  const saveProject = (newProject) => {
-    // send project to ProjectsPageScreen.js using navigation
-    navigation.navigate("ProjectsPageScreen", {
-      newProject: newProject,
-    });
-  };
-
-  const clearFields = () => {
-    setName("");
-    setType("");
-    setTools("");
-    setMaterials("");
-    setPattern("");
-    setDescription("");
+  const handleChooseAvatar = () => {
+    // TODO: Implement avatar selection logic
   };
 
   return (
     <View style={styles.container}>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={name}
-          onChangeText={(text) => setName(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Password"
-          value={type}
-          onChangeText={(text) => setType(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Username"
-          value={tools}
-          onChangeText={(text) => setTools(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Bio"
-          value={materials}
-          onChangeText={(text) => setMaterials(text)}
-        />
+      <View style={styles.avatarContainer}>
+        {avatar ? (
+          <Image style={styles.avatar} source={{ uri: avatar }} />
+        ) : (
+          <TouchableOpacity
+            style={styles.avatarPlaceholder}
+            onPress={handleChooseAvatar}
+          >
+            <Text style={styles.avatarPlaceholderText}>Choose Avatar</Text>
+          </TouchableOpacity>
+        )}
       </View>
-      <TouchableOpacity style={styles.button} onPress={handleAddProject}>
-        <Text style={styles.buttonText}>Save Changes</Text>
+      <TextInput
+        style={styles.input}
+        placeholder="Username"
+        value={userName}
+        onChangeText={(text) => setUserName(text)}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Email"
+        keyboardType="email-address"
+        value={email}
+        onChangeText={(text) => setEmail(text)}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Password"
+        value={password}
+        onChangeText={(text) => setPassword(text)}
+      />
+      <TextInput
+        style={styles.input}
+        placeholder="Phone"
+        keyboardType="phone-pad"
+        value={phone}
+        onChangeText={(text) => setPhone(text)}
+      />
+      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+        <Text style={styles.saveButtonText}>Save Changes</Text>
       </TouchableOpacity>
     </View>
   );
@@ -84,35 +72,52 @@ const EditProfileScreen = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    // flex: 1,
     padding: 20,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
+  avatarContainer: {
+    width: 150,
+    height: 150,
+    borderRadius: 75,
+    overflow: "hidden",
     marginBottom: 20,
   },
-  inputContainer: {
-    marginBottom: 20,
+  avatar: {
+    width: "100%",
+    height: "100%",
+  },
+  avatarPlaceholder: {
+    width: "100%",
+    height: "100%",
+    backgroundColor: "#CCCCCC",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  avatarPlaceholderText: {
+    fontSize: 16,
+    color: "#FFFFFF",
   },
   input: {
+    width: "100%",
     height: 40,
-    borderWidth: 1,
-    borderColor: "#ccc",
+    backgroundColor: "#FFFFFF",
     borderRadius: 5,
-    padding: 10,
+    paddingHorizontal: 10,
     marginBottom: 10,
   },
-  button: {
-    backgroundColor: "#FF6F61",
-    padding: 10,
+  saveButton: {
+    width: "100%",
+    height: 40,
+    backgroundColor: "#1E90FF",
     borderRadius: 5,
+    alignItems: "center",
+    justifyContent: "center",
   },
-  buttonText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
-    textAlign: "center",
+  saveButtonText: {
+    fontSize: 16,
+    color: "#FFFFFF",
   },
 });
 
