@@ -14,9 +14,9 @@ import { auth, db, storage } from "../firebase";
 import { collection, addDoc } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import * as ImagePicker from "expo-image-picker";
+import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 
 const AddProjectScreen = ({ navigation }) => {
-
   // States
   const [user, setUser] = useState(null);
   const [name, setName] = useState("");
@@ -45,8 +45,7 @@ const AddProjectScreen = ({ navigation }) => {
     return unsubscribe;
   }, []);
 
-  
-  // Helper functions 
+  // Helper functions
 
   // handleAddProject is called when the user clicks the "Add Project" button. It will
   // upload the image to storage, add the project to Firestore, and clear the fields
@@ -100,38 +99,46 @@ const AddProjectScreen = ({ navigation }) => {
       aspect: [4, 3],
       quality: 1,
     });
- 
-    // If the user didn't cancel the image picker, upload the image to storage and set the image in state
-    if (!result.canceled) { 
-      const uri = result.assets[0].uri; // Get the uri of the image
+
+    // If the user didn't cancel the image picker, convert the image to JPEG, upload the image to storage, and set the image in state
+    if (!result.canceled) {
+      const uri = result.uri; // Get the uri of the image
+      try {
+      const manipResult = await manipulateAsync(
+        uri,
+        [{ resize: { width: 500 } }],
+        { compress: 0.5, format: SaveFormat.JPEG }
+      );
       const imageRef = ref(storage, "projectImages/" + uri.split("/").pop());
-      setImageUri(uri);
+      setImageUri(manipResult.uri);
       setImageRef(imageRef);
-      setImage(uri);
+      setImage(manipResult.uri);
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
   // takePhoto launches the camera and allows the user to take a photo with the camera
-  const takePhoto = async () => {
-    const result = await ImagePicker.launchCameraAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [4, 3],
-      quality: 1,
-    });
+  // const takePhoto = async () => {
+  //   const result = await ImagePicker.launchCameraAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //     allowsEditing: true,
+  //     aspect: [4, 3],
+  //     quality: 1,
+  //   });
 
-    // If the user didn't cancel the camera, upload the image to storage and set the image in state
-    if (!result.canceled) {
-      const uri = result.assets[0].uri; // Get the uri of the image
-      const imageRef = ref(storage, "projectImages/" + uri.split("/").pop()); 
-      setImageUri(uri);
-      setImageRef(imageRef);
-      setImage(uri);
-    } else {
-      alert("Camera permission is required to take a photo.");
-    }
-  };
-
+  //   // If the user didn't cancel the camera, upload the image to storage and set the image in state
+  //   if (!result.canceled) {
+  //     const uri = result.assets[0].uri; // Get the uri of the image
+  //     const imageRef = ref(storage, "projectImages/" + uri.split("/").pop());
+  //     setImageUri(uri);
+  //     setImageRef(imageRef);
+  //     setImage(uri);
+  //   } else {
+  //     alert("Camera permission is required to take a photo.");
+  //   }
+  // };
 
   // getCurrentDate returns the current date in the format MM/DD/YYYY
   const getCurrentDate = () => {
@@ -201,7 +208,7 @@ const AddProjectScreen = ({ navigation }) => {
 
         <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
           <Button title="Choose Photo" onPress={choosePhoto} />
-          <Button title="Take Photo" onPress={takePhoto} />
+          {/* <Button title="Take Photo" onPress={takePhoto} /> */}
         </View>
       </View>
       <TouchableOpacity style={styles.button} onPress={handleAddProject}>
