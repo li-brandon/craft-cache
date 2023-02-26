@@ -25,6 +25,8 @@ import UserProfileScreen from "./Screens/UserProfileScreen";
 import EditProfileScreen from "./Screens/EditProfileScreen";
 import ResetPasswordScreen from "./Screens/ResetPasswordScreen";
 const auth = getAuth();
+import RegisterScreen from "./Screens/RegisterScreen";
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -111,6 +113,7 @@ const FrontPage = function () {
   );
 };
 export default function App() {
+
   const [projects, setProjects] = useState([]);
   const [isloggedIn, setIsLoggedIn] = useState(false);
   const getAuthState = function () {
@@ -149,6 +152,11 @@ export default function App() {
                 component={LoginScreen}
                 options={{ headerShown: false }}
               />
+             <Stack.Screen
+              name="Register"
+              component={RegisterScreen}
+              options={{ headerShown: false }}
+            />
               <Stack.Screen name="Detail" component={ItemDetailScreen} />
               <Stack.Screen name="User Profile" component={UserProfileScreen} />
               <Stack.Screen name="Edit Profile" component={EditProfileScreen} />
@@ -156,6 +164,7 @@ export default function App() {
             </Stack.Navigator>
           </NavigationContainer>
         </LoginContext.Provider>
+
       </MyContext.Provider>
     </Provider>
     // {/* </ExpensesContextProvider> */ }
