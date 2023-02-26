@@ -19,8 +19,10 @@ import {
 import { GlobalStyles } from "../Constants/styles";
 import { async } from "@firebase/util";
 
-const LoginScreen = ({ navigation }) => {
+const RegisterScreen = ({ navigation }) => {
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -89,16 +91,15 @@ const LoginScreen = ({ navigation }) => {
   //   return <LoadingOverLay containerStyle={styles.container} />
   // }
   const handleSignUp = () => {
-    // Alert.alert("Sign Up", "Are you sure to Sign up?", [
-    //   { text: "cancel", style: "cancel" },
-    //   {
-    //     text: "yes",
-    //     onPress: () => {
-    //       firebaseSignUp();
-    //     },
-    //   },
-    // ]);
-    navigation.replace("Register");
+    Alert.alert("Sign Up", "Are you sure to Sign up?", [
+      { text: "cancel", style: "cancel" },
+      {
+        text: "yes",
+        onPress: () => {
+          firebaseSignUp();
+        },
+      },
+    ]);
   };
 
   return (
@@ -110,13 +111,21 @@ const LoginScreen = ({ navigation }) => {
       )}
 
       <View style={styles.logoContainer}>
-        <Text style={styles.logo}>Sign In</Text>
+        <Text style={styles.logo}>Register</Text>
       </View>
       <View>
         <Text style={styles.textStyle}>{errorMessage}</Text>
       </View>
 
       <View style={styles.inputContainer}>
+        <Text style={styles.inputTitle}>Username</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Your Username"
+          value={username}
+          onChangeText={(text) => setUsername(text)}
+          autoCapitalize="none"
+        />
         <Text style={styles.inputTitle}>Email</Text>
         <TextInput
           style={styles.input}
@@ -124,6 +133,15 @@ const LoginScreen = ({ navigation }) => {
           keyboardType="email-address"
           value={email}
           onChangeText={(text) => setEmail(text)}
+          autoCapitalize="none"
+        />
+        <Text style={styles.inputTitle}>Phone</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="xxx-xxx-xxxx (Optional)"
+          keyboardType="numeric"
+          value={phone}
+          onChangeText={(text) => setPhone(text)}
           autoCapitalize="none"
         />
         <Text style={styles.inputTitle}>Password</Text>
@@ -137,14 +155,8 @@ const LoginScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={handleSignIn} style={styles.button}>
-          <Text style={styles.buttonText}>Sign In</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handleSignUp}
-          style={[styles.button, styles.buttonOutline]}
-        >
-          <Text style={styles.buttonOutlineText}>Register</Text>
+        <TouchableOpacity onPress={handleSignUp} style={styles.button}>
+          <Text style={styles.buttonText}>Register</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={handleBack}
@@ -157,7 +169,7 @@ const LoginScreen = ({ navigation }) => {
   );
 };
 
-export default LoginScreen;
+export default RegisterScreen;
 
 const styles = StyleSheet.create({
   container: {

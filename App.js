@@ -21,6 +21,7 @@ import ProjectsPageScreen from "./Screens/ProjectsPageScreen";
 import LoginScreen from "./Screens/LoginScreen";
 import UserProfileScreen from "./Screens/UserProfileScreen";
 import EditProfileScreen from "./Screens/EditProfileScreen";
+import RegisterScreen from "./Screens/RegisterScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -114,11 +115,10 @@ const FrontPage = function () {
 };
 export default function App() {
   const [projects, setProjects] = React.useState([]);
-  
+
   return (
     <Provider store={store}>
       <MyContext.Provider value={{ projects, setProjects }}>
-        {/* <ExpensesContextProvider> */}
         <NavigationContainer>
           <Stack.Navigator
             screenOptions={{
@@ -139,6 +139,11 @@ export default function App() {
             <Stack.Screen
               name="Login"
               component={LoginScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Register"
+              component={RegisterScreen}
               options={{ headerShown: false }}
             />
             <Stack.Screen name="Detail" component={ItemDetailScreen} />
