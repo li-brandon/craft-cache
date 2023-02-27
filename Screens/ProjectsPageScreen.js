@@ -37,6 +37,9 @@ function ProjectsPageScreen({ navigation }) {
           setProjects(tempProjects);
         });
       }
+      else {
+        setProjects([]); // clear projects since there is no user
+      }
     }, [currentUser])
   );
 

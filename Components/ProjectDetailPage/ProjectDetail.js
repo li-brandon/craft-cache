@@ -1,22 +1,79 @@
-import { StyleSheet, Text, View, Image } from "react-native";
-import React from "react";
-// import hat from "../assets/flower-bucket-hat.jpg";
+import { StyleSheet, Text, View, Image, Button } from "react-native";
+import React, { useState, useEffect } from "react";
+import { auth, db } from "../../firebase";
+import { collection, doc, updateDoc } from "firebase/firestore";
 
 const ProjectDetail = ({ project }) => {
-  // console.log(project);
+  const [projectState, setProjectState] = useState(project);
+  const [showPostButton, setShowPostButton] = useState(false);
+
+  useEffect(() => {
+    // get current user
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) { 
+        // if the current user is the owner of the project, show the post button
+        if (user.uid === projectState.userID) {
+          setShowPostButton(true);
+        }
+      }
+    });
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
+  const postOrUnpostProject = async () => {
+    // if project is posted, unpost it
+    if (projectState.posted) {
+      try {
+        const projectRef = doc(collection(db, "projects"), projectState.id);
+        await updateDoc(projectRef, {
+          posted: false,
+        });
+
+        // update UI to show that project is not posted
+        setProjectState({
+          ...projectState,
+          posted: false,
+        });
+      } catch (error) {
+        console.error("Error unposting project: ", error);
+      }
+    } else {
+      // if project is not posted, post it
+      try {
+        const projectRef = doc(collection(db, "projects"), projectState.id);
+        await updateDoc(projectRef, {
+          posted: true,
+        });
+
+        // update UI to show that project is posted
+        setProjectState({
+          ...projectState,
+          posted: true,
+        });
+      } catch (error) {
+        console.error("Error posting project: ", error);
+      }
+    }
+  };
+
   return (
     <View>
       <View style={styles.project}>
         <View>
           <View style={styles.projectName}>
-            <Text style={styles.projectNameText}>{project.name}</Text>
+            <Text style={styles.projectNameText}>{projectState.name}</Text>
           </View>
           <View style={styles.projectInfoAndImage}>
             <View style={styles.imageContainer}>
-              <Image style={styles.image} source={{ uri: project.image }} />
+              <Image
+                style={styles.image}
+                source={{ uri: projectState.image }}
+              />
             </View>
             <View style={styles.postStatus}>
-              {project.posted ? ( // If project is posted, show "POSTED" text
+              {projectState.posted ? ( // If project is posted, show "POSTED" text
                 <Text style={styles.postStatusText}>POSTED</Text>
               ) : (
                 // If project is not posted, show "NOT POSTED" text
@@ -26,36 +83,44 @@ const ProjectDetail = ({ project }) => {
             <View style={styles.projectStatusAndPostStatus}>
               <View style={styles.projectStatus}>
                 <Text style={styles.projectStatusText}>
-                  Started: {project.startDate}
+                  Started: {projectState.startDate}
                 </Text>
                 <Text style={styles.projectStatusText}>
-                  Last Updated: {project.lastUpdated}
+                  Last Updated: {projectState.lastUpdated}
                 </Text>
                 <Text style={styles.projectStatusText}>
-                  Status: {project.inProgress ? "In progress" : "Finished"}
+                  Status: {projectState.inProgress ? "In progress" : "Finished"}
                 </Text>
               </View>
               <View style={styles.projectInfo}>
                 <Text style={styles.projectInfoText}>
-                  Project Type: {project.type}
+                  Project Type: {projectState.type}
                 </Text>
                 <Text style={styles.projectInfoText}>
-                  Tools: {project.tools}
+                  Tools: {projectState.tools}
                 </Text>
                 <Text style={styles.projectInfoText}>
-                  Materials: {project.materials}
+                  Materials: {projectState.materials}
                 </Text>
                 <Text style={styles.projectInfoText}>
-                  Pattern: {project.pattern}
+                  Pattern: {projectState.pattern}
                 </Text>
                 <Text style={styles.projectInfoText}>
-                  Description: {project.description}
+                  Description: {projectState.description}
                 </Text>
               </View>
             </View>
           </View>
         </View>
       </View>
+
+      {/* Only show button to POST or UNPOST if the project belongs to current signed in user */}
+      {showPostButton && (
+        <Button
+          title={projectState.posted ? "Unpost" : "Post"}
+          onPress={postOrUnpostProject}
+        />
+      )}
     </View>
   );
 };

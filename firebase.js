@@ -2,6 +2,7 @@
 import * as firebase from "firebase/app";
 import { getAuth, sendPasswordResetEmail } from "firebase/auth";
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getStorage } from "firebase/storage";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
@@ -25,6 +26,7 @@ if (firebase.getApps().length === 0) {
 // const auth = firebase.auth()
 const auth = getAuth();
 const db = getFirestore();
+const storage = getStorage();
 async function getUser(db) {
     const usercol = collection(db, 'projects');
     const snapshot = await getDocs(usercol);
@@ -48,4 +50,4 @@ export const resetByEmail = (email) => {
         });
     return false;
 }
-export { auth, db }
+export { auth, db, storage }

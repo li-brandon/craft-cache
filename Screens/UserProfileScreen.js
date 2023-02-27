@@ -22,7 +22,7 @@ import hat from "../Components/assets/flower-bucket-hat.jpg";
 const UserProfileScreen = ({ navigation, route }) => {
   const { projects, setProjects } = React.useContext(MyContext);
   const user = auth.currentUser;
-  const userEmail = user.email;
+  const userEmail = user ? user.email : null;
   if (user !== null) {
     // The user object has basic properties such as display name, email, etc.
     const displayName = user.displayName;
