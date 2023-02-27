@@ -35,9 +35,8 @@ const AddProjectScreen = ({ navigation }) => {
       if (user) {
         setUser(user.uid);
       } else {
-        // TODO: User is not logged in if we reached here but we haven't handled yet. So
-        // for now we will hardcode user id
-        setUser("JzDTobXLRSPMIw7G86sjQxR9REd2");
+        // Redirect to login screen if user is not logged in
+        navigation.navigate("Login");
       }
     });
 
@@ -50,6 +49,19 @@ const AddProjectScreen = ({ navigation }) => {
   // handleAddProject is called when the user clicks the "Add Project" button. It will
   // upload the image to storage, add the project to Firestore, and clear the fields
   const handleAddProject = async () => {
+
+    // Check if the user has entered all the required fields
+    if (!name || !type || !tools || !materials || !description || !image) {
+      Alert.alert("Please fill in all the required fields");
+      return;
+    }
+
+    // Check if user has logged in 
+    if (!user) {
+      Alert.alert("Please log in to add a project");
+      return;
+    }
+
     const newProject = {
       name: name,
       type: type,

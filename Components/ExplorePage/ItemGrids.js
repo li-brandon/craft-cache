@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
     padding: 16,
     borderRadius: 8,
     justifyContent: "center",
-    alignItems: "center",
+    // alignItems: "center",
   },
   buttonPressed: {
     opacity: 0.2,
