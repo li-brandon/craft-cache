@@ -11,7 +11,7 @@ import {
 import LoadingOverLay from "../Components/UI/LoadingOverLay";
 import React, { useEffect, useState } from "react";
 import { auth, db, storage } from "../firebase";
-import { collection, addDoc } from "firebase/firestore";
+import { doc, collection, addDoc, setDoc } from "firebase/firestore";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -46,25 +46,33 @@ const RegisterScreen = ({ navigation }) => {
     }
   }
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        navigation.replace("User Profile");
-      }
-    });
-    return unsubscribe;
-  }, []);
-
   async function firebaseSignUp() {
     if (!username || !email || !password) {
       Alert.alert("Please fill in all the required fields");
     }
-
     setIsLoading(true);
     await createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        console.log("Registered Successfully:" + email);
+
+        try {
+          setDoc(doc(db, "users", user.uid), {
+            username: username,
+            email: email,
+            phone: phone,
+            password: password,
+            bio: "",
+            savedProjects: [],
+            publishedProjects: [],
+          });
+          clearFields();
+          Alert.alert("User registered successfully");
+          navigation.navigate("User Profile");
+        } catch (error) {
+          console.error("Error adding document: ", error);
+        }
+
+        console.log("Registered Successfully:" + user.uid);
       })
       .catch((error) => {
         // const errorCode = error.code;
@@ -72,24 +80,6 @@ const RegisterScreen = ({ navigation }) => {
         outputErrorCode(error.code);
       });
 
-    const newUser = {
-      username: username,
-      email: email,
-      phone: phone,
-      password: password,
-      bio: "",
-      savedProjects: [],
-      publishedProjects: [],
-      projects: [],
-    };
-
-    try {
-      await addDoc(collection(db, "users"), newUser);
-      clearFields();
-      Alert.alert("User registered successfully");
-    } catch (error) {
-      console.error("Error adding document: ", error);
-    }
     setIsLoading(false);
   }
 
