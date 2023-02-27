@@ -61,6 +61,8 @@ const RegisterScreen = ({ navigation }) => {
             email: email,
             phone: phone,
             password: password,
+            numFollowers: 0,
+            numFollowing: 0,
             bio: "",
             savedProjects: [],
             publishedProjects: [],
