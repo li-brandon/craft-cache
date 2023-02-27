@@ -87,9 +87,6 @@ const RegisterScreen = ({ navigation }) => {
     navigation.goBack("UserProfile");
   };
 
-  // if (isFetching) {
-  //   return <LoadingOverLay containerStyle={styles.container} />
-  // }
   const handleSignUp = () => {
     Alert.alert("Sign Up", "Are you sure to Sign up?", [
       { text: "cancel", style: "cancel" },

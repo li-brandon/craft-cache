@@ -49,51 +49,46 @@ const AddProjectScreen = ({ navigation }) => {
   // handleAddProject is called when the user clicks the "Add Project" button. It will
   // upload the image to storage, add the project to Firestore, and clear the fields
   const handleAddProject = async () => {
-
-    // Check if the user has entered all the required fields
-    if (!name || !type || !tools || !materials || !description || !image) {
-      Alert.alert("Please fill in all the required fields");
-      return;
-    }
-
-    // Check if user has logged in 
-    if (!user) {
-      Alert.alert("Please log in to add a project");
-      return;
-    }
-
-    const newProject = {
-      name: name,
-      type: type,
-      tools: tools.split(","), // split tools string into array
-      materials: materials.split(","), // split materials string into array
-      pattern: pattern,
-      description: description,
-      userID: user,
-      image: image,
-    };
-
-    const date = getCurrentDate();
-    newProject.startDate = date;
-    newProject.lastUpdated = date;
-    newProject.inProgress = true;
-    newProject.posted = false;
-
-    try {
-      // Upload the image to storage and get the download URL
-      if (imageUri) {
-        const snapshot = await uploadImageAsync(imageRef, imageUri);
-        const downloadURL = await getDownloadURL(snapshot.ref);
-        newProject.image = downloadURL;
-      }
-
-      // Add the new project to Firestore
-      await addDoc(collection(db, "projects"), newProject);
-      clearFields();
-      Alert.alert("Project added successfully");
-    } catch (error) {
-      console.error("Error adding document: ", error);
-    }
+    console.log(user);
+    // // Check if the user has entered all the required fields
+    // if (!name || !type || !tools || !materials || !description || !image) {
+    //   Alert.alert("Please fill in all the required fields");
+    //   return;
+    // }
+    // // Check if user has logged in
+    // if (!user) {
+    //   Alert.alert("Please log in to add a project");
+    //   return;
+    // }
+    // const newProject = {
+    //   name: name,
+    //   type: type,
+    //   tools: tools.split(","), // split tools string into array
+    //   materials: materials.split(","), // split materials string into array
+    //   pattern: pattern,
+    //   description: description,
+    //   userID: user,
+    //   image: image,
+    // };
+    // const date = getCurrentDate();
+    // newProject.startDate = date;
+    // newProject.lastUpdated = date;
+    // newProject.inProgress = true;
+    // newProject.posted = false;
+    // try {
+    //   // Upload the image to storage and get the download URL
+    //   if (imageUri) {
+    //     const snapshot = await uploadImageAsync(imageRef, imageUri);
+    //     const downloadURL = await getDownloadURL(snapshot.ref);
+    //     newProject.image = downloadURL;
+    //   }
+    //   // Add the new project to Firestore
+    //   await addDoc(collection(db, "projects"), newProject);
+    //   clearFields();
+    //   Alert.alert("Project added successfully");
+    // } catch (error) {
+    //   console.error("Error adding document: ", error);
+    // }
   };
 
   // uploadImageAsync uploads the image to storage and returns the snapshot of the upload
@@ -116,21 +111,22 @@ const AddProjectScreen = ({ navigation }) => {
     if (!result.canceled) {
       const uri = result.assets[0].uri; // Get the uri of the image
       try {
-      const manipResult = await manipulateAsync(
-        uri,
-        [{ resize: { width: 500 } }],
-        { compress: 0.5, format: SaveFormat.JPEG }
-      );
-      const imageRef = ref(storage, "projectImages/" + uri.split("/").pop());
-      setImageUri(manipResult.uri);
-      setImageRef(imageRef);
-      setImage(manipResult.uri);
+        const manipResult = await manipulateAsync(
+          uri,
+          [{ resize: { width: 500 } }],
+          { compress: 0.5, format: SaveFormat.JPEG }
+        );
+        const imageRef = ref(storage, "projectImages/" + uri.split("/").pop());
+        setImageUri(manipResult.uri);
+        setImageRef(imageRef);
+        setImage(manipResult.uri);
       } catch (error) {
         console.log(error);
       }
     }
   };
 
+  // TODO: Implement camera functionality
   // takePhoto launches the camera and allows the user to take a photo with the camera
   // const takePhoto = async () => {
   //   const result = await ImagePicker.launchCameraAsync({
@@ -210,8 +206,12 @@ const AddProjectScreen = ({ navigation }) => {
           onChangeText={(text) => setPattern(text)}
         />
         <TextInput
-          style={styles.input}
+          style={styles.description}
           placeholder="Description"
+          editable
+          multiline
+          numberOfLines={4}
+          maxLength={40}
           value={description}
           onChangeText={(text) => setDescription(text)}
         />
@@ -245,6 +245,14 @@ const styles = StyleSheet.create({
   },
   input: {
     height: 40,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 5,
+    padding: 10,
+    marginBottom: 10,
+  },
+  description: {
+    height: 100,
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
