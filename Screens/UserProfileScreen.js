@@ -22,15 +22,30 @@ import hat from "../Components/assets/flower-bucket-hat.jpg";
 const UserProfileScreen = ({ navigation, route }) => {
   const { projects, setProjects } = React.useContext(MyContext);
 
-
+  const SignOutHandler = function () {
+    signOut(auth).then(() => {
+      console.log('Sign-out successful.');
+      navigation.replace('Front Page');
+    }).catch((error) => {
+      // An error happened.
+    });
+  }
   return (
     <View style={styles.container}>
-      <TouchableOpacity
-        onPress={() => navigation.navigate("Edit Profile")}
-        style={styles.editProfileButton}
-      >
-        <Text style={styles.editProfileButtonText}>Edit Profile</Text>
-      </TouchableOpacity>
+      <View style={[styles.buttons, styles.right]}>
+        <TouchableOpacity
+          onPress={SignOutHandler}
+          style={styles.followButton}
+        >
+          <Text >Sign out</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("Edit Profile")}
+          style={styles.followButton}
+        >
+          <Text style={styles.editProfileButtonText1}>Edit Profile</Text>
+        </TouchableOpacity>
+      </View>
 
       <Image style={styles.profileImage} source={hat} />
 
@@ -72,6 +87,10 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     padding: 15,
+  },
+  right: {
+    marginLeft: "auto",
+    // flexDirection: 'column'
   },
   profileImage: {
     width: 150,
