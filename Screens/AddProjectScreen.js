@@ -49,46 +49,49 @@ const AddProjectScreen = ({ navigation }) => {
   // handleAddProject is called when the user clicks the "Add Project" button. It will
   // upload the image to storage, add the project to Firestore, and clear the fields
   const handleAddProject = async () => {
-    console.log(user);
     // // Check if the user has entered all the required fields
-    // if (!name || !type || !tools || !materials || !description || !image) {
-    //   Alert.alert("Please fill in all the required fields");
-    //   return;
-    // }
-    // // Check if user has logged in
-    // if (!user) {
-    //   Alert.alert("Please log in to add a project");
-    //   return;
-    // }
-    // const newProject = {
-    //   name: name,
-    //   type: type,
-    //   tools: tools.split(","), // split tools string into array
-    //   materials: materials.split(","), // split materials string into array
-    //   pattern: pattern,
-    //   description: description,
-    //   userID: user,
-    //   image: image,
-    // };
-    // const date = getCurrentDate();
-    // newProject.startDate = date;
-    // newProject.lastUpdated = date;
-    // newProject.inProgress = true;
-    // newProject.posted = false;
-    // try {
-    //   // Upload the image to storage and get the download URL
-    //   if (imageUri) {
-    //     const snapshot = await uploadImageAsync(imageRef, imageUri);
-    //     const downloadURL = await getDownloadURL(snapshot.ref);
-    //     newProject.image = downloadURL;
-    //   }
-    //   // Add the new project to Firestore
-    //   await addDoc(collection(db, "projects"), newProject);
-    //   clearFields();
-    //   Alert.alert("Project added successfully");
-    // } catch (error) {
-    //   console.error("Error adding document: ", error);
-    // }
+    if (!name || !type || !tools || !materials || !description || !image) {
+      Alert.alert("Please fill in all the required fields");
+      return;
+    }
+
+    // Check if user has logged in
+    if (!user) {
+      Alert.alert("Please log in to add a project");
+      return;
+    }
+
+    const newProject = {
+      name: name,
+      type: type,
+      tools: tools.split(","), // split tools string into array
+      materials: materials.split(","), // split materials string into array
+      pattern: pattern,
+      description: description,
+      userID: user,
+      image: image,
+    };
+
+    const date = getCurrentDate();
+    newProject.startDate = date;
+    newProject.lastUpdated = date;
+    newProject.inProgress = true;
+    newProject.posted = false;
+
+    try {
+      // Upload the image to storage and get the download URL
+      if (imageUri) {
+        const snapshot = await uploadImageAsync(imageRef, imageUri);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        newProject.image = downloadURL;
+      }
+      // Add the new project to Firestore
+      await addDoc(collection(db, "projects"), newProject);
+      clearFields();
+      Alert.alert("Project added successfully");
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
   };
 
   // uploadImageAsync uploads the image to storage and returns the snapshot of the upload

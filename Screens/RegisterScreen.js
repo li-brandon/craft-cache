@@ -10,7 +10,8 @@ import {
 } from "react-native";
 import LoadingOverLay from "../Components/UI/LoadingOverLay";
 import React, { useEffect, useState } from "react";
-import { auth, db } from "../firebase";
+import { auth, db, storage } from "../firebase";
+import { collection, addDoc } from "firebase/firestore";
 import {
   getAuth,
   createUserWithEmailAndPassword,
@@ -54,49 +55,68 @@ const RegisterScreen = ({ navigation }) => {
     return unsubscribe;
   }, []);
 
-  async function handleSignIn() {
-    setIsLoading(true);
-    await signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        console.log(email + " logged in!");
-      })
-      .catch((error) => {
-        outputErrorCode(error.code);
-      });
-    setIsLoading(false);
-  }
-
   async function firebaseSignUp() {
+    if (!username || !email || !password) {
+      Alert.alert("Please fill in all the required fields");
+    }
+
     setIsLoading(true);
     await createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        console.log("reigisered successfully:" + email);
+        console.log("Registered Successfully:" + email);
       })
       .catch((error) => {
         // const errorCode = error.code;
         // const errorMessage = error.message;
         outputErrorCode(error.code);
       });
+
+    const newUser = {
+      username: username,
+      email: email,
+      phone: phone,
+      password: password,
+      bio: "",
+      savedProjects: [],
+      publishedProjects: [],
+      projects: [],
+    };
+
+    try {
+      await addDoc(collection(db, "users"), newUser);
+      clearFields();
+      Alert.alert("User registered successfully");
+    } catch (error) {
+      console.error("Error adding document: ", error);
+    }
     setIsLoading(false);
   }
 
   const handleBack = function () {
-    navigation.goBack("UserProfile");
+    navigation.goBack("User Profile");
   };
 
   const handleSignUp = () => {
-    Alert.alert("Sign Up", "Are you sure to Sign up?", [
-      { text: "cancel", style: "cancel" },
-      {
-        text: "yes",
-        onPress: () => {
-          firebaseSignUp();
-        },
-      },
-    ]);
+    // Alert.alert("Sign Up", "Are you sure to Sign up?", [
+    //   { text: "Cancel", style: "Cancel" },
+    //   {
+    //     text: "yes",
+    //     onPress: () => {
+    //       firebaseSignUp();
+    //     },
+    //   },
+    // ]);
+    firebaseSignUp();
+  };
+
+  const clearFields = () => {
+    setUsername("");
+    setEmail("");
+    setPassword("");
+    setPhone("");
+    setPassword("");
+    setErrorMessage("");
   };
 
   return (
