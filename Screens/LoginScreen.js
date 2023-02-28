@@ -50,7 +50,7 @@ const LoginScreen = ({ navigation }) => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setloggedIn(true);
-        navigation.replace("User Profile");
+        navigation.replace("Front Page");
       } else {
         setloggedIn(false);
       }
