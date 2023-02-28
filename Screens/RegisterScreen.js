@@ -67,7 +67,7 @@ const RegisterScreen = ({ navigation }) => {
           });
           clearFields();
           Alert.alert("User registered successfully");
-          navigation.navigate("User Profile");
+          navigation.navigate("Front Page");
         } catch (error) {
           console.error("Error adding document: ", error);
         }
