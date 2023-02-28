@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  projectImage: {
+  inventoryImage: {
     width: 130,
     height: 130,
     alignSelf: "center",

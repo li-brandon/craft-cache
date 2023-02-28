@@ -68,7 +68,7 @@ function InventoryPageScreen({ navigation }) {
           navigation.navigate("Add Inventory");
         }}
       >
-        <Text style={outerStyles.buttonText}>Add Project</Text>
+        <Text style={outerStyles.buttonText}>Add Inventory</Text>
       </TouchableOpacity>
       <ScrollView style={styles.container}>
         {/* map over inventory and render Inventory component */}
@@ -101,6 +101,7 @@ const outerStyles = StyleSheet.create({
     backgroundColor: "#FF6F61",
     padding: 10,
     borderRadius: 5,
+    marginBottom: 10,
   },
   buttonText: {
     color: "white",

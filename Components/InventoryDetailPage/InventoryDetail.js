@@ -2,14 +2,45 @@ import { StyleSheet, Text, View, Image, Button } from "react-native";
 import React, { useState } from "react";
 
 const InventoryDetail = ({ inventoryItem }) => {
-  const [inventoryState, setInventoryState] = useState(inventoryItem);
+  const [inventoryItemState, setInventoryItemState] = useState(inventoryItem);
 
   return (
     <View>
-      <View style={styles.inventory}>
+      <View style={styles.inventoryItem}>
         <View>
-          <View style={styles.inventoryName}>
-            <Text style={styles.inventoryNameText}>{inventoryState.name}</Text>
+          <View style={styles.inventoryItemName}>
+            <Text style={styles.inventoryItemNameText}>
+              {inventoryItemState.name}
+            </Text>
+          </View>
+          <View style={styles.inventoryItemInfoAndImage}>
+            <View style={styles.imageContainer}>
+              <Image
+                style={styles.image}
+                source={{ uri: inventoryItemState.image }}
+              />
+            </View>
+            <View style={styles.postStatus}>
+              <Text style={styles.inventoryItemStatusText}>
+                Last Updated: {inventoryItemState.lastUpdated}
+              </Text>
+            </View>
+            <View style={styles.inventoryItemStatusAndPostStatus}>
+              <View style={styles.inventoryItemInfo}>
+                <Text style={styles.inventoryItemInfoText}>
+                  Brand: {inventoryItemState.brand}
+                </Text>
+                <Text style={styles.inventoryItemInfoText}>
+                  Size: {inventoryItemState.size}
+                </Text>
+                <Text style={styles.inventoryItemInfoText}>
+                  Categories: {inventoryItemState.category}
+                </Text>
+                <Text style={styles.inventoryItemInfoText}>
+                  Description: {inventoryItemState.description}
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
       </View>
@@ -20,7 +51,7 @@ const InventoryDetail = ({ inventoryItem }) => {
 export default InventoryDetail;
 
 const styles = StyleSheet.create({
-  inventory: {
+  inventoryItem: {
     borderRadius: 10,
     backgroundColor: "#F5F5F5",
     padding: 5,
@@ -29,25 +60,25 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  inventoryName: {
+  inventoryItemName: {
     marginBottom: 5,
     alignItems: "center",
   },
 
-  inventoryNameText: {
+  inventoryItemNameText: {
     fontSize: 20,
   },
 
-  inventoryInfoAndImage: {
+  inventoryItemInfoAndImage: {
     flexDirection: "column",
     marginBottom: 5,
   },
 
-  inventoryInfo: {
+  inventoryItemInfo: {
     width: "100%",
   },
 
-  inventoryInfoText: {
+  inventoryItemInfoText: {
     fontSize: 13,
   },
 
@@ -62,12 +93,12 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
 
-  inventoryStatusAndPostStatus: {
+  inventoryItemStatusAndPostStatus: {
     flexDirection: "column",
   },
 
-  inventoryStatus: {
-    width: "60%",
+  inventoryItemStatus: {
+    width: "100%",
   },
 
   postStatus: {
@@ -77,7 +108,7 @@ const styles = StyleSheet.create({
     width: "100%",
   },
 
-  inventoryStatusText: {
+  inventoryItemStatusText: {
     fontSize: 13,
     color: "grey",
   },
