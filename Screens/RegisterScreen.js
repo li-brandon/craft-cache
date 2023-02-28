@@ -17,8 +17,6 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { GlobalStyles } from "../Constants/styles";
-import { async } from "@firebase/util";
 
 const RegisterScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -107,7 +105,6 @@ const RegisterScreen = ({ navigation }) => {
     setEmail("");
     setPassword("");
     setPhone("");
-    setPassword("");
     setErrorMessage("");
   };
 
