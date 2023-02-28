@@ -87,25 +87,27 @@ const UserProfileScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
-      <View style={[styles.buttons, styles.right]}>
-        <TouchableOpacity
-          onPress={SignOutHandler.bind(this, "Front Page")}
-          style={styles.followButton}
-        >
-          <Text>Sign out</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={ResetPasswordHandler.bind(this, userEmail)}
-          style={styles.followButton}
-        >
-          <Text>Reset Password</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() => navigation.navigate("Edit Profile")}
-          style={styles.followButton}
-        >
-          <Text style={styles.editProfileButtonText}>Edit Profile</Text>
-        </TouchableOpacity>
+      <View style={styles.userInfo}>
+        <View style={styles.buttons}>
+          <TouchableOpacity
+            onPress={SignOutHandler.bind(this, "Front Page")}
+            style={styles.followButton}
+          >
+            <Text style={styles.editProfileButtonText}>Sign out</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={ResetPasswordHandler.bind(this, userEmail)}
+            style={styles.followButton}
+          >
+            <Text style={styles.editProfileButtonText}>Reset Password</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => navigation.navigate("Edit Profile")}
+            style={styles.followButton}
+          >
+            <Text style={styles.editProfileButtonText}>Edit Profile</Text>
+          </TouchableOpacity>
+        </View>
       </View>
 
       <Image style={styles.profileImage} source={hat} />
@@ -163,7 +165,7 @@ const styles = StyleSheet.create({
   },
   userInfo: {
     alignItems: "center",
-    marginBottom: 20,
+    marginTop: 20,
   },
   username: {
     fontSize: 28,
