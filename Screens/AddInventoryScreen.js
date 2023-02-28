@@ -18,14 +18,14 @@ import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import * as ImagePicker from "expo-image-picker";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 
-const AddProjectScreen = ({ navigation }) => {
+const AddInventoryScreen = ({ navigation }) => {
   // States
   const [user, setUser] = useState(null);
   const [name, setName] = useState("");
-  const [type, setType] = useState("");
-  const [tools, setTools] = useState("");
-  const [materials, setMaterials] = useState("");
-  const [pattern, setPattern] = useState("");
+  const [brand, setBrand] = useState("");
+  const [category, setCategory] = useState("");
+  const [count, setCount] = useState("");
+  const [size, setSize] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [imageUri, setImageUri] = useState(null);
@@ -50,9 +50,17 @@ const AddProjectScreen = ({ navigation }) => {
 
   // handleAddProject is called when the user clicks the "Add Project" button. It will
   // upload the image to storage, add the project to Firestore, and clear the fields
-  const handleAddProject = async () => {
+  const handleAddInventory = async () => {
     // // Check if the user has entered all the required fields
-    if (!name || !type || !tools || !materials || !description || !image) {
+    if (
+      !name ||
+      !brand ||
+      !category ||
+      !count ||
+      !description ||
+      !size ||
+      !image
+    ) {
       Alert.alert("Please fill in all the required fields");
       return;
     }
@@ -63,34 +71,31 @@ const AddProjectScreen = ({ navigation }) => {
       return;
     }
 
-    const newProject = {
+    const newInventory = {
       name: name,
-      type: type,
-      tools: tools.split(","), // split tools string into array
-      materials: materials.split(","), // split materials string into array
-      pattern: pattern,
+      brand: brand,
+      category: category.split(","), // split categories string into array
+      count: count,
+      size: size,
       description: description,
       userID: user,
       image: image,
     };
 
     const date = getCurrentDate();
-    newProject.startDate = date;
-    newProject.lastUpdated = date;
-    newProject.inProgress = true;
-    newProject.posted = false;
+    newInventory.lastUpdated = date;
 
     try {
       // Upload the image to storage and get the download URL
       if (imageUri) {
         const snapshot = await uploadImageAsync(imageRef, imageUri);
         const downloadURL = await getDownloadURL(snapshot.ref);
-        newProject.image = downloadURL;
+        newInventory.image = downloadURL;
       }
       // Add the new project to Firestore
-      await addDoc(collection(db, "projects"), newProject);
+      await addDoc(collection(db, "inventory"), newInventory);
       clearFields();
-      Alert.alert("Project added successfully");
+      Alert.alert("Inventory added successfully");
     } catch (error) {
       console.error("Error adding document: ", error);
     }
@@ -121,7 +126,10 @@ const AddProjectScreen = ({ navigation }) => {
           [{ resize: { width: 500 } }],
           { compress: 0.5, format: SaveFormat.JPEG }
         );
-        const imageRef = ref(storage, "projectImages/" + uri.split("/").pop());
+        const imageRef = ref(
+          storage,
+          "inventoryImages/" + uri.split("/").pop()
+        );
         setImageUri(manipResult.uri);
         setImageRef(imageRef);
         setImage(manipResult.uri);
@@ -168,17 +176,17 @@ const AddProjectScreen = ({ navigation }) => {
   // clearFields clears the fields in the form
   const clearFields = () => {
     setName("");
-    setType("");
-    setTools("");
-    setMaterials("");
-    setPattern("");
+    setBrand("");
+    setCategory("");
+    setCount("");
+    setSize("");
     setDescription("");
     setImage(null);
   };
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Add a new project</Text>
+      <Text style={styles.title}>Add new inventory</Text>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -188,27 +196,28 @@ const AddProjectScreen = ({ navigation }) => {
         />
         <TextInput
           style={styles.input}
-          placeholder="Project type"
-          value={type}
-          onChangeText={(text) => setType(text)}
+          placeholder="Brand"
+          value={brand}
+          onChangeText={(text) => setBrand(text)}
         />
         <TextInput
           style={styles.input}
-          placeholder="Tools"
-          value={tools}
-          onChangeText={(text) => setTools(text)}
+          placeholder="Category"
+          value={category}
+          onChangeText={(text) => setCategory(text)}
         />
         <TextInput
           style={styles.input}
-          placeholder="Materials"
-          value={materials}
-          onChangeText={(text) => setMaterials(text)}
+          placeholder="Size"
+          value={size}
+          onChangeText={(text) => setSize(text)}
         />
         <TextInput
           style={styles.input}
-          placeholder="Pattern"
-          value={pattern}
-          onChangeText={(text) => setPattern(text)}
+          keyboardType="numeric"
+          placeholder="Count"
+          value={count}
+          onChangeText={(text) => setCount(text)}
         />
         <TextInput
           style={styles.description}
@@ -222,15 +231,17 @@ const AddProjectScreen = ({ navigation }) => {
           onChangeText={(text) => setDescription(text)}
         />
 
-        {image && <Image source={{ uri: image }} style={styles.projectImage} />}
+        {image && (
+          <Image source={{ uri: image }} style={styles.inventoryImage} />
+        )}
 
         <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
           <Button title="Choose Photo" onPress={choosePhoto} />
           {/* <Button title="Take Photo" onPress={takePhoto} /> */}
         </View>
       </View>
-      <TouchableOpacity style={styles.button} onPress={handleAddProject}>
-        <Text style={styles.buttonText}>Add Project</Text>
+      <TouchableOpacity style={styles.button} onPress={handleAddInventory}>
+        <Text style={styles.buttonText}>Add Inventory</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -276,7 +287,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
-  projectImage: {
+  inventoryImage: {
     width: 130,
     height: 130,
     alignSelf: "center",
@@ -285,4 +296,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default AddProjectScreen;
+export default AddInventoryScreen;

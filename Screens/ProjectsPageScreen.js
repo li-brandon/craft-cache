@@ -21,7 +21,7 @@ function ProjectsPageScreen({ navigation }) {
       unsubscribe();
     };
   }, []);
-  
+
   // useFocusEffect is similar to useEffect, but it is called when the screen is focused
   useFocusEffect(
     React.useCallback(() => {
@@ -29,15 +29,17 @@ function ProjectsPageScreen({ navigation }) {
         const userID = currentUser.uid;
         const tempProjects = [];
 
-        const q = query(collection(db, "projects"), where("userID", "==", userID));
+        const q = query(
+          collection(db, "projects"),
+          where("userID", "==", userID)
+        );
         getDocs(q).then((querySnapshot) => {
           querySnapshot.forEach((doc) => {
             tempProjects.push({ ...doc.data(), id: doc.id });
           });
           setProjects(tempProjects);
         });
-      }
-      else {
+      } else {
         setProjects([]); // clear projects since there is no user
       }
     }, [currentUser])

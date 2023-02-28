@@ -1,14 +1,14 @@
 import { ScrollView, Text, StyleSheet, AsyncStorage, View } from "react-native";
 import React, { useEffect, useState, createContext, useContext } from "react";
-import ProjectDetail from "../Components/ProjectDetailPage/ProjectDetail";
+import InventoryDetail from "../Components/InventoryDetailPage/InventoryDetail";
 import { MyContext } from "../Contexts/MyContext";
 
-function ItemDetailScreen({ route }) {
-  const { project } = route.params;
+function InventoryDetailScreen({ route }) {
+  const { inventoryItem } = route.params;
 
   return (
     <View>
-      <ProjectDetail project={project} />
+      <InventoryDetail inventoryItem={inventoryItem} />
     </View>
   );
 }
@@ -21,4 +21,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default ItemDetailScreen;
+export default InventoryDetailScreen;
