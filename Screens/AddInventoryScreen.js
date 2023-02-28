@@ -73,8 +73,8 @@ const AddInventoryScreen = ({ navigation }) => {
     const newInventory = {
       name: name,
       brand: brand,
-      category: category.split(","), // split tools string into array
-      count: count, // split materials string into array
+      category: category.split(","), // split categories string into array
+      count: count,
       size: size,
       description: description,
       userID: user,
@@ -89,12 +89,12 @@ const AddInventoryScreen = ({ navigation }) => {
       if (imageUri) {
         const snapshot = await uploadImageAsync(imageRef, imageUri);
         const downloadURL = await getDownloadURL(snapshot.ref);
-        newProject.image = downloadURL;
+        newInventory.image = downloadURL;
       }
       // Add the new project to Firestore
       await addDoc(collection(db, "inventory"), newInventory);
       clearFields();
-      Alert.alert("Project added successfully");
+      Alert.alert("Inventory added successfully");
     } catch (error) {
       console.error("Error adding document: ", error);
     }
@@ -210,6 +210,13 @@ const AddInventoryScreen = ({ navigation }) => {
           placeholder="Size"
           value={size}
           onChangeText={(text) => setSize(text)}
+        />
+        <TextInput
+          style={styles.input}
+          keyboardType="numeric"
+          placeholder="Count"
+          value={count}
+          onChangeText={(text) => setCount(text)}
         />
         <TextInput
           style={styles.description}
