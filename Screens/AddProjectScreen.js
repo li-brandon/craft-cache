@@ -8,6 +8,7 @@ import {
   Alert,
   Image,
   Button,
+  Keyboard
 } from "react-native";
 import { MyContext } from "../Contexts/MyContext";
 import { auth, db, storage } from "../firebase";
@@ -214,8 +215,9 @@ const AddProjectScreen = ({ navigation }) => {
           editable
           multiline
           numberOfLines={4}
-          maxLength={40}
           value={description}
+          onSubmitEditing={() => Keyboard.dismiss()}
+          blurOnSubmit={true} // prevent new line when return button is pressed
           onChangeText={(text) => setDescription(text)}
         />
 
