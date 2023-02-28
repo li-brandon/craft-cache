@@ -27,7 +27,7 @@ const EditProfileScreen = ({ navigation }) => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        const fetchOriginalData = async () => {
+        async function fetchOriginalData() {
           const userDocRef = doc(db, "users", user.uid);
           const docSnap = await getDoc(userDocRef);
           if (docSnap.exists()) {
@@ -37,7 +37,7 @@ const EditProfileScreen = ({ navigation }) => {
             setPassword(docSnap.data().password);
             setPhone(docSnap.data().phone);
           }
-        };
+        }
         fetchOriginalData();
       } else {
         // Redirect to login screen if user is not logged in
