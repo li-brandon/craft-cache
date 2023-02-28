@@ -9,6 +9,7 @@ import {
   Image,
   Button,
   Keyboard,
+  ScrollView
 } from "react-native";
 import { MyContext } from "../Contexts/MyContext";
 import { auth, db, storage } from "../firebase";
@@ -184,7 +185,7 @@ const AddInventoryScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>Add new inventory</Text>
       <View style={styles.inputContainer}>
         <TextInput
@@ -242,7 +243,7 @@ const AddInventoryScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.button} onPress={handleAddInventory}>
         <Text style={styles.buttonText}>Add Inventory</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 

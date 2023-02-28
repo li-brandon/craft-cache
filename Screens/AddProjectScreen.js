@@ -9,6 +9,7 @@ import {
   Image,
   Button,
   Keyboard,
+  ScrollView
 } from "react-native";
 import { MyContext } from "../Contexts/MyContext";
 import { auth, db, storage } from "../firebase";
@@ -176,7 +177,7 @@ const AddProjectScreen = ({ navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>Add a new project</Text>
       <View style={styles.inputContainer}>
         <TextInput
@@ -231,7 +232,7 @@ const AddProjectScreen = ({ navigation }) => {
       <TouchableOpacity style={styles.button} onPress={handleAddProject}>
         <Text style={styles.buttonText}>Add Project</Text>
       </TouchableOpacity>
-    </View>
+    </ScrollView>
   );
 };
 
