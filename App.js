@@ -26,6 +26,8 @@ import EditProfileScreen from "./Screens/EditProfileScreen";
 import ResetPasswordScreen from "./Screens/ResetPasswordScreen";
 const auth = getAuth();
 import RegisterScreen from "./Screens/RegisterScreen";
+import InventoryDetailScreen from "./Screens/InventoryDetailScreen";
+import AddInventoryScreen from "./Screens/AddInventoryScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -109,12 +111,12 @@ const FrontPage = function () {
           ),
         }}
       />
-    </Tab.Navigator >
+    </Tab.Navigator>
   );
 };
 export default function App() {
-
   const [projects, setProjects] = useState([]);
+  const [inventory, setInventory] = useState([]);
   const [isloggedIn, setIsLoggedIn] = useState(false);
   const getAuthState = function () {
     auth.onAuthStateChanged((user) => {
@@ -122,20 +124,28 @@ export default function App() {
         setIsLoggedIn(true);
       }
     });
-  }
+  };
   getAuthState();
   // console.log(isloggedIn)
   const { loggedIn, setloggedIn } = useContext(LoginContext);
   return (
     <Provider store={store}>
-      <MyContext.Provider value={{ projects, setProjects }}>
-        <LoginContext.Provider value={{ loggedIn: isloggedIn, setloggedIn: setIsLoggedIn }}>
+      <MyContext.Provider
+        value={{ projects, setProjects, inventory, setInventory }}
+      >
+        <LoginContext.Provider
+          value={{ loggedIn: isloggedIn, setloggedIn: setIsLoggedIn }}
+        >
           <NavigationContainer>
             <Stack.Navigator
               screenOptions={{
-                headerStyle: { backgroundColor: GlobalStyles.colors.primary500 },
+                headerStyle: {
+                  backgroundColor: GlobalStyles.colors.primary500,
+                },
                 headerTintColor: "white",
-                tabBarStyle: { backgroundColor: GlobalStyles.colors.primary500 },
+                tabBarStyle: {
+                  backgroundColor: GlobalStyles.colors.primary500,
+                },
                 tabBarActiveTintColor: GlobalStyles.colors.accent500,
               }}
             >
@@ -158,14 +168,23 @@ export default function App() {
                 options={{ headerShown: false }}
               />
               <Stack.Screen name="Detail" component={ItemDetailScreen} />
-              <Stack.Screen name="User Profile" component={UserProfileScreen}
+              <Stack.Screen
+                name="Inventory Detail"
+                component={InventoryDetailScreen}
               />
+              <Stack.Screen name="User Profile" component={UserProfileScreen} />
               <Stack.Screen name="Edit Profile" component={EditProfileScreen} />
-              <Stack.Screen name="Reset Password" component={ResetPasswordScreen} />
+              <Stack.Screen
+                name="Add Inventory"
+                component={AddInventoryScreen}
+              />
+              <Stack.Screen
+                name="Reset Password"
+                component={ResetPasswordScreen}
+              />
             </Stack.Navigator>
           </NavigationContainer>
         </LoginContext.Provider>
-
       </MyContext.Provider>
     </Provider>
     // {/* </ExpensesContextProvider> */ }
