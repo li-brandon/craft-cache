@@ -10,14 +10,13 @@ import {
 } from "react-native";
 import LoadingOverLay from "../Components/UI/LoadingOverLay";
 import React, { useEffect, useState } from "react";
-import { auth, db } from "../firebase";
+import { auth, db, storage } from "../firebase";
+import { doc, collection, addDoc, setDoc } from "firebase/firestore";
 import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { GlobalStyles } from "../Constants/styles";
-import { async } from "@firebase/util";
 
 const RegisterScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -45,61 +44,68 @@ const RegisterScreen = ({ navigation }) => {
     }
   }
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) {
-        navigation.replace("User Profile");
-      }
-    });
-    return unsubscribe;
-  }, []);
-
-  async function handleSignIn() {
-    setIsLoading(true);
-    await signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        console.log(email + " logged in!");
-      })
-      .catch((error) => {
-        outputErrorCode(error.code);
-      });
-    setIsLoading(false);
-  }
-
   async function firebaseSignUp() {
+    if (!username || !email || !password) {
+      Alert.alert("Please fill in all the required fields");
+    }
     setIsLoading(true);
     await createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
         const user = userCredential.user;
-        console.log("reigisered successfully:" + email);
+
+        try {
+          setDoc(doc(db, "users", user.uid), {
+            username: username,
+            email: email,
+            phone: phone,
+            password: password,
+            numFollowers: 0,
+            numFollowing: 0,
+            bio: "",
+            savedProjects: [],
+            publishedProjects: [],
+          });
+          clearFields();
+          Alert.alert("User registered successfully");
+          navigation.navigate("User Profile");
+        } catch (error) {
+          console.error("Error adding document: ", error);
+        }
+
+        console.log("Registered Successfully:" + user.uid);
       })
       .catch((error) => {
         // const errorCode = error.code;
         // const errorMessage = error.message;
         outputErrorCode(error.code);
       });
+
     setIsLoading(false);
   }
 
   const handleBack = function () {
-    navigation.goBack("UserProfile");
+    navigation.goBack("User Profile");
   };
 
-  // if (isFetching) {
-  //   return <LoadingOverLay containerStyle={styles.container} />
-  // }
   const handleSignUp = () => {
-    Alert.alert("Sign Up", "Are you sure to Sign up?", [
-      { text: "cancel", style: "cancel" },
-      {
-        text: "yes",
-        onPress: () => {
-          firebaseSignUp();
-        },
-      },
-    ]);
+    // Alert.alert("Sign Up", "Are you sure to Sign up?", [
+    //   { text: "Cancel", style: "Cancel" },
+    //   {
+    //     text: "yes",
+    //     onPress: () => {
+    //       firebaseSignUp();
+    //     },
+    //   },
+    // ]);
+    firebaseSignUp();
+  };
+
+  const clearFields = () => {
+    setUsername("");
+    setEmail("");
+    setPassword("");
+    setPhone("");
+    setErrorMessage("");
   };
 
   return (

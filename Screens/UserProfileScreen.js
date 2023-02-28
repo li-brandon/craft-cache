@@ -1,5 +1,4 @@
-
-import React from "react";
+import React, { useState, useContext, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -12,17 +11,25 @@ import {
 } from "react-native";
 
 import { getAuth, signOut, sendPasswordResetEmail } from "firebase/auth";
-import { auth, resetByEmail } from "../firebase";
+import { auth, db, resetByEmail } from "../firebase";
+import { doc, getDoc } from "firebase/firestore";
 import Project from "../Components/ProjectsPage/Project";
 import { MyContext } from "../Contexts/MyContext";
 
 import hat from "../Components/assets/flower-bucket-hat.jpg";
 
-
 const UserProfileScreen = ({ navigation, route }) => {
   const { projects, setProjects } = React.useContext(MyContext);
   const user = auth.currentUser;
   const userEmail = user ? user.email : null;
+
+  const [username, setUsername] = useState("");
+  const [numFollowers, setNumFollowers] = useState("");
+  const [numFollowing, setNumFollowing] = useState("");
+  const [publishedProjects, setPublishedProjects] = useState("");
+  const [savedProjects, setSavedProjects] = useState("");
+  const [bio, setBio] = useState("");
+
   if (user !== null) {
     // The user object has basic properties such as display name, email, etc.
     const displayName = user.displayName;
@@ -36,62 +43,83 @@ const UserProfileScreen = ({ navigation, route }) => {
     const uid = user.uid;
   }
 
-  const SignOutHandler = function (page) {
-    signOut(auth).then(() => {
-      console.log('Sign-out successful.');
-      navigation.replace(page);
-    }).catch((error) => {
-      // An error happened.
-    });
-  }
-  const ResetPasswordHandler = function (email) {
+  // TODO: Have props passed from RegisterSceen.js instead of making a call
+  useEffect(async () => {
+    const userDocRef = doc(db, "users", user.uid);
+    const docSnap = await getDoc(userDocRef);
 
+    if (docSnap.exists()) {
+      console.log("Document data:", docSnap.data());
+      setUsername(docSnap.data().username);
+      setNumFollowers(docSnap.data().numFollowers);
+      setNumFollowing(docSnap.data().numFollowing);
+      setPublishedProjects(docSnap.data().publishedProjects);
+      setSavedProjects(docSnap.data().savedProjects);
+      setBio(docSnap.data().bio);
+    } else {
+      console.log("No such document!");
+    }
+  }, []);
+
+  const SignOutHandler = function (page) {
+    signOut(auth)
+      .then(() => {
+        console.log("Sign-out successful.");
+        navigation.replace(page);
+      })
+      .catch((error) => {
+        // An error happened.
+      });
+  };
+
+  const ResetPasswordHandler = function (email) {
     sendPasswordResetEmail(auth, email)
       .then(() => {
-        SignOutHandler('Login');
+        SignOutHandler("Login");
       })
       .catch((error) => {
         const errorCode = error.code;
         const errorMessage = error.message;
-        console.log(errorMessage)
+        console.log(errorMessage);
         // ..
       });
-  }
-  console.log(userEmail);
+  };
+
   return (
     <View style={styles.container}>
       <View style={[styles.buttons, styles.right]}>
         <TouchableOpacity
-          onPress={SignOutHandler.bind(this, 'Front Page')}
+          onPress={SignOutHandler.bind(this, "Front Page")}
           style={styles.followButton}
         >
-          <Text >Sign out</Text>
+          <Text>Sign out</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={ResetPasswordHandler.bind(this, userEmail)}
           style={styles.followButton}
         >
-          <Text >Reset Password</Text>
+          <Text>Reset Password</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => navigation.navigate("Edit Profile")}
           style={styles.followButton}
         >
-          <Text style={styles.editProfileButtonText1}>Edit Profile</Text>
+          <Text style={styles.editProfileButtonText}>Edit Profile</Text>
         </TouchableOpacity>
       </View>
 
       <Image style={styles.profileImage} source={hat} />
 
-
       <View style={styles.userInfo}>
-        <Text style={styles.username}>Test User</Text>
+        <Text style={styles.username}>{username}</Text>
         <Text style={styles.bio}>Craft Cache Member</Text>
-        <View style={styles.stats}>
-          <Text style={styles.stat}>150 Posts</Text>
-          <Text style={styles.stat}>10k Followers</Text>
-          <Text style={styles.stat}>500 Following</Text>
+
+        {/* <View style={styles.stats}>
+          <Text style={styles.stat}>{numPosts} Posts</Text>
+          <Text style={styles.stat}>{numFollowers} Followers</Text>
+          <Text style={styles.stat}>{numFollowing} Following</Text>
         </View>
+
         <View style={styles.buttons}>
           <TouchableOpacity style={styles.followButton}>
             <Text style={styles.followButtonText}>Follow</Text>
@@ -99,7 +127,7 @@ const UserProfileScreen = ({ navigation, route }) => {
           <TouchableOpacity style={styles.messageButton}>
             <Text style={styles.messageButtonText}>Message</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
       </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
