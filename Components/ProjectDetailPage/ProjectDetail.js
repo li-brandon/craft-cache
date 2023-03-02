@@ -1,19 +1,19 @@
-import { StyleSheet, Text, View, Image, Button } from "react-native";
+import { StyleSheet, Text, View, Image, Button, Alert } from "react-native";
 import React, { useState, useEffect } from "react";
 import { auth, db } from "../../firebase";
-import { collection, doc, updateDoc } from "firebase/firestore";
+import { collection, doc, updateDoc, deleteDoc } from "firebase/firestore";
 
-const ProjectDetail = ({ project }) => {
+const ProjectDetail = ({ project, navigation }) => {
   const [projectState, setProjectState] = useState(project);
-  const [showPostButton, setShowPostButton] = useState(false);
+  const [showButtons, setshowButtons] = useState(false);
 
   useEffect(() => {
     // get current user
     const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (user) { 
+      if (user) {
         // if the current user is the owner of the project, show the post button
         if (user.uid === projectState.userID) {
-          setShowPostButton(true);
+          setshowButtons(true);
         }
       }
     });
@@ -21,6 +21,51 @@ const ProjectDetail = ({ project }) => {
       unsubscribe();
     };
   }, []);
+
+  const handleDeleteProject = async () => {
+    // prompt user to confirm deletion
+    Alert.alert(
+      "Delete Project",
+      "Are you sure you want to delete this project?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          onPress: () => {
+            try {
+              const projectRef = doc(collection(db, "projects"), projectState.id);
+              deleteDoc(projectRef);
+              navigation.navigate("Front Page");
+            } catch (error) {
+              console.error(error);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+
+
+
+
+    // if user confirms deletion, delete project
+    // if (confirmDelete) {
+    //   try {
+    //     const projectRef = doc(collection(db, "projects"), projectState.id);
+    //     await deleteDoc(projectRef);
+    //     console.log("Project deleted");
+    //     navigation.navigate("Front Page");
+    //   } catch (error) {
+    //     console.error("Error deleting project: ", error);
+    //   }
+    // } else {
+    //   console.log("Project not deleted");
+    // }
+  };
 
   const postOrUnpostProject = async () => {
     // if project is posted, unpost it
@@ -114,12 +159,16 @@ const ProjectDetail = ({ project }) => {
         </View>
       </View>
 
-      {/* Only show button to POST or UNPOST if the project belongs to current signed in user */}
-      {showPostButton && (
-        <Button
-          title={projectState.posted ? "Unpost" : "Post"}
-          onPress={postOrUnpostProject}
-        />
+      {/* Only show buttons if the project belongs to current signed in user */}
+      {showButtons && (
+        <View style={styles.buttons}>
+          <Button
+            title={projectState.posted ? "Unpost Project" : "Post Project"}
+            onPress={postOrUnpostProject}
+          />
+          <Button title="Edit Project" />
+          <Button title="Delete Project" onPress={handleDeleteProject}/>
+        </View>
       )}
     </View>
   );
@@ -193,5 +242,10 @@ const styles = StyleSheet.create({
   postStatusText: {
     fontSize: 17,
     fontWeight: "bold",
+  },
+
+  buttons: {
+    flexDirection: "row",
+    justifyContent: "space-around",
   },
 });
