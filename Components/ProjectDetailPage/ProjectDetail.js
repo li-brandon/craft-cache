@@ -35,11 +35,12 @@ const ProjectDetail = ({ project, navigation }) => {
         },
         {
           text: "OK",
+          // delete project from database after user confirms deletion
           onPress: () => {
             try {
               const projectRef = doc(collection(db, "projects"), projectState.id);
               deleteDoc(projectRef);
-              navigation.navigate("Front Page");
+              navigation.navigate("Front Page"); 
             } catch (error) {
               console.error(error);
             }
@@ -48,23 +49,6 @@ const ProjectDetail = ({ project, navigation }) => {
       ],
       { cancelable: false }
     );
-
-
-
-
-    // if user confirms deletion, delete project
-    // if (confirmDelete) {
-    //   try {
-    //     const projectRef = doc(collection(db, "projects"), projectState.id);
-    //     await deleteDoc(projectRef);
-    //     console.log("Project deleted");
-    //     navigation.navigate("Front Page");
-    //   } catch (error) {
-    //     console.error("Error deleting project: ", error);
-    //   }
-    // } else {
-    //   console.log("Project not deleted");
-    // }
   };
 
   const postOrUnpostProject = async () => {
