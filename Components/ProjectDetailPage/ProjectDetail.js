@@ -1,4 +1,12 @@
-import { StyleSheet, Text, View, Image, Button, Alert } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  Image,
+  Button,
+  Alert,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import { auth, db } from "../../firebase";
 import { collection, doc, updateDoc, deleteDoc } from "firebase/firestore";
@@ -6,6 +14,7 @@ import { collection, doc, updateDoc, deleteDoc } from "firebase/firestore";
 const ProjectDetail = ({ project, navigation }) => {
   const [projectState, setProjectState] = useState(project);
   const [showButtons, setshowButtons] = useState(false);
+  const [edit, setEdit] = useState(false);
 
   useEffect(() => {
     // get current user
@@ -90,6 +99,28 @@ const ProjectDetail = ({ project, navigation }) => {
     }
   };
 
+  const handleEditButtonPress = () => {
+    setEdit(!edit); // toggle edit button state
+
+    // if "DONE" button is pressed, update project in database
+    if (edit) {
+      try {
+        const projectRef = doc(collection(db, "projects"), projectState.id);
+        updateDoc(projectRef, {
+          name: projectState.name,
+          type: projectState.type,
+          tools: projectState.tools,
+          materials: projectState.materials,
+          pattern: projectState.pattern,
+          description: projectState.description,
+          image: projectState.image,
+        });
+      } catch (error) {
+        console.error("Error updating project: ", error);
+      }
+    }
+  };
+
   return (
     <View>
       <View style={styles.project}>
@@ -98,11 +129,9 @@ const ProjectDetail = ({ project, navigation }) => {
             <View style={styles.editBtnContainer}>
               <Button
                 style={styles.editBtn}
-                title="EDIT"
-                onPress={() =>
-                  console.log("Edit button pressed")
-                  // TODO: figure out what happens after edit button is pressed
-                }
+                // title is "EDIT" if edit state is false, "DONE" if edit state is true
+                title={edit ? "DONE" : "EDIT"}
+                onPress={() => handleEditButtonPress()}
               />
             </View>
           ) : null}
@@ -124,11 +153,28 @@ const ProjectDetail = ({ project, navigation }) => {
             </View>
             <View style={styles.projectStatusAndPostStatus}>
               <View style={styles.projectInfo}>
-                <View style={{display: "flex", alignContent: "center", flexDirection: "row"}}>
-                  <Text style={styles.projectInfoText}>Name:  </Text>
-                  <Text style={styles.projectNameAndPatternText}>
-                    {projectState.name}
-                  </Text>
+                <View
+                  style={{
+                    display: "flex",
+                    alignContent: "center",
+                    flexDirection: "row",
+                  }}
+                >
+                  <Text style={styles.projectInfoText}>Name: </Text>
+                  {/* if edit state is true, show input text. If not true, show the name as Text*/}
+                  {edit ? (
+                    <TextInput
+                      style={styles.inputField}
+                      onChangeText={(text) =>
+                        setProjectState({ ...projectState, name: text })
+                      }
+                      value={projectState.name}
+                    />
+                  ) : (
+                    <Text style={styles.projectNameAndPatternText}>
+                      {projectState.name}
+                    </Text>
+                  )}
                 </View>
 
                 <View style={styles.rowWithWrappers}>
@@ -167,20 +213,55 @@ const ProjectDetail = ({ project, navigation }) => {
                 </View>
 
                 <View style={{ marginTop: 10 }}>
-                <View style={{display: "flex", alignContent: "center", flexDirection: "row"}}>
-                  <Text style={styles.projectInfoText}>Pattern:  </Text>
-                  <Text style={styles.projectNameAndPatternText}>
-                    {projectState.pattern}
-                  </Text>
-                </View>
+                  <View
+                    style={{
+                      display: "flex",
+                      alignContent: "center",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <Text style={styles.projectInfoText}>Pattern: </Text>
+                    {/* if edit state is true, show input text. If not true, show the name as Text*/}
+                    {edit ? (
+                      <TextInput
+                        style={styles.inputField}
+                        onChangeText={(text) =>
+                          setProjectState({ ...projectState, pattern: text })
+                        }
+                        value={projectState.pattern}
+                      />
+                    ) : (
+                      <Text style={styles.projectNameAndPatternText}>
+                        {projectState.pattern}
+                      </Text>
+                    )}
+                  </View>
                 </View>
 
                 <View style={{ marginTop: 10 }}>
                   <Text style={styles.projectInfoText}>Description: </Text>
                   <View style={styles.projectDescriptionContainer}>
-                    <Text style={styles.projectDescriptionText}>
-                      {projectState.description}
-                    </Text>
+                    {edit ? (
+                      <TextInput
+                        style={styles.descriptionInputField}
+                        onChangeText={(text) =>
+                          setProjectState({
+                            ...projectState,
+                            description: text,
+                          })
+                        }
+                        value={projectState.description}
+                        editable
+                        multiline
+                        numberOfLines={4}
+                        onSubmitEditing={() => Keyboard.dismiss()}
+                        blurOnSubmit={true} // prevent new line when return button is pressed
+                      />
+                    ) : (
+                      <Text style={styles.projectDescriptionText}>
+                        {projectState.description}
+                      </Text>
+                    )}
                   </View>
                 </View>
               </View>
@@ -192,11 +273,11 @@ const ProjectDetail = ({ project, navigation }) => {
       {/* Only show buttons if the project belongs to current signed in user */}
       {showButtons && (
         <View style={styles.buttons}>
+          <Button title="Delete Project" onPress={handleDeleteProject} />
           <Button
             title={projectState.posted ? "Unpost Project" : "Post Project"}
             onPress={postOrUnpostProject}
           />
-          <Button title="Delete Project" onPress={handleDeleteProject} />
         </View>
       )}
     </View>
@@ -213,6 +294,16 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     flexDirection: "column",
     justifyContent: "center",
+  },
+
+  inputField: {
+    height: 27,
+    width: 150,
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 5,
+    fontSize: 17,
   },
 
   projectName: {
@@ -323,6 +414,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
 
+  descriptionInputField: {
+    height: 100,
+    width: "98%",
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 5,
+    fontSize: 16,
+  }, 
+
   editBtnContainer: {
     // the edit button should be on the right side of the screen
     // so we need to set the position to absolute
@@ -348,5 +449,4 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
   },
-
 });
