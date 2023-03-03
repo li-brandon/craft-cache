@@ -38,9 +38,12 @@ const ProjectDetail = ({ project, navigation }) => {
           // delete project from database after user confirms deletion
           onPress: () => {
             try {
-              const projectRef = doc(collection(db, "projects"), projectState.id);
+              const projectRef = doc(
+                collection(db, "projects"),
+                projectState.id
+              );
               deleteDoc(projectRef);
-              navigation.navigate("Front Page"); 
+              navigation.navigate("Front Page");
             } catch (error) {
               console.error(error);
             }
@@ -91,9 +94,19 @@ const ProjectDetail = ({ project, navigation }) => {
     <View>
       <View style={styles.project}>
         <View>
-          <View style={styles.projectName}>
-            <Text style={styles.projectNameText}>{projectState.name}</Text>
-          </View>
+          {showButtons ? (
+            <View style={styles.editBtnContainer}>
+              <Button
+                style={styles.editBtn}
+                title="EDIT"
+                onPress={() =>
+                  console.log("Edit button pressed")
+                  // TODO: figure out what happens after edit button is pressed
+                }
+              />
+            </View>
+          ) : null}
+
           <View style={styles.projectInfoAndImage}>
             <View style={styles.imageContainer}>
               <Image
@@ -110,33 +123,66 @@ const ProjectDetail = ({ project, navigation }) => {
               )}
             </View>
             <View style={styles.projectStatusAndPostStatus}>
-              <View style={styles.projectStatus}>
-                <Text style={styles.projectStatusText}>
-                  Started: {projectState.startDate}
-                </Text>
-                <Text style={styles.projectStatusText}>
-                  Last Updated: {projectState.lastUpdated}
-                </Text>
-                <Text style={styles.projectStatusText}>
-                  Status: {projectState.inProgress ? "In progress" : "Finished"}
-                </Text>
-              </View>
               <View style={styles.projectInfo}>
-                <Text style={styles.projectInfoText}>
-                  Project Type: {projectState.type}
-                </Text>
-                <Text style={styles.projectInfoText}>
-                  Tools: {projectState.tools}
-                </Text>
-                <Text style={styles.projectInfoText}>
-                  Materials: {projectState.materials}
-                </Text>
-                <Text style={styles.projectInfoText}>
-                  Pattern: {projectState.pattern}
-                </Text>
-                <Text style={styles.projectInfoText}>
-                  Description: {projectState.description}
-                </Text>
+                <View style={{display: "flex", alignContent: "center", flexDirection: "row"}}>
+                  <Text style={styles.projectInfoText}>Name:  </Text>
+                  <Text style={styles.projectNameAndPatternText}>
+                    {projectState.name}
+                  </Text>
+                </View>
+
+                <View style={styles.rowWithWrappers}>
+                  <Text style={styles.projectInfoText}>Type: </Text>
+                  <View style={styles.wrappers}>
+                    <View style={styles.wrapper}>
+                      <Text style={styles.wrapperText}>
+                        {projectState.type}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+
+                <View style={styles.rowWithWrappers}>
+                  <Text style={styles.projectInfoText}>Tools: </Text>
+                  <View style={styles.wrappers}>
+                    {/* Tools is an array so iterate through it and create a new view for each */}
+                    {projectState.tools.map((tool) => (
+                      <View style={styles.wrapper}>
+                        <Text style={styles.wrapperText}>{tool}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+
+                <View style={styles.rowWithWrappers}>
+                  <Text style={styles.projectInfoText}>Materials: </Text>
+                  <View style={styles.wrappers}>
+                    {/* Tools is an array so iterate through it and create a new view for each */}
+                    {projectState.materials.map((material) => (
+                      <View style={styles.wrapper}>
+                        <Text style={styles.wrapperText}>{material}</Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+
+                <View style={{ marginTop: 10 }}>
+                <View style={{display: "flex", alignContent: "center", flexDirection: "row"}}>
+                  <Text style={styles.projectInfoText}>Pattern:  </Text>
+                  <Text style={styles.projectNameAndPatternText}>
+                    {projectState.pattern}
+                  </Text>
+                </View>
+                </View>
+
+                <View style={{ marginTop: 10 }}>
+                  <Text style={styles.projectInfoText}>Description: </Text>
+                  <View style={styles.projectDescriptionContainer}>
+                    <Text style={styles.projectDescriptionText}>
+                      {projectState.description}
+                    </Text>
+                  </View>
+                </View>
               </View>
             </View>
           </View>
@@ -150,8 +196,7 @@ const ProjectDetail = ({ project, navigation }) => {
             title={projectState.posted ? "Unpost Project" : "Post Project"}
             onPress={postOrUnpostProject}
           />
-          <Button title="Edit Project" />
-          <Button title="Delete Project" onPress={handleDeleteProject}/>
+          <Button title="Delete Project" onPress={handleDeleteProject} />
         </View>
       )}
     </View>
@@ -175,8 +220,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
-  projectNameText: {
-    fontSize: 20,
+  projectNameAndPatternText: {
+    fontSize: 17,
   },
 
   projectInfoAndImage: {
@@ -189,7 +234,17 @@ const styles = StyleSheet.create({
   },
 
   projectInfoText: {
-    fontSize: 13,
+    fontSize: 17,
+    fontWeight: "bold",
+  },
+
+  projectTypeText: {
+    flexDirection: "row",
+  },
+
+  projectToolsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
 
   imageContainer: {
@@ -198,6 +253,7 @@ const styles = StyleSheet.create({
   },
 
   image: {
+    marginTop: 16,
     width: 200,
     height: 200,
     borderRadius: 10,
@@ -228,8 +284,69 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 
+  rowWithWrappers: {
+    display: "flex",
+    flexDirection: "row",
+    marginTop: 10,
+  },
+
+  wrappers: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    maxWidth: "80%",
+  },
+
+  wrapper: {
+    backgroundColor: "#ECF3F9",
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 2,
+    paddingLeft: 17,
+    paddingRight: 17,
+    margin: 5,
+    marginTop: 0,
+  },
+
+  wrapperText: {
+    fontSize: 13,
+  },
+
+  projectDescriptionContainer: {
+    marginLeft: 3,
+    marginTop: 10,
+  },
+
+  projectDescriptionText: {
+    fontSize: 14,
+  },
+
+  editBtnContainer: {
+    // the edit button should be on the right side of the screen
+    // so we need to set the position to absolute
+    position: "absolute",
+    right: 0,
+    backgroundColor: "#ECF3F9",
+    width: "17%",
+  },
+
+  editBtn: {
+    backgroundColor: "#ECF3F9",
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 12,
+    padding: 2,
+    paddingLeft: 30,
+    paddingRight: 30,
+    margin: 5,
+    marginTop: 0,
+  },
+
   buttons: {
     flexDirection: "row",
     justifyContent: "space-around",
   },
+
 });
