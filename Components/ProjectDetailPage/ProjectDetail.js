@@ -7,6 +7,10 @@ import {
   Button,
   TouchableOpacity,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Keyboard,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { auth, db } from "../../firebase";
@@ -123,97 +127,43 @@ const ProjectDetail = ({ project, navigation }) => {
   };
 
   return (
-    <View>
-      <View style={styles.project}>
-        <View>
-          {showButtons ? (
-            <View style={styles.editBtnContainer}>
-              <TouchableOpacity
-                style={styles.editBtn}
-                onPress={() => handleEditButtonPress()}
-              >
-                <Text style={styles.editBtnText}>{edit ? "DONE" : "EDIT"}</Text>
-              </TouchableOpacity>
-            </View>
-          ) : null}
-
-          <View style={styles.projectInfoAndImage}>
-            <View style={styles.imageContainer}>
-              <Image
-                style={styles.image}
-                source={{ uri: projectState.image }}
-              />
-            </View>
-            <View style={styles.postStatus}>
-              {projectState.posted ? ( // If project is posted, show "POSTED" text
-                <Text style={styles.postStatusText}>POSTED</Text>
-              ) : (
-                // If project is not posted, show "NOT POSTED" text
-                <Text style={styles.postStatusText}>NOT POSTED</Text>
-              )}
-            </View>
-            <View style={styles.projectStatusAndPostStatus}>
-              <View style={styles.projectInfo}>
-                <View
-                  style={{
-                    display: "flex",
-                    alignContent: "center",
-                    flexDirection: "row",
-                  }}
+    <KeyboardAvoidingView
+      // behavior prop should be position
+      behavior={Platform.OS === "ios" ? "position" : "height"}
+      keyboardVerticalOffset={100}
+    >
+        <View style={styles.project}>
+          <View>
+            {showButtons ? (
+              <View style={styles.editBtnContainer}>
+                <TouchableOpacity
+                  style={styles.editBtn}
+                  onPress={() => handleEditButtonPress()}
                 >
-                  <Text style={styles.projectInfoText}>Name: </Text>
-                  {/* if edit state is true, show input text. If not true, show the name as Text*/}
-                  {edit ? (
-                    <TextInput
-                      style={styles.inputField}
-                      onChangeText={(text) =>
-                        setProjectState({ ...projectState, name: text })
-                      }
-                      value={projectState.name}
-                    />
-                  ) : (
-                    <Text style={styles.projectNameAndPatternText}>
-                      {projectState.name}
-                    </Text>
-                  )}
-                </View>
+                  <Text style={styles.editBtnText}>
+                    {edit ? "DONE" : "EDIT"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : null}
 
-                <View style={styles.rowWithWrappers}>
-                  <Text style={styles.projectInfoText}>Type: </Text>
-                  <View style={styles.wrappers}>
-                    <View style={styles.wrapper}>
-                      <Text style={styles.wrapperText}>
-                        {projectState.type}
-                      </Text>
-                    </View>
-                  </View>
-                </View>
-
-                <View style={styles.rowWithWrappers}>
-                  <Text style={styles.projectInfoText}>Tools: </Text>
-                  <View style={styles.wrappers}>
-                    {/* Tools is an array so iterate through it and create a new view for each */}
-                    {projectState.tools.map((tool) => (
-                      <View style={styles.wrapper}>
-                        <Text style={styles.wrapperText}>{tool}</Text>
-                      </View>
-                    ))}
-                  </View>
-                </View>
-
-                <View style={styles.rowWithWrappers}>
-                  <Text style={styles.projectInfoText}>Materials: </Text>
-                  <View style={styles.wrappers}>
-                    {/* Tools is an array so iterate through it and create a new view for each */}
-                    {projectState.materials.map((material) => (
-                      <View style={styles.wrapper}>
-                        <Text style={styles.wrapperText}>{material}</Text>
-                      </View>
-                    ))}
-                  </View>
-                </View>
-
-                <View style={{ marginTop: 10 }}>
+            <View style={styles.projectInfoAndImage}>
+              <View style={styles.imageContainer}>
+                <Image
+                  style={styles.image}
+                  source={{ uri: projectState.image }}
+                />
+              </View>
+              <View style={styles.postStatus}>
+                {projectState.posted ? ( // If project is posted, show "POSTED" text
+                  <Text style={styles.postStatusText}>POSTED</Text>
+                ) : (
+                  // If project is not posted, show "NOT POSTED" text
+                  <Text style={styles.postStatusText}>NOT POSTED</Text>
+                )}
+              </View>
+              <View style={styles.projectStatusAndPostStatus}>
+                <View style={styles.projectInfo}>
                   <View
                     style={{
                       display: "flex",
@@ -221,67 +171,133 @@ const ProjectDetail = ({ project, navigation }) => {
                       flexDirection: "row",
                     }}
                   >
-                    <Text style={styles.projectInfoText}>Pattern: </Text>
+                    <Text style={styles.projectInfoText}>Name: </Text>
                     {/* if edit state is true, show input text. If not true, show the name as Text*/}
                     {edit ? (
                       <TextInput
                         style={styles.inputField}
+                        returnKeyType="done"
                         onChangeText={(text) =>
-                          setProjectState({ ...projectState, pattern: text })
+                          setProjectState({ ...projectState, name: text })
                         }
-                        value={projectState.pattern}
+                        value={projectState.name}
                       />
                     ) : (
                       <Text style={styles.projectNameAndPatternText}>
-                        {projectState.pattern}
+                        {projectState.name}
                       </Text>
                     )}
                   </View>
-                </View>
 
-                <View style={{ marginTop: 10 }}>
-                  <Text style={styles.projectInfoText}>Description: </Text>
-                  <View style={styles.projectDescriptionContainer}>
-                    {edit ? (
-                      <TextInput
-                        style={styles.descriptionInputField}
-                        onChangeText={(text) =>
-                          setProjectState({
-                            ...projectState,
-                            description: text,
-                          })
-                        }
-                        value={projectState.description}
-                        editable
-                        multiline
-                        numberOfLines={4}
-                        onSubmitEditing={() => Keyboard.dismiss()}
-                        blurOnSubmit={true} // prevent new line when return button is pressed
-                      />
-                    ) : (
-                      <Text style={styles.projectDescriptionText}>
-                        {projectState.description}
-                      </Text>
-                    )}
+                  <View style={styles.rowWithWrappers}>
+                    <Text style={styles.projectInfoText}>Type: </Text>
+                    <View style={styles.wrappers}>
+                      <View style={styles.wrapper}>
+                        <Text style={styles.wrapperText}>
+                          {projectState.type}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+
+                  <View style={styles.rowWithWrappers}>
+                    <Text style={styles.projectInfoText}>Tools: </Text>
+                    <View style={styles.wrappers}>
+                      {/* Tools is an array so iterate through it and create a new view for each */}
+                      {projectState.tools.map((tool) => (
+                        <View style={styles.wrapper}>
+                          <Text style={styles.wrapperText}>{tool}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+
+                  <View style={styles.rowWithWrappers}>
+                    <Text style={styles.projectInfoText}>Materials: </Text>
+                    <View style={styles.wrappers}>
+                      {/* Tools is an array so iterate through it and create a new view for each */}
+                      {projectState.materials.map((material) => (
+                        <View style={styles.wrapper}>
+                          <Text style={styles.wrapperText}>{material}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  </View>
+
+                  <View style={{ marginTop: 10 }}>
+                    <View
+                      style={{
+                        display: "flex",
+                        alignContent: "center",
+                        flexDirection: "row",
+                      }}
+                    >
+                      <Text style={styles.projectInfoText}>Pattern: </Text>
+                      {/* if edit state is true, show input text. If not true, show the name as Text*/}
+                      {edit ? (
+                        <TextInput
+                          style={styles.inputField}
+                          returnKeyType="done"
+                          onChangeText={(text) =>
+                            setProjectState({ ...projectState, pattern: text })
+                          }
+                          value={projectState.pattern}
+                        />
+                      ) : (
+                        <Text style={styles.projectNameAndPatternText}>
+                          {projectState.pattern}
+                        </Text>
+                      )}
+                    </View>
+                  </View>
+
+                  <View style={{ marginTop: 10 }}>
+                    <Text style={styles.projectInfoText}>Description: </Text>
+                    <View style={styles.projectDescriptionContainer}>
+                      {edit ? (
+                        <TextInput
+                          style={styles.descriptionInputField}
+                          editable
+                          multiline
+                          numberOfLines={4}
+                          value={projectState.description}
+                          onKeyPress={({ nativeEvent }) => { // dismiss keyboard when enter is pressed
+                            if (nativeEvent.key === 'Enter') {
+                              Keyboard.dismiss();
+                            }
+                          }}
+                          returnKeyType="done"
+                          onChangeText={(text) =>
+                            setProjectState({
+                              ...projectState,
+                              description: text,
+                            })
+                          }
+                        />
+                      ) : (
+                        <Text style={styles.projectDescriptionText}>
+                          {projectState.description}
+                        </Text>
+                      )}
+                    </View>
                   </View>
                 </View>
               </View>
             </View>
           </View>
         </View>
-      </View>
 
-      {/* Only show buttons if the project belongs to current signed in user */}
-      {showButtons && (
-        <View style={styles.buttons}>
-          <Button title="Delete Project" onPress={handleDeleteProject} />
-          <Button
-            title={projectState.posted ? "Unpost Project" : "Post Project"}
-            onPress={postOrUnpostProject}
-          />
-        </View>
-      )}
-    </View>
+        {/* Only show buttons if the project belongs to current signed in user */}
+        {showButtons && (
+          <View style={styles.buttons}>
+            <Button title="Delete Project" onPress={handleDeleteProject} />
+            <Button
+              title={projectState.posted ? "Unpost Project" : "Post Project"}
+              onPress={postOrUnpostProject}
+            />
+          </View>
+        )}
+    </KeyboardAvoidingView>
   );
 };
 
@@ -304,7 +320,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderRadius: 5,
     padding: 5,
-    fontSize: 17,
+    fontSize: 14,
   },
 
   projectName: {
