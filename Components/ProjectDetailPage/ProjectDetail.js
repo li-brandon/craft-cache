@@ -5,6 +5,7 @@ import {
   View,
   Image,
   Button,
+  TouchableOpacity,
   Alert,
 } from "react-native";
 import React, { useState, useEffect } from "react";
@@ -127,12 +128,12 @@ const ProjectDetail = ({ project, navigation }) => {
         <View>
           {showButtons ? (
             <View style={styles.editBtnContainer}>
-              <Button
+              <TouchableOpacity
                 style={styles.editBtn}
-                // title is "EDIT" if edit state is false, "DONE" if edit state is true
-                title={edit ? "DONE" : "EDIT"}
                 onPress={() => handleEditButtonPress()}
-              />
+              >
+                <Text style={styles.editBtnText}>{edit ? "DONE" : "EDIT"}</Text>
+              </TouchableOpacity>
             </View>
           ) : null}
 
@@ -422,27 +423,33 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: 5,
     fontSize: 16,
-  }, 
+  },
 
   editBtnContainer: {
-    // the edit button should be on the right side of the screen
-    // so we need to set the position to absolute
     position: "absolute",
+    top: 0,
     right: 0,
-    backgroundColor: "#ECF3F9",
-    width: "17%",
+    zIndex: 1,
   },
 
   editBtn: {
-    backgroundColor: "#ECF3F9",
+    backgroundColor: "#D9D9D9",
+    justifyContent: "center",
+    fontWeight: "bold",
     borderColor: "gray",
     borderWidth: 1,
-    borderRadius: 12,
+    borderRadius: 5,
     padding: 2,
-    paddingLeft: 30,
-    paddingRight: 30,
+    height: 30,
+    paddingLeft: 15,
+    paddingRight: 15,
     margin: 5,
     marginTop: 0,
+  },
+
+  editBtnText: {
+    fontSize: 15,
+    fontWeight: "bold",
   },
 
   buttons: {
