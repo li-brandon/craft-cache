@@ -92,8 +92,8 @@ const LoginScreen = ({ navigation }) => {
   };
 
   const handleResetPassword = function () {
-    navigation.navigate("Reset Password")
-  }
+    navigation.navigate("Reset Password");
+  };
 
   // if (isFetching) {
   //   return <LoadingOverLay containerStyle={styles.container} />
@@ -147,9 +147,10 @@ const LoginScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.buttonContainer}>
-
-        <TouchableOpacity onPress={handleSignIn}
-          style={[styles.button, styles.buttonOutline]}>
+        <TouchableOpacity
+          onPress={handleSignIn}
+          style={[styles.button, styles.buttonOutline]}
+        >
           <Text style={styles.buttonOutlineText}>Sign In</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -165,7 +166,7 @@ const LoginScreen = ({ navigation }) => {
           <Text style={styles.buttonOutlineText}>Reset Password</Text>
         </TouchableOpacity> */}
         <TouchableOpacity
-          onPress={handleBack}
+          onPress={() => navigation.goBack()}
           style={[styles.button, styles.cancelButtonOutline]}
         >
           <Text style={styles.cancelButtonOutlineText}>Cancel</Text>
@@ -174,8 +175,6 @@ const LoginScreen = ({ navigation }) => {
     </KeyboardAvoidingView>
   );
 };
-
-export default LoginScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -263,3 +262,5 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
 });
+
+export default LoginScreen;

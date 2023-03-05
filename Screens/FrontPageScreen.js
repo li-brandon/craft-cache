@@ -53,4 +53,5 @@ const styles = StyleSheet.create({
     color: GlobalStyles.colors.error500,
   },
 });
+
 export default FrontPageScreen;

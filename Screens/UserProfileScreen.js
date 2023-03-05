@@ -13,13 +13,17 @@ import {
 import { getAuth, signOut, sendPasswordResetEmail } from "firebase/auth";
 import { auth, db, resetByEmail } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
-import Project from "../Components/ProjectsPage/Project";
 import { MyContext } from "../Contexts/MyContext";
+import { LoginContext } from "../Contexts/LoginContext";
+
+import Project from "../Components/ProjectsPage/Project";
+import LoginScreen from "./LoginScreen";
 
 import hat from "../Components/assets/flower-bucket-hat.jpg";
 
 const UserProfileScreen = ({ navigation, route }) => {
   const { projects, setProjects } = React.useContext(MyContext);
+  const { loggedIn, setLoggedIn } = React.useContext(LoginContext);
   const user = auth.currentUser;
   const userEmail = user ? user.email : null;
 
@@ -60,16 +64,21 @@ const UserProfileScreen = ({ navigation, route }) => {
     } else {
       console.log("No such document!");
     }
+
+    if (!loggedIn) {
+      navigation.navigate("Login");
+    }
   }, []);
 
   const SignOutHandler = function (page) {
     signOut(auth)
       .then(() => {
         console.log("Sign-out successful.");
-        navigation.replace(page);
+        navigation.replace("Login");
       })
       .catch((error) => {
         // An error happened.
+        console.log(error);
       });
   };
 
@@ -110,9 +119,7 @@ const UserProfileScreen = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
       </View>
-
       <Image style={styles.profileImage} source={hat} />
-
       <View style={styles.userInfo}>
         <Text style={styles.username}>{username}</Text>
         <Text style={styles.bio}>Craft Cache Member</Text>
@@ -132,7 +139,6 @@ const UserProfileScreen = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
       </View>
-
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {projects.map((project, index) => (
           <Project key={index} project={project} navigation={navigation} />
