@@ -49,6 +49,8 @@ export default function App() {
     auth.onAuthStateChanged((user) => {
       if (user) {
         setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
       }
     });
   };
@@ -91,15 +93,6 @@ export default function App() {
           }}
         />
         <Tab.Screen
-          name="Explore"
-          component={ExplorePageScreen}
-          options={{
-            tabBarIcon: ({ color, size }) => (
-              <Ionicons name="eye-outline" size={size} color={color} />
-            ),
-          }}
-        />
-        <Tab.Screen
           name="Add Project"
           component={AddProjectScreen}
           options={{
@@ -123,6 +116,15 @@ export default function App() {
           options={{
             tabBarIcon: ({ color, size }) => (
               <Ionicons name="cube-outline" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Profile"
+          component={isloggedIn ? UserProfileScreen : LoginScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="person-circle-outline" size={size} color={color} />
             ),
           }}
         />
