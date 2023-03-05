@@ -8,6 +8,7 @@ import ProjectsPageScreen from "./ProjectsPageScreen";
 import { GlobalStyles } from "../Constants/styles";
 import { auth, db } from "../firebase";
 import { LoginContext } from "../Contexts/LoginContext";
+import ExplorePageScreen from "./ExplorePageScreen";
 function FrontPageScreen({ navigation, route }) {
     // const expenseData = useContext(ExpensesContext);
     // const expenseData = useSelector((state) => state.itemList.expenses)
@@ -29,7 +30,8 @@ function FrontPageScreen({ navigation, route }) {
                     <Text style={styles.text}>Please log in first!</Text>
                 </View>
             }
-            <ProjectsPageScreen navigation={navigation} />
+            {/* <ProjectsPageScreen navigation={navigation} /> */}
+            <ExplorePageScreen navigation={navigation} />
         </View>
     );
 };
