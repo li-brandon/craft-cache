@@ -40,80 +40,7 @@ function ToProfile(navigation) {
   return navigation.navigate("User Profile");
 }
 // const rightIcon = loggedIn ? "log-out-outline" : "log-in-outline";
-const FrontPage = function () {
-  return (
-    <Tab.Navigator
-      screenOptions={({ navigation }) => ({
-        headerStyle: { backgroundColor: GlobalStyles.colors.primary50 },
-        headerTintColor: GlobalStyles.colors.gray700,
-        tabBarStyle: { backgroundColor: GlobalStyles.colors.primary50 },
-        tabBarActiveTintColor: GlobalStyles.colors.gray700,
-        headerRight: ({ tintColor }) => (
-          <IconButton
-            icon="log-in-outline"
-            color={tintColor}
-            size={24}
-            onPress={ToManage.bind(this, navigation)}
-          />
-        ),
-        headerLeft: ({ tintColor }) => (
-          <IconButton
-            icon="person-circle-outline"
-            color={tintColor}
-            size={24}
-            onPress={ToProfile.bind(this, navigation)}
-          />
-        ),
-      })}
-    >
-      <Tab.Screen
-        name="Home"
-        component={FrontPageScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Explore"
-        component={ExplorePageScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="eye-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Add Project"
-        component={AddProjectScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="add-circle-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Projects"
-        component={ProjectsPageScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="folder-outline" size={size} color={color} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Inventory"
-        component={InventoryPageScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="cube-outline" size={size} color={color} />
-          ),
-        }}
-      />
-    </Tab.Navigator>
-  );
-};
+
 export default function App() {
   const [projects, setProjects] = useState([]);
   const [inventory, setInventory] = useState([]);
@@ -128,6 +55,80 @@ export default function App() {
   getAuthState();
   // console.log(isloggedIn)
   const { loggedIn, setloggedIn } = useContext(LoginContext);
+  const FrontPage = function () {
+    return (
+      <Tab.Navigator
+        screenOptions={({ navigation }) => ({
+          headerStyle: { backgroundColor: GlobalStyles.colors.primary50 },
+          headerTintColor: GlobalStyles.colors.gray700,
+          tabBarStyle: { backgroundColor: GlobalStyles.colors.primary50 },
+          tabBarActiveTintColor: GlobalStyles.colors.gray700,
+          headerRight: ({ tintColor }) => (
+            <IconButton
+              icon="log-in-outline"
+              color={tintColor}
+              size={24}
+              onPress={ToManage.bind(this, navigation)}
+            />
+          ),
+          headerLeft: ({ tintColor }) => (
+            <IconButton
+              icon="person-circle-outline"
+              color={tintColor}
+              size={24}
+              onPress={isloggedIn ? ToProfile.bind(this, navigation) : ToManage.bind(this, navigation)}
+            />
+          ),
+        })}
+      >
+        <Tab.Screen
+          name="Home"
+          component={FrontPageScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="home-outline" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Explore"
+          component={ExplorePageScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="eye-outline" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Add Project"
+          component={AddProjectScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="add-circle-outline" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Projects"
+          component={ProjectsPageScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="folder-outline" size={size} color={color} />
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Inventory"
+          component={InventoryPageScreen}
+          options={{
+            tabBarIcon: ({ color, size }) => (
+              <Ionicons name="cube-outline" size={size} color={color} />
+            ),
+          }}
+        />
+      </Tab.Navigator>
+    );
+  };
   return (
     <Provider store={store}>
       <MyContext.Provider
