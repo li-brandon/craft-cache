@@ -80,7 +80,7 @@ const EditProfileScreen = ({ navigation }) => {
 
   return (
     <View style={styles.container}>
-      {/* <View style={styles.avatarContainer}>
+      <View style={styles.avatarContainer}>
         {avatar ? (
           <Image style={styles.avatar} source={{ uri: avatar }} />
         ) : (
@@ -91,7 +91,7 @@ const EditProfileScreen = ({ navigation }) => {
             <Text style={styles.avatarPlaceholderText}>Choose Avatar</Text>
           </TouchableOpacity>
         )}
-      </View> */}
+      </View>
       <TextInput
         style={styles.input}
         placeholder="Username"
@@ -110,6 +110,7 @@ const EditProfileScreen = ({ navigation }) => {
         placeholder="Password"
         value={password}
         onChangeText={(text) => setPassword(text)}
+        secureTextEntry={true}
       />
       <TextInput
         style={styles.input}
@@ -118,7 +119,7 @@ const EditProfileScreen = ({ navigation }) => {
         value={phone}
         onChangeText={(text) => setPhone(text)}
       />
-      {/* <TextInput
+      <TextInput
         style={styles.bio}
         placeholder="Bio"
         editable
@@ -127,7 +128,7 @@ const EditProfileScreen = ({ navigation }) => {
         maxLength={40}
         value={bio}
         onChangeText={(text) => setBio(text)}
-      /> */}
+      />
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
         <Text style={styles.saveButtonText}>Save Changes</Text>
       </TouchableOpacity>

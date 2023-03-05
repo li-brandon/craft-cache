@@ -26,6 +26,7 @@ const UserProfileScreen = ({ navigation, route }) => {
   const [username, setUsername] = useState("");
   const [numFollowers, setNumFollowers] = useState("");
   const [numFollowing, setNumFollowing] = useState("");
+  const [numPosts, setNumPosts] = useState("");
   const [publishedProjects, setPublishedProjects] = useState("");
   const [savedProjects, setSavedProjects] = useState("");
   const [bio, setBio] = useState("");
@@ -116,7 +117,7 @@ const UserProfileScreen = ({ navigation, route }) => {
         <Text style={styles.username}>{username}</Text>
         <Text style={styles.bio}>Craft Cache Member</Text>
 
-        {/* <View style={styles.stats}>
+        <View style={styles.stats}>
           <Text style={styles.stat}>{numPosts} Posts</Text>
           <Text style={styles.stat}>{numFollowers} Followers</Text>
           <Text style={styles.stat}>{numFollowing} Following</Text>
@@ -129,7 +130,7 @@ const UserProfileScreen = ({ navigation, route }) => {
           <TouchableOpacity style={styles.messageButton}>
             <Text style={styles.messageButtonText}>Message</Text>
           </TouchableOpacity>
-        </View> */}
+        </View>
       </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
