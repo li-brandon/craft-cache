@@ -75,12 +75,21 @@ const FrontPage = function () {
           ),
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Explore"
         component={ExplorePageScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="eye-outline" size={size} color={color} />
+          ),
+        }}
+      /> */}
+      <Tab.Screen
+        name="Inventory"
+        component={InventoryPageScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="cube-outline" size={size} color={color} />
           ),
         }}
       />
@@ -102,15 +111,15 @@ const FrontPage = function () {
           ),
         }}
       />
-      <Tab.Screen
-        name="Inventory"
-        component={InventoryPageScreen}
+      {/* <Tab.Screen
+        name="Profile"
+        component={isloggedIn ? UserProfileScreen : LoginScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
-            <Ionicons name="cube-outline" size={size} color={color} />
+            <Ionicons name="person-circle-outline" size={size} color={color} />
           ),
         }}
-      />
+      /> */}
     </Tab.Navigator>
   );
 };
