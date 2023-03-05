@@ -9,7 +9,6 @@ import {
   Alert,
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   Keyboard,
 } from "react-native";
 import React, { useState, useEffect } from "react";

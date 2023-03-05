@@ -9,7 +9,7 @@ import {
   Image,
   Button,
   Keyboard,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import { MyContext } from "../Contexts/MyContext";
 import { auth, db, storage } from "../firebase";
@@ -30,6 +30,7 @@ const AddProjectScreen = ({ navigation }) => {
   const [image, setImage] = useState(null);
   const [imageUri, setImageUri] = useState(null);
   const [imageRef, setImageRef] = useState(null);
+  const [status, requestPermission] = ImagePicker.useCameraPermissions();
 
   // Get the user id from firebase auth
   useEffect(() => {
@@ -131,27 +132,44 @@ const AddProjectScreen = ({ navigation }) => {
     }
   };
 
-  // TODO: Implement camera functionality
-  // takePhoto launches the camera and allows the user to take a photo with the camera
-  // const takePhoto = async () => {
-  //   const result = await ImagePicker.launchCameraAsync({
-  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  //     allowsEditing: true,
-  //     aspect: [4, 3],
-  //     quality: 1,
-  //   });
+  // takePhoto launches the camera and allows the user to take a photo
+  const takePhoto = async () => {
+    // Check if the user has granted camera permissions
+    const cameraPermission = await ImagePicker.getCameraPermissionsAsync();
+    if (!cameraPermission.granted) {
+      // If the user has not granted camera permissions, request them
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== "granted") {
+        alert("Sorry, we need camera permissions to make this work!");
+        return;
+      }
+    }
 
-  //   // If the user didn't cancel the camera, upload the image to storage and set the image in state
-  //   if (!result.canceled) {
-  //     const uri = result.assets[0].uri; // Get the uri of the image
-  //     const imageRef = ref(storage, "projectImages/" + uri.split("/").pop());
-  //     setImageUri(uri);
-  //     setImageRef(imageRef);
-  //     setImage(uri);
-  //   } else {
-  //     alert("Camera permission is required to take a photo.");
-  //   }
-  // };
+    // Launch the camera
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    // If the user cancels the camera, return
+    if (!result.canceled) {
+      const uri = result.assets[0].uri; // Get the uri of the image
+      try {
+        const manipResult = await manipulateAsync(
+          uri,
+          [{ resize: { width: 500 } }],
+          { compress: 0.5, format: SaveFormat.JPEG }
+        );
+        const imageRef = ref(storage, "projectImages/" + uri.split("/").pop());
+        setImageUri(manipResult.uri);
+        setImageRef(imageRef);
+        setImage(manipResult.uri);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
 
   // getCurrentDate returns the current date in the format MM/DD/YYYY
   const getCurrentDate = () => {
@@ -183,50 +201,66 @@ const AddProjectScreen = ({ navigation }) => {
         <TextInput
           style={styles.input}
           placeholder="Name"
+          returnKeyType="done"
           value={name}
           onChangeText={(text) => setName(text)}
         />
         <TextInput
           style={styles.input}
           placeholder="Project type"
+          returnKeyType="done"
           value={type}
           onChangeText={(text) => setType(text)}
         />
         <TextInput
           style={styles.input}
           placeholder="Tools"
+          returnKeyType="done"
           value={tools}
           onChangeText={(text) => setTools(text)}
         />
         <TextInput
           style={styles.input}
           placeholder="Materials"
+          returnKeyType="done"
           value={materials}
           onChangeText={(text) => setMaterials(text)}
         />
         <TextInput
           style={styles.input}
           placeholder="Pattern"
+          returnKeyType="done"
           value={pattern}
           onChangeText={(text) => setPattern(text)}
         />
         <TextInput
           style={styles.description}
           placeholder="Description"
+          returnKeyType="done"
           editable
           multiline
           numberOfLines={4}
           value={description}
-          onSubmitEditing={() => Keyboard.dismiss()}
+          onKeyPress={({ nativeEvent }) => { // dismiss keyboard when enter is pressed
+            if (nativeEvent.key === 'Enter') {
+              Keyboard.dismiss();
+            }
+          }}
           blurOnSubmit={true} // prevent new line when return button is pressed
-          onChangeText={(text) => setDescription(text)}
+          onChangeText={(text) => {
+            if (text.trim() === '') { // prevent user from entering only whitespace
+              setDescription('');
+            } else {
+              setDescription(text);
+            }
+          }}
         />
 
         {image && <Image source={{ uri: image }} style={styles.projectImage} />}
 
         <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
           <Button title="Choose Photo" onPress={choosePhoto} />
-          {/* <Button title="Take Photo" onPress={takePhoto} /> */}
+          <Button title="Take Photo" onPress={takePhoto} />
         </View>
       </View>
       <TouchableOpacity style={styles.button} onPress={handleAddProject}>
