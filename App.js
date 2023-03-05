@@ -111,15 +111,16 @@ const FrontPage = function () {
           ),
         }}
       />
-      {/* <Tab.Screen
+      <Tab.Screen
         name="Profile"
-        component={isloggedIn ? UserProfileScreen : LoginScreen}
+        // component={isloggedIn ? UserProfileScreen : LoginScreen}
+        component={UserProfileScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="person-circle-outline" size={size} color={color} />
           ),
         }}
-      /> */}
+      />
     </Tab.Navigator>
   );
 };
