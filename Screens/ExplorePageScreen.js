@@ -10,6 +10,7 @@ import { collection, getDocs, query, where } from "firebase/firestore";
 function ExplorePageScreen({ navigation }) {
   const [projects, setProjects] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
+  const [refresh, setRefresh] = useState(false);
 
   useEffect(() => {
     // get current user
@@ -19,6 +20,7 @@ function ExplorePageScreen({ navigation }) {
 
     return () => {
       unsubscribe();
+      setRefresh(true);
     };
   }, []);
 
@@ -47,6 +49,7 @@ function ExplorePageScreen({ navigation }) {
       // navigate to detail page with project
       navigation.navigate("Detail", {
         project: item,
+        navigation: navigation,
       });
     }
     return (

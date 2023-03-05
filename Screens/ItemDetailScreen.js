@@ -4,11 +4,11 @@ import ProjectDetail from "../Components/ProjectDetailPage/ProjectDetail";
 import { MyContext } from "../Contexts/MyContext";
 
 function ItemDetailScreen({ route }) {
-  const { project } = route.params;
+  const { project, navigation } = route.params;
 
   return (
     <View>
-      <ProjectDetail project={project} />
+      <ProjectDetail project={project} navigation={navigation}/>
     </View>
   );
 }

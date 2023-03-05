@@ -9,6 +9,7 @@ const Project = ({ project, navigation }) => {
         onPress={() => {
           navigation.navigate("Detail", {
             project: project,
+            navigation: navigation,
           });
         }}
       >
