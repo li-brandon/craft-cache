@@ -74,7 +74,7 @@ const UserProfileScreen = ({ navigation, route }) => {
     signOut(auth)
       .then(() => {
         console.log("Sign-out successful.");
-        navigation.replace("Login");
+        navigation.replace(page);
       })
       .catch((error) => {
         // An error happened.
@@ -96,55 +96,61 @@ const UserProfileScreen = ({ navigation, route }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.userInfo}>
-        <View style={styles.buttons}>
-          <TouchableOpacity
-            onPress={SignOutHandler.bind(this, "Front Page")}
-            style={styles.followButton}
-          >
-            <Text style={styles.editProfileButtonText}>Sign out</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={ResetPasswordHandler.bind(this, userEmail)}
-            style={styles.followButton}
-          >
-            <Text style={styles.editProfileButtonText}>Reset Password</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Edit Profile")}
-            style={styles.followButton}
-          >
-            <Text style={styles.editProfileButtonText}>Edit Profile</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-      <Image style={styles.profileImage} source={hat} />
-      <View style={styles.userInfo}>
-        <Text style={styles.username}>{username}</Text>
-        <Text style={styles.bio}>Craft Cache Member</Text>
+    <>
+      {!loggedIn ? (
+        <LoginScreen />
+      ) : (
+        <View style={styles.container}>
+          <View style={styles.userInfo}>
+            <View style={styles.buttons}>
+              <TouchableOpacity
+                onPress={SignOutHandler.bind(this, "Front Page")}
+                style={styles.followButton}
+              >
+                <Text style={styles.editProfileButtonText}>Sign out</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={ResetPasswordHandler.bind(this, userEmail)}
+                style={styles.followButton}
+              >
+                <Text style={styles.editProfileButtonText}>Reset Password</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("Edit Profile")}
+                style={styles.followButton}
+              >
+                <Text style={styles.editProfileButtonText}>Edit Profile</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <Image style={styles.profileImage} source={hat} />
+          <View style={styles.userInfo}>
+            <Text style={styles.username}>{username}</Text>
+            <Text style={styles.bio}>Craft Cache Member</Text>
 
-        <View style={styles.stats}>
-          <Text style={styles.stat}>{numPosts} Posts</Text>
-          <Text style={styles.stat}>{numFollowers} Followers</Text>
-          <Text style={styles.stat}>{numFollowing} Following</Text>
-        </View>
+            <View style={styles.stats}>
+              <Text style={styles.stat}>{numPosts} Posts</Text>
+              <Text style={styles.stat}>{numFollowers} Followers</Text>
+              <Text style={styles.stat}>{numFollowing} Following</Text>
+            </View>
 
-        <View style={styles.buttons}>
-          <TouchableOpacity style={styles.followButton}>
-            <Text style={styles.followButtonText}>Follow</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.messageButton}>
-            <Text style={styles.messageButtonText}>Message</Text>
-          </TouchableOpacity>
+            <View style={styles.buttons}>
+              <TouchableOpacity style={styles.followButton}>
+                <Text style={styles.followButtonText}>Follow</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={styles.messageButton}>
+                <Text style={styles.messageButtonText}>Message</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+          <ScrollView contentContainerStyle={styles.contentContainer}>
+            {projects.map((project, index) => (
+              <Project key={index} project={project} navigation={navigation} />
+            ))}
+          </ScrollView>
         </View>
-      </View>
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-        {projects.map((project, index) => (
-          <Project key={index} project={project} navigation={navigation} />
-        ))}
-      </ScrollView>
-    </View>
+      )}
+    </>
   );
 };
 
