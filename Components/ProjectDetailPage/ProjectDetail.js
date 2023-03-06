@@ -14,11 +14,25 @@ import {
 import React, { useState, useEffect } from "react";
 import { auth, db } from "../../firebase";
 import { collection, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import DropDownPicker from "react-native-dropdown-picker";
 
 const ProjectDetail = ({ project, navigation }) => {
   const [projectState, setProjectState] = useState(project);
   const [showButtons, setshowButtons] = useState(false);
   const [edit, setEdit] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [value, setValue] = useState([
+    'knitting', 'crochet', 'sewing', 'embroidery', 'weaving', 'tailoring'
+  ]);
+
+  const [items, setItems] = useState([
+    { label: "Knitting", value: "knitting" },
+    { label: "Crochet", value: "crochet" },
+    { label: "Sewing", value: "sewing" },
+    { label: "Embroidery", value: "embroidery" },
+    { label: "Weaving", value: "weaving" },
+    { label: "Tailoring", value: "tailoring" },
+  ]);
 
   useEffect(() => {
     // get current user
@@ -188,16 +202,30 @@ const ProjectDetail = ({ project, navigation }) => {
 
                 <View style={styles.rowWithWrappers}>
                   <Text style={styles.projectInfoText}>Type: </Text>
-                  <View style={styles.wrappers}>
-                    {/* Type is an array so iterate through it and create a new view for each */}
-                    {projectState.type.map((type) => (
-                      <View style={styles.wrapper}>
-                        <Text style={styles.wrapperText}>
-                          {type}
-                        </Text>
-                      </View>
-                    ))}
-                  </View>
+                  {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
+                  {edit ? (
+                    <View style={{flex: 1, height: open ? 250 : 50}}>
+                      <DropDownPicker
+                        open={open}
+                        value={value}
+                        items={items}
+                        setOpen={setOpen}
+                        setValue={setValue}
+                        setItems={setItems}
+                        multiple={true}
+                        mode="BADGE"
+                        listItemContainerStyle={{ height:33 }}
+                      />
+                    </View>
+                  ) : (
+                    <View style={styles.wrappers}>
+                      {projectState.type.map((type) => (
+                        <View style={styles.wrapper}>
+                          <Text style={styles.wrapperText}>{type}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
                 </View>
 
                 <View style={styles.rowWithWrappers}>
