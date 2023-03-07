@@ -66,7 +66,7 @@ const AddProjectScreen = ({ navigation }) => {
 
     const newProject = {
       name: name,
-      type: type,
+      type: type.split(","), // split type string into array
       tools: tools.split(","), // split tools string into array
       materials: materials.split(","), // split materials string into array
       pattern: pattern,

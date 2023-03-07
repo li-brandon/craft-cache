@@ -21,7 +21,15 @@ const Project = ({ project, navigation }) => {
             <View style={styles.projectInfoAndImage}>
               <View style={styles.projectInfo}>
                 <Text style={styles.projectInfoText}>
-                  Project Type: {project.type}
+                  {/* Goes through array of project types and outputs them in readable way */}
+                  Project Type:{" "}
+                  {project.type.map((type, index) => {
+                    if (index === project.type.length - 1) {
+                      return type;
+                    } else {
+                      return type + ", ";
+                    }
+                  })}
                 </Text>
                 <Text style={styles.projectInfoText}>
                   {/* Goes through array of tools and outputs them in a readable way */}
