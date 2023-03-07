@@ -20,13 +20,26 @@ const ProjectDetail = ({ project, navigation }) => {
   const [projectState, setProjectState] = useState(project);
   const [showButtons, setshowButtons] = useState(false);
   const [edit, setEdit] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState([ 
+  const [typeDropDownIsOpen, setTypeDropDownIsOpen] = useState(false);
+  const [toolsDropDownIsOpen, setToolsDropDownIsOpen] = useState(false);
+  const [materialsDropDownIsOpen, setMaterialsDropDownIsOpen] = useState(false);
+
+  const [typeValues, setTypeValues] = useState([ 
     // goes through the projectState.type array and prepares it for the dropdown picker
     ...projectState.type.map((item) => item),
   ]);
 
-  const [items, setItems] = useState([
+  const [toolsValues, setToolsValues] = useState([
+    // goes through the projectState.tools array and prepares it for the dropdown picker
+    ...projectState.tools.map((item) => item),
+  ]);
+
+  const [materialsValues, setMaterialsValues] = useState([
+    // goes through the projectState.materials array and prepares it for the dropdown picker
+    ...projectState.materials.map((item) => item),
+  ]);
+
+  const [typeItems, setTypeItems] = useState([
     { label: "Knitting", value: "Knitting" },
     { label: "Crochet", value: "Crochet" },
     { label: "Sewing", value: "Sewing" },
@@ -128,7 +141,7 @@ const ProjectDetail = ({ project, navigation }) => {
         // update type array in the projectState to reflect changes made in DropDownPicker
         setProjectState({
           ...projectState,
-          type: value,
+          type: typeValues,
         });
 
         const projectRef = doc(collection(db, "projects"), projectState.id);
@@ -136,7 +149,7 @@ const ProjectDetail = ({ project, navigation }) => {
         //TODO: rename value to be more descriptive
         await updateDoc(projectRef, {
           name: projectState.name,
-          type: value, 
+          type: typeValues, 
           tools: projectState.tools,
           materials: projectState.materials,
           pattern: projectState.pattern,
@@ -210,18 +223,18 @@ const ProjectDetail = ({ project, navigation }) => {
                   )}
                 </View>
 
-                <View style={styles.rowWithWrappers}>
+                <View style={[styles.rowWithWrappers, typeDropDownIsOpen && { alignItems: 'flex-start' }]}>
                   <Text style={styles.projectInfoText}>Type: </Text>
                   {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
                   {edit ? (
-                    <View style={{flex: 1, height: open ? 250 : 50}}>
+                    <View style={{flex: 1, height: typeDropDownIsOpen ? 250 : 50}}>
                       <DropDownPicker
-                        open={open}
-                        value={value}
-                        items={items}
-                        setOpen={setOpen}
-                        setValue={setValue}
-                        setItems={setItems}
+                        open={typeDropDownIsOpen}
+                        value={typeValues}
+                        items={typeItems}
+                        setOpen={setTypeDropDownIsOpen}
+                        setValue={setTypeValues}
+                        setItems={setTypeItems}
                         multiple={true}
                         mode="BADGE"
                         listItemContainerStyle={{ height:33 }}
@@ -238,7 +251,7 @@ const ProjectDetail = ({ project, navigation }) => {
                   )}
                 </View>
 
-                <View style={styles.rowWithWrappers}>
+                <View style={styles.rowWithWrappers}> 
                   <Text style={styles.projectInfoText}>Tools: </Text>
                   <View style={styles.wrappers}>
                     {/* Tools is an array so iterate through it and create a new view for each */}
@@ -433,6 +446,7 @@ const styles = StyleSheet.create({
 
   rowWithWrappers: {
     display: "flex",
+    alignItems: "center",
     flexDirection: "row",
     marginTop: 10,
   },
