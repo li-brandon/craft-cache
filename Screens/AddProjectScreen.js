@@ -37,10 +37,11 @@ const AddProjectScreen = ({ navigation }) => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         setUser(user.uid);
-      } else {
-        // Redirect to login screen if user is not logged in
-        navigation.navigate("Login");
       }
+      // Redirect to login screen if user is not logged in
+      // else {
+      //   navigation.navigate("Login");
+      // }
     });
 
     // Clean up the subscription on unmount
@@ -241,15 +242,17 @@ const AddProjectScreen = ({ navigation }) => {
           multiline
           numberOfLines={4}
           value={description}
-          onKeyPress={({ nativeEvent }) => { // dismiss keyboard when enter is pressed
-            if (nativeEvent.key === 'Enter') {
+          onKeyPress={({ nativeEvent }) => {
+            // dismiss keyboard when enter is pressed
+            if (nativeEvent.key === "Enter") {
               Keyboard.dismiss();
             }
           }}
           blurOnSubmit={true} // prevent new line when return button is pressed
           onChangeText={(text) => {
-            if (text.trim() === '') { // prevent user from entering only whitespace
-              setDescription('');
+            if (text.trim() === "") {
+              // prevent user from entering only whitespace
+              setDescription("");
             } else {
               setDescription(text);
             }

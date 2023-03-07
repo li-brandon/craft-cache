@@ -41,6 +41,8 @@ function ToProfile(navigation) {
 }
 // const rightIcon = loggedIn ? "log-out-outline" : "log-in-outline";
 const FrontPage = function () {
+  const { loggedIn, setLoggedIn } = React.useContext(LoginContext);
+
   return (
     <Tab.Navigator
       screenOptions={({ navigation }) => ({
@@ -75,12 +77,21 @@ const FrontPage = function () {
           ),
         }}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="Explore"
         component={ExplorePageScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="eye-outline" size={size} color={color} />
+          ),
+        }}
+      /> */}
+      <Tab.Screen
+        name="Inventory"
+        component={InventoryPageScreen}
+        options={{
+          tabBarIcon: ({ color, size }) => (
+            <Ionicons name="cube-outline" size={size} color={color} />
           ),
         }}
       />
@@ -103,13 +114,31 @@ const FrontPage = function () {
         }}
       />
       <Tab.Screen
-        name="Inventory"
-        component={InventoryPageScreen}
-        options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="cube-outline" size={size} color={color} />
-          ),
-        }}
+        name="Profile"
+        component={loggedIn ? UserProfileScreen : LoginScreen}
+        // component={UserProfileScreen}
+        options={
+          loggedIn
+            ? {
+                tabBarIcon: ({ color, size }) => (
+                  <Ionicons
+                    name="person-circle-outline"
+                    size={size}
+                    color={color}
+                  />
+                ),
+              }
+            : {
+                tabBarIcon: ({ color, size }) => (
+                  <Ionicons
+                    name="person-circle-outline"
+                    size={size}
+                    color={color}
+                  />
+                ),
+                headerShown: false,
+              }
+        }
       />
     </Tab.Navigator>
   );
@@ -154,7 +183,7 @@ export default function App() {
                 component={FrontPage}
                 options={{
                   headerShown: false,
-                  headerBackVisible: false,
+                  // headerBackVisible: false,
                 }}
               />
               <Stack.Screen
