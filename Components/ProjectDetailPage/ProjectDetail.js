@@ -21,17 +21,18 @@ const ProjectDetail = ({ project, navigation }) => {
   const [showButtons, setshowButtons] = useState(false);
   const [edit, setEdit] = useState(false);
   const [open, setOpen] = useState(false);
-  const [value, setValue] = useState([
-    'knitting', 'crochet', 'sewing', 'embroidery', 'weaving', 'tailoring'
+  const [value, setValue] = useState([ 
+    // goes through the projectState.type array and prepares it for the dropdown picker
+    ...projectState.type.map((item) => item),
   ]);
 
   const [items, setItems] = useState([
-    { label: "Knitting", value: "knitting" },
-    { label: "Crochet", value: "crochet" },
-    { label: "Sewing", value: "sewing" },
-    { label: "Embroidery", value: "embroidery" },
-    { label: "Weaving", value: "weaving" },
-    { label: "Tailoring", value: "tailoring" },
+    { label: "Knitting", value: "Knitting" },
+    { label: "Crochet", value: "Crochet" },
+    { label: "Sewing", value: "Sewing" },
+    { label: "Embroidery", value: "Embroidery" },
+    { label: "Weaving", value: "Weaving" },
+    { label: "Tailoring", value: "Tailoring" },
   ]);
 
   useEffect(() => {
@@ -117,16 +118,25 @@ const ProjectDetail = ({ project, navigation }) => {
     }
   };
 
-  const handleEditButtonPress = () => {
+  const handleEditButtonPress = async () => {
     setEdit(!edit); // toggle edit button state
 
     // if "DONE" button is pressed, update project in database
     if (edit) {
       try {
+        
+        // update type array in the projectState to reflect changes made in DropDownPicker
+        setProjectState({
+          ...projectState,
+          type: value,
+        });
+
         const projectRef = doc(collection(db, "projects"), projectState.id);
-        updateDoc(projectRef, {
+
+        //TODO: rename value to be more descriptive
+        await updateDoc(projectRef, {
           name: projectState.name,
-          type: projectState.type,
+          type: value, 
           tools: projectState.tools,
           materials: projectState.materials,
           pattern: projectState.pattern,
