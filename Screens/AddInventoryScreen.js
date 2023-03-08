@@ -9,7 +9,7 @@ import {
   Image,
   Button,
   Keyboard,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import { MyContext } from "../Contexts/MyContext";
 import { auth, db, storage } from "../firebase";
@@ -17,6 +17,7 @@ import { collection, addDoc } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import * as ImagePicker from "expo-image-picker";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
+import { Picker } from "@react-native-picker/picker";
 
 const AddInventoryScreen = ({ navigation }) => {
   // States
@@ -30,6 +31,7 @@ const AddInventoryScreen = ({ navigation }) => {
   const [image, setImage] = useState(null);
   const [imageUri, setImageUri] = useState(null);
   const [imageRef, setImageRef] = useState(null);
+  const [selectedValue, setSelectedValue] = useState("Tool");
 
   // Get the user id from firebase auth
   useEffect(() => {
@@ -59,7 +61,8 @@ const AddInventoryScreen = ({ navigation }) => {
       !count ||
       !description ||
       !size ||
-      !image
+      !image ||
+      !selectedValue
     ) {
       Alert.alert("Please fill in all the required fields");
       return;
@@ -80,6 +83,7 @@ const AddInventoryScreen = ({ navigation }) => {
       description: description,
       userID: user,
       image: image,
+      toolOrMaterial: selectedValue,
     };
 
     const date = getCurrentDate();
@@ -186,7 +190,6 @@ const AddInventoryScreen = ({ navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
-      <Text style={styles.title}>Add new inventory</Text>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.input}
@@ -231,6 +234,20 @@ const AddInventoryScreen = ({ navigation }) => {
           onChangeText={(text) => setDescription(text)}
         />
 
+        <View style="pickerContainer">
+          <Text style={styles.label}>Select where to add:</Text>
+          <Picker
+            style={styles.picker}
+            selectedValue={selectedValue}
+            onValueChange={(itemValue, itemIndex) =>
+              setSelectedValue(itemValue)
+            }
+          >
+            <Picker.Item label="Tool" value="Tool" />
+            <Picker.Item label="Material" value="Material" />
+          </Picker>
+        </View>
+
         {image && (
           <Image source={{ uri: image }} style={styles.inventoryImage} />
         )}
@@ -239,6 +256,7 @@ const AddInventoryScreen = ({ navigation }) => {
           <Button title="Choose Photo" onPress={choosePhoto} />
           {/* <Button title="Take Photo" onPress={takePhoto} /> */}
         </View>
+
       </View>
       <TouchableOpacity style={styles.button} onPress={handleAddInventory}>
         <Text style={styles.buttonText}>Add Inventory</Text>
@@ -251,6 +269,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    marginBottom: 0,
   },
   title: {
     fontSize: 24,
@@ -269,7 +288,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   description: {
-    height: 100,
+    height: 80,
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
@@ -293,6 +312,21 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     marginTop: 10,
     marginBottom: 10,
+  },
+  pickerContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "blue",
+  },
+
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginBottom: -50,
+  },
+
+  picker: {
+    height:170,
   },
 });
 

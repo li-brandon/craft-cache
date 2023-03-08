@@ -24,7 +24,7 @@ const ProjectDetail = ({ project, navigation }) => {
   const [toolsDropDownIsOpen, setToolsDropDownIsOpen] = useState(false);
   const [materialsDropDownIsOpen, setMaterialsDropDownIsOpen] = useState(false);
 
-  const [typeValues, setTypeValues] = useState([ 
+  const [typeValues, setTypeValues] = useState([
     // goes through the projectState.type array and prepares it for the dropdown picker
     ...projectState.type.map((item) => item),
   ]);
@@ -48,12 +48,16 @@ const ProjectDetail = ({ project, navigation }) => {
     { label: "Tailoring", value: "Tailoring" },
   ]);
 
+  const [toolsItems, setToolsItems] = useState(); // will be set to the user's inventory
+  const [materialsItems, setMaterialsItems] = useState(); // will be set to the user's inventory
+
   useEffect(() => {
     // get current user
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
         // if the current user is the owner of the project, show the post button
         if (user.uid === projectState.userID) {
+          fetchItemsFromInventory();
           setshowButtons(true);
         }
       }
@@ -61,7 +65,28 @@ const ProjectDetail = ({ project, navigation }) => {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [user]);
+
+  // fetches the user's inventory from the database and sets the tools and materials dropdowns to the items in the user's inventory
+  const fetchItemsFromInventory = async () => {
+    const userID = auth.currentUser.uid;
+    const q = query(collection(db, "inventory"), where("userID", "==", userID));
+    const querySnapshot = await getDocs(q);
+    const tools = [];
+    const materials = [];
+    querySnapshot.forEach((doc) => {
+      if (doc.data().type === "tool") {
+        tools.push({ label: doc.data().name, value: doc.data().name });
+      } else {
+        materials.push({ label: doc.data().name, value: doc.data().name });
+      }
+    });
+    // set the tools and materials dropdowns to the items in the user's inventory
+    setToolsValues(tools);
+    setMaterialsValues(materials);
+    setToolsItems(tools);
+    setMaterialsItems(materials);
+  };
 
   const handleDeleteProject = async () => {
     // prompt user to confirm deletion
@@ -137,11 +162,12 @@ const ProjectDetail = ({ project, navigation }) => {
     // if "DONE" button is pressed, update project in database
     if (edit) {
       try {
-        
         // update type array in the projectState to reflect changes made in DropDownPicker
         setProjectState({
           ...projectState,
           type: typeValues,
+          tools: toolsValues,
+          materials: materialsValues,
         });
 
         const projectRef = doc(collection(db, "projects"), projectState.id);
@@ -149,9 +175,9 @@ const ProjectDetail = ({ project, navigation }) => {
         //TODO: rename value to be more descriptive
         await updateDoc(projectRef, {
           name: projectState.name,
-          type: typeValues, 
-          tools: projectState.tools,
-          materials: projectState.materials,
+          type: typeValues,
+          tools: toolsValues,
+          materials: materialsValues,
           pattern: projectState.pattern,
           description: projectState.description,
           image: projectState.image,
@@ -223,11 +249,18 @@ const ProjectDetail = ({ project, navigation }) => {
                   )}
                 </View>
 
-                <View style={[styles.rowWithWrappers, typeDropDownIsOpen && { alignItems: 'flex-start' }]}>
+                <View
+                  style={[
+                    styles.rowWithWrappers,
+                    typeDropDownIsOpen && { alignItems: "flex-start" },
+                  ]}
+                >
                   <Text style={styles.projectInfoText}>Type: </Text>
                   {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
                   {edit ? (
-                    <View style={{flex: 1, height: typeDropDownIsOpen ? 250 : 50}}>
+                    <View
+                      style={{ flex: 1, height: typeDropDownIsOpen ? 250 : 50 }}
+                    >
                       <DropDownPicker
                         open={typeDropDownIsOpen}
                         value={typeValues}
@@ -237,7 +270,7 @@ const ProjectDetail = ({ project, navigation }) => {
                         setItems={setTypeItems}
                         multiple={true}
                         mode="BADGE"
-                        listItemContainerStyle={{ height:33 }}
+                        listItemContainerStyle={{ height: 33 }}
                       />
                     </View>
                   ) : (
@@ -251,28 +284,67 @@ const ProjectDetail = ({ project, navigation }) => {
                   )}
                 </View>
 
-                <View style={styles.rowWithWrappers}> 
+                <View style={[
+                    styles.rowWithWrappers,
+                    typeDropDownIsOpen && { alignItems: "flex-start" },
+                  ]}>
                   <Text style={styles.projectInfoText}>Tools: </Text>
-                  <View style={styles.wrappers}>
-                    {/* Tools is an array so iterate through it and create a new view for each */}
-                    {projectState.tools.map((tool) => (
-                      <View style={styles.wrapper}>
-                        <Text style={styles.wrapperText}>{tool}</Text>
-                      </View>
-                    ))}
-                  </View>
+                  {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
+                  {edit ? (
+                    <View
+                      style={{ flex: 1, height: toolsDropDownIsOpen ? 250 : 50 }}
+                    >
+                      <DropDownPicker
+                        open={toolsDropDownIsOpen}
+                        value={toolsValues}
+                        items={toolsItems}
+                        setOpen={setToolsDropDownIsOpen}
+                        setValue={setToolsValues}
+                        setItems={setToolsItems}
+                        multiple={true}
+                        mode="BADGE"
+                        listItemContainerStyle={{ height: 33 }}
+                      />
+                    </View>
+                  ) : (
+                    <View style={styles.wrappers}>
+                      {projectState.tools.map((tool) => (
+                        <View style={styles.wrapper}>
+                          <Text style={styles.wrapperText}>{tool}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
                 </View>
 
                 <View style={styles.rowWithWrappers}>
                   <Text style={styles.projectInfoText}>Materials: </Text>
-                  <View style={styles.wrappers}>
-                    {/* Tools is an array so iterate through it and create a new view for each */}
-                    {projectState.materials.map((material) => (
-                      <View style={styles.wrapper}>
-                        <Text style={styles.wrapperText}>{material}</Text>
+                  {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
+                  {edit ? (
+                    <View
+                      style={{ flex: 1, height: materialsDropDownIsOpen ? 250 : 50 }}
+                    >
+                      <DropDownPicker
+                        open={materialsDropDownIsOpen}
+                        value={materialsValues}
+                        items={materialsItems}
+                        setOpen={setMaterialsDropDownIsOpen}
+                        setValue={setMaterialsValues}
+                        setItems={setMaterialsItems}
+                        multiple={true}
+                        mode="BADGE"
+                        listItemContainerStyle={{ height: 33 }}
+                      />
                       </View>
-                    ))}
-                  </View>
+                  ) : (
+                    <View style={styles.wrappers}>
+                      {projectState.materials.map((material) => (
+                        <View style={styles.wrapper}>
+                          <Text style={styles.wrapperText}>{material}</Text>
+                          </View>
+                      ))}
+                      </View>
+                  )}
                 </View>
 
                 <View style={{ marginTop: 10 }}>
