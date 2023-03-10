@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { auth, db } from "../../firebase";
-import { collection, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { collection, doc, getDocs, updateDoc, deleteDoc, query, where } from "firebase/firestore";
 import DropDownPicker from "react-native-dropdown-picker";
 
 const ProjectDetail = ({ project, navigation }) => {
@@ -39,6 +39,7 @@ const ProjectDetail = ({ project, navigation }) => {
     ...projectState.materials.map((item) => item),
   ]);
 
+  // states below are the ones that are displayed in DropDownPickers
   const [typeItems, setTypeItems] = useState([
     { label: "Knitting", value: "Knitting" },
     { label: "Crochet", value: "Crochet" },
@@ -48,8 +49,8 @@ const ProjectDetail = ({ project, navigation }) => {
     { label: "Tailoring", value: "Tailoring" },
   ]);
 
-  const [toolsItems, setToolsItems] = useState(); // will be set to the user's inventory
-  const [materialsItems, setMaterialsItems] = useState(); // will be set to the user's inventory
+  const [toolsItems, setToolsItems] = useState(); // will be set to the tools in user's inventory 
+  const [materialsItems, setMaterialsItems] = useState(); // will be set to the materilas in user's inventory
 
   useEffect(() => {
     // get current user
@@ -65,29 +66,54 @@ const ProjectDetail = ({ project, navigation }) => {
     return () => {
       unsubscribe();
     };
-  }, [user]);
+  }, [projectState.userID]);
 
-  // fetches the user's inventory from the database and sets the tools and materials dropdowns to the items in the user's inventory
+  /**
+   * fetchItemsFromInventory(): fetches the user's inventory from the database 
+   * and sets the tools and materials dropdowns to the items in the user's inventory
+   */
   const fetchItemsFromInventory = async () => {
     const userID = auth.currentUser.uid;
     const q = query(collection(db, "inventory"), where("userID", "==", userID));
     const querySnapshot = await getDocs(q);
-    const tools = [];
-    const materials = [];
+
+    // first we get all the tools and materials from the user's inventory
+    const allTools = [];
+    const allMaterials = [];
     querySnapshot.forEach((doc) => {
-      if (doc.data().type === "tool") {
-        tools.push({ label: doc.data().name, value: doc.data().name });
+      if (doc.data().toolOrMaterial === "Tool") { 
+        allTools.push(doc.data().name);
       } else {
-        materials.push({ label: doc.data().name, value: doc.data().name });
+        allMaterials.push(doc.data().name);
       }
     });
-    // set the tools and materials dropdowns to the items in the user's inventory
-    setToolsValues(tools);
-    setMaterialsValues(materials);
-    setToolsItems(tools);
-    setMaterialsItems(materials);
+
+    // convert tools, materials to the format that the dropdown picker needs
+    convertedTools = allTools.map((item) => {
+      return { label: item, value: item };
+    });
+    convertedMaterials = allMaterials.map((item) => {
+      return { label: item, value: item };
+    });
+
+    // filter tools, materials to only include the ones that are in the project
+    toolsForProject = allTools.filter((item) => {
+      return projectState.tools.includes(item);
+    });
+    materialsForProject = allMaterials.filter((item) => {
+      return projectState.materials.includes(item);
+    });
+    
+    // set the states to the values that the dropdown pickers need
+    setToolsValues(toolsForProject);
+    setMaterialsValues(materialsForProject);
+    setToolsItems(convertedTools);
+    setMaterialsItems(convertedMaterials);
   };
 
+  /**
+   * handleDeleteProject(): called when user presses the 'Delete' button  
+   */
   const handleDeleteProject = async () => {
     // prompt user to confirm deletion
     Alert.alert(
@@ -120,6 +146,11 @@ const ProjectDetail = ({ project, navigation }) => {
     );
   };
 
+
+  /**
+   * postOrUnpostProject(): called when user presses POST/UNPOST button.
+   * Updates the state of the project to whether project is posted in the database
+   */
   const postOrUnpostProject = async () => {
     // if project is posted, unpost it
     if (projectState.posted) {
@@ -156,9 +187,13 @@ const ProjectDetail = ({ project, navigation }) => {
     }
   };
 
-  const handleEditButtonPress = async () => {
+  /**
+   * handleEditButtonPress(): Toggles the edit button to be "EDIT" or "DONE". 
+   * If EDIT is pressed, user will enter edit mode.
+   * If DONE is pressed, project details are updated in the database as well as UI
+   */
+  const handleEditButtonPress = () => {
     setEdit(!edit); // toggle edit button state
-
     // if "DONE" button is pressed, update project in database
     if (edit) {
       try {
@@ -172,8 +207,7 @@ const ProjectDetail = ({ project, navigation }) => {
 
         const projectRef = doc(collection(db, "projects"), projectState.id);
 
-        //TODO: rename value to be more descriptive
-        await updateDoc(projectRef, {
+        updateDoc(projectRef, {
           name: projectState.name,
           type: typeValues,
           tools: toolsValues,
@@ -218,8 +252,8 @@ const ProjectDetail = ({ project, navigation }) => {
               {projectState.posted ? ( // If project is posted, show "POSTED" text
                 <Text style={styles.postStatusText}>POSTED</Text>
               ) : (
-                // If project is not posted, show "NOT POSTED" text
-                <Text style={styles.postStatusText}>NOT POSTED</Text>
+                // If project is not posted, show "DRAFT" text
+                <Text style={styles.postStatusText}>DRAFT</Text>
               )}
             </View>
             <View style={styles.projectStatusAndPostStatus}>
