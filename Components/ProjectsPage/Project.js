@@ -80,8 +80,8 @@ const Project = ({ project, navigation }) => {
                 {project.posted ? ( // If project is posted, show "POSTED" text
                   <Text style={styles.postStatusText}>POSTED</Text>
                 ) : (
-                  // If project is not posted, show "NOT POSTED" text
-                  <Text style={styles.postStatusText}>NOT POSTED</Text>
+                  // If project is not posted, show "DRAFT" text
+                  <Text style={styles.postStatusText}>DRAFT</Text>
                 )}
               </View>
             </View>

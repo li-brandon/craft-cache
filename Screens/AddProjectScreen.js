@@ -9,33 +9,52 @@ import {
   Image,
   Button,
   Keyboard,
-  ScrollView,
+  ScrollView
 } from "react-native";
 import { MyContext } from "../Contexts/MyContext";
 import { auth, db, storage } from "../firebase";
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import * as ImagePicker from "expo-image-picker";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
+import DropDownPicker from "react-native-dropdown-picker";
 
 const AddProjectScreen = ({ navigation }) => {
   // States
   const [user, setUser] = useState(null);
   const [name, setName] = useState("");
-  const [type, setType] = useState("");
-  const [tools, setTools] = useState("");
-  const [materials, setMaterials] = useState("");
   const [pattern, setPattern] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [imageUri, setImageUri] = useState(null);
   const [imageRef, setImageRef] = useState(null);
-  const [status, requestPermission] = ImagePicker.useCameraPermissions();
+
+  // DropDownPicker states
+  const [typeDropDownIsOpen, setTypeDropDownIsOpen] = useState(false);
+  const [toolsDropDownIsOpen, setToolsDropDownIsOpen] = useState(false);
+  const [materialsDropDownIsOpen, setMaterialsDropDownIsOpen] = useState(false);
+  const [typeValues, setTypeValues] = useState([]);
+  const [toolsValues, setToolsValues] = useState([]);
+  const [materialsValues, setMaterialsValues] = useState([]);
+
+  const [typeItems, setTypeItems] = useState([
+    { label: "Knitting", value: "Knitting" },
+    { label: "Crochet", value: "Crochet" },
+    { label: "Sewing", value: "Sewing" },
+    { label: "Embroidery", value: "Embroidery" },
+    { label: "Weaving", value: "Weaving" },
+    { label: "Tailoring", value: "Tailoring" },
+  ]);
+
+  // These will be fetched from Firestore
+  const [toolsItems, setToolsItems] = useState([]);
+  const [materialsItems, setMaterialsItems] = useState([]);
 
   // Get the user id from firebase auth
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
+        fetchItemsFromInventory(user.uid);
         setUser(user.uid);
       } else {
         // Redirect to login screen if user is not logged in
@@ -47,13 +66,48 @@ const AddProjectScreen = ({ navigation }) => {
     return unsubscribe;
   }, []);
 
-  // Helper functions
+  //fetchItemsFromInventory fetches the user's inventory items from Firestore
+  const fetchItemsFromInventory = async (userID) => {
+    const q = query(collection(db, "inventory"), where("userID", "==", userID));
+    const querySnapshot = await getDocs(q);
+
+    // first we get all the tools and materials from the user's inventory
+    const allTools = [];
+    const allMaterials = [];
+    querySnapshot.forEach((doc) => {
+      if (doc.data().toolOrMaterial === "Tool") {
+        allTools.push(doc.data().name);
+      } else {
+        allMaterials.push(doc.data().name);
+      }
+    });
+
+    // convert tools, materials to the format that the dropdown picker needs
+    convertedTools = allTools.map((item) => {
+      return { label: item, value: item };
+    });
+    convertedMaterials = allMaterials.map((item) => {
+      return { label: item, value: item };
+    });
+
+    // set the states to the values that the dropdown pickers need
+    setToolsItems(convertedTools);
+    setMaterialsItems(convertedMaterials);
+  };
 
   // handleAddProject is called when the user clicks the "Add Project" button. It will
   // upload the image to storage, add the project to Firestore, and clear the fields
   const handleAddProject = async () => {
-    // // Check if the user has entered all the required fields
-    if (!name || !type || !tools || !materials || !description || !image) {
+    // // Check if the user has entered all the required fields.
+    if (
+      !name ||
+      !typeValues ||
+      !toolsValues ||
+      !materialsValues ||
+      !pattern ||
+      !description ||
+      !image
+    ) {
       Alert.alert("Please fill in all the required fields");
       return;
     }
@@ -66,9 +120,9 @@ const AddProjectScreen = ({ navigation }) => {
 
     const newProject = {
       name: name,
-      type: type.split(","), // split type string into array
-      tools: tools.split(","), // split tools string into array
-      materials: materials.split(","), // split materials string into array
+      type: typeValues,
+      tools: toolsValues,
+      materials: materialsValues,
       pattern: pattern,
       description: description,
       userID: user,
@@ -186,9 +240,9 @@ const AddProjectScreen = ({ navigation }) => {
   // clearFields clears the fields in the form
   const clearFields = () => {
     setName("");
-    setType("");
-    setTools("");
-    setMaterials("");
+    setTypeValues([]);
+    setToolsValues([]);
+    setMaterialsValues([]);
     setPattern("");
     setDescription("");
     setImage(null);
@@ -205,27 +259,48 @@ const AddProjectScreen = ({ navigation }) => {
           value={name}
           onChangeText={(text) => setName(text)}
         />
-        <TextInput
-          style={styles.input}
-          placeholder="Project type"
-          returnKeyType="done"
-          value={type}
-          onChangeText={(text) => setType(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Tools"
-          returnKeyType="done"
-          value={tools}
-          onChangeText={(text) => setTools(text)}
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="Materials"
-          returnKeyType="done"
-          value={materials}
-          onChangeText={(text) => setMaterials(text)}
-        />
+        <View style={{ flex: 1, height: typeDropDownIsOpen ? 250 : 50 }}>
+          <DropDownPicker
+            placeholder="Select type(s)"
+            open={typeDropDownIsOpen}
+            value={typeValues}
+            items={typeItems}
+            setOpen={setTypeDropDownIsOpen}
+            setValue={setTypeValues}
+            setItems={setTypeItems}
+            multiple={true}
+            mode="BADGE"
+            listItemContainerStyle={{ height: 33 }}
+          />
+        </View>
+        <View style={{ flex: 1, height: toolsDropDownIsOpen ? 200 : 50 }}>
+          <DropDownPicker
+            placeholder="Select tool(s)"
+            open={toolsDropDownIsOpen}
+            value={toolsValues}
+            items={toolsItems}
+            setOpen={setToolsDropDownIsOpen}
+            setValue={setToolsValues}
+            setItems={setToolsItems}
+            multiple={true}
+            mode="BADGE"
+            listItemContainerStyle={{ height: 33 }}
+          />
+        </View>
+        <View style={{ flex: 1, height: materialsDropDownIsOpen ? 250 : 50 }}>
+          <DropDownPicker
+            placeholder="Select material(s)"
+            open={materialsDropDownIsOpen}
+            value={materialsValues}
+            items={materialsItems}
+            setOpen={setMaterialsDropDownIsOpen}
+            setValue={setMaterialsValues}
+            setItems={setMaterialsItems}
+            multiple={true}
+            mode="BADGE"
+            listItemContainerStyle={{ height: 33 }}
+          />
+        </View>
         <TextInput
           style={styles.input}
           placeholder="Pattern"
@@ -241,15 +316,17 @@ const AddProjectScreen = ({ navigation }) => {
           multiline
           numberOfLines={4}
           value={description}
-          onKeyPress={({ nativeEvent }) => { // dismiss keyboard when enter is pressed
-            if (nativeEvent.key === 'Enter') {
+          onKeyPress={({ nativeEvent }) => {
+            // dismiss keyboard when enter is pressed
+            if (nativeEvent.key === "Enter") {
               Keyboard.dismiss();
             }
           }}
           blurOnSubmit={true} // prevent new line when return button is pressed
           onChangeText={(text) => {
-            if (text.trim() === '') { // prevent user from entering only whitespace
-              setDescription('');
+            if (text.trim() === "") {
+              // prevent user from entering only whitespace
+              setDescription("");
             } else {
               setDescription(text);
             }
