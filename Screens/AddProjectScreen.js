@@ -9,7 +9,8 @@ import {
   Image,
   Button,
   Keyboard,
-  ScrollView
+  ScrollView,
+  KeyboardAvoidingView,
 } from "react-native";
 import { MyContext } from "../Contexts/MyContext";
 import { auth, db, storage } from "../firebase";
@@ -18,6 +19,7 @@ import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import * as ImagePicker from "expo-image-picker";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 import DropDownPicker from "react-native-dropdown-picker";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const AddProjectScreen = ({ navigation }) => {
   // States
@@ -249,150 +251,420 @@ const AddProjectScreen = ({ navigation }) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <Text style={styles.title}>Add a new project</Text>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.input}
-          placeholder="Name"
-          returnKeyType="done"
-          value={name}
-          onChangeText={(text) => setName(text)}
-        />
-        <View style={{ flex: 1, height: typeDropDownIsOpen ? 250 : 50 }}>
-          <DropDownPicker
-            placeholder="Select type(s)"
-            open={typeDropDownIsOpen}
-            value={typeValues}
-            items={typeItems}
-            setOpen={setTypeDropDownIsOpen}
-            setValue={setTypeValues}
-            setItems={setTypeItems}
-            multiple={true}
-            mode="BADGE"
-            listItemContainerStyle={{ height: 33 }}
-          />
-        </View>
-        <View style={{ flex: 1, height: toolsDropDownIsOpen ? 200 : 50 }}>
-          <DropDownPicker
-            placeholder="Select tool(s)"
-            open={toolsDropDownIsOpen}
-            value={toolsValues}
-            items={toolsItems}
-            setOpen={setToolsDropDownIsOpen}
-            setValue={setToolsValues}
-            setItems={setToolsItems}
-            multiple={true}
-            mode="BADGE"
-            listItemContainerStyle={{ height: 33 }}
-          />
-        </View>
-        <View style={{ flex: 1, height: materialsDropDownIsOpen ? 250 : 50 }}>
-          <DropDownPicker
-            placeholder="Select material(s)"
-            open={materialsDropDownIsOpen}
-            value={materialsValues}
-            items={materialsItems}
-            setOpen={setMaterialsDropDownIsOpen}
-            setValue={setMaterialsValues}
-            setItems={setMaterialsItems}
-            multiple={true}
-            mode="BADGE"
-            listItemContainerStyle={{ height: 33 }}
-          />
-        </View>
-        <TextInput
-          style={styles.input}
-          placeholder="Pattern"
-          returnKeyType="done"
-          value={pattern}
-          onChangeText={(text) => setPattern(text)}
-        />
-        <TextInput
-          style={styles.description}
-          placeholder="Description"
-          returnKeyType="done"
-          editable
-          multiline
-          numberOfLines={4}
-          value={description}
-          onKeyPress={({ nativeEvent }) => {
-            // dismiss keyboard when enter is pressed
-            if (nativeEvent.key === "Enter") {
-              Keyboard.dismiss();
-            }
-          }}
-          blurOnSubmit={true} // prevent new line when return button is pressed
-          onChangeText={(text) => {
-            if (text.trim() === "") {
-              // prevent user from entering only whitespace
-              setDescription("");
-            } else {
-              setDescription(text);
-            }
-          }}
-        />
+    <KeyboardAvoidingView
+      // behavior prop should be position
+      behavior={Platform.OS === "ios" ? "position" : "height"}
+      keyboardVerticalOffset={100}
+    >
+      <View style={styles.project}>
+        <View>
+          <View style={styles.projectInfoAndImage}>
+            <View style={styles.imageContainer}>
+              {!image && (
+                <View style={styles.imagePlaceholder}>
+                  <Text style={styles.imagePlaceholderText}>
+                    Choose an image
+                  </Text>
+                  <View style={styles.icons}>
+                    <TouchableOpacity onPress={choosePhoto}>
+                      <Icon name="image" size={30} color="black" />
+                    </TouchableOpacity>
+                    <TouchableOpacity onPress={takePhoto}>
+                      <Icon name="photo-camera" size={30} color="black" />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              )}
+              {image && (
+                <View style={styles.imageWithButtons}>
+                  <TouchableOpacity onPress={choosePhoto}>
+                    <Icon name="image" size={30} color="black" />
+                  </TouchableOpacity>
+                  <Image source={{ uri: image }} style={styles.image} />
+                  <TouchableOpacity onPress={takePhoto}>
+                    <Icon name="photo-camera" size={30} color="black" />
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+            <View style={styles.projectStatusAndPostStatus}>
+              <View style={styles.projectInfo}>
+                <View
+                  style={{
+                    display: "flex",
+                    alignContent: "center",
+                    flexDirection: "row",
+                  }}
+                >
+                  <Text style={styles.projectInfoText}>Name: </Text>
+                  {/* if edit state is true, show input text. If not true, show the name as Text*/}
+                  <TextInput
+                    style={styles.inputField}
+                    returnKeyType="done"
+                    onChangeText={(text) => setName(text)}
+                    value={name}
+                  />
+                </View>
 
-        {image && <Image source={{ uri: image }} style={styles.projectImage} />}
+                <View
+                  style={[
+                    styles.rowWithWrappers,
+                    typeDropDownIsOpen && { alignItems: "flex-start" },
+                  ]}
+                >
+                  <Text style={styles.projectInfoText}>Type: </Text>
+                  {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
+                  <View
+                    style={{ flex: 1, height: typeDropDownIsOpen ? 250 : 50 }}
+                  >
+                    <DropDownPicker
+                      open={typeDropDownIsOpen}
+                      value={typeValues}
+                      items={typeItems}
+                      setOpen={setTypeDropDownIsOpen}
+                      setValue={setTypeValues}
+                      setItems={setTypeItems}
+                      multiple={true}
+                      mode="BADGE"
+                      listItemContainerStyle={{ height: 30 }}
+                      containerStyle={{ width: 200 }}
+                    />
+                  </View>
+                </View>
 
-        <View style={{ flexDirection: "row", justifyContent: "space-around" }}>
-          <Button title="Choose Photo" onPress={choosePhoto} />
-          <Button title="Take Photo" onPress={takePhoto} />
+                <View
+                  style={[
+                    styles.rowWithWrappers,
+                    typeDropDownIsOpen && { alignItems: "flex-start" },
+                  ]}
+                >
+                  <Text style={styles.projectInfoText}>Tools: </Text>
+                  {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
+                  <View
+                    style={{
+                      flex: 1,
+                      height: toolsDropDownIsOpen ? 250 : 50,
+                    }}
+                  >
+                    <DropDownPicker
+                      open={toolsDropDownIsOpen}
+                      value={toolsValues}
+                      items={toolsItems}
+                      setOpen={setToolsDropDownIsOpen}
+                      setValue={setToolsValues}
+                      setItems={setToolsItems}
+                      multiple={true}
+                      mode="BADGE"
+                      listItemContainerStyle={{ height: 33 }}
+                      containerStyle={{ width: 200 }}
+                    />
+                  </View>
+                </View>
+
+                <View style={styles.rowWithWrappers}>
+                  <Text style={styles.projectInfoText}>Materials: </Text>
+                  <View
+                    style={{
+                      flex: 1,
+                      height: materialsDropDownIsOpen ? 250 : 50,
+                    }}
+                  >
+                    <DropDownPicker
+                      open={materialsDropDownIsOpen}
+                      value={materialsValues}
+                      items={materialsItems}
+                      setOpen={setMaterialsDropDownIsOpen}
+                      setValue={setMaterialsValues}
+                      setItems={setMaterialsItems}
+                      multiple={true}
+                      mode="BADGE"
+                      listItemContainerStyle={{ height: 33 }}
+                      containerStyle={{ width: 200 }}
+                    />
+                  </View>
+                </View>
+
+                <View style={{ marginTop: 10 }}>
+                  <View
+                    style={{
+                      display: "flex",
+                      alignContent: "center",
+                      flexDirection: "row",
+                    }}
+                  >
+                    <Text style={styles.projectInfoText}>Pattern: </Text>
+                    {/* if edit state is true, show input text. If not true, show the name as Text*/}
+                    <TextInput
+                      style={styles.inputField}
+                      returnKeyType="done"
+                      onChangeText={(text) => setPattern(text)}
+                      value={pattern}
+                    />
+                  </View>
+                </View>
+
+                <View style={{ marginTop: 10 }}>
+                  <Text style={styles.projectInfoText}>Description: </Text>
+                  <View style={styles.projectDescriptionContainer}>
+                    <TextInput
+                      style={styles.descriptionInputField}
+                      editable
+                      multiline
+                      numberOfLines={4}
+                      onKeyPress={({ nativeEvent }) => {
+                        // dismiss keyboard when enter is pressed
+                        if (nativeEvent.key === "Enter") {
+                          Keyboard.dismiss();
+                        }
+                      }}
+                      returnKeyType="done"
+                      onChangeText={(text) => setDescription(text)}
+                      value={description}
+                    />
+                  </View>
+                </View>
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-around",
+                    marginTop: 10,
+                  }}
+                >
+                  <Button title="Choose Photo" onPress={choosePhoto} />
+                  <Button title="Take Photo" onPress={takePhoto} />
+                </View>
+
+                <TouchableOpacity
+                  style={styles.button}
+                  onPress={handleAddProject}
+                >
+                  <Text style={styles.buttonText}>Add Project</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
         </View>
       </View>
-      <TouchableOpacity style={styles.button} onPress={handleAddProject}>
-        <Text style={styles.buttonText}>Add Project</Text>
-      </TouchableOpacity>
-    </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
+  project: {
+    borderRadius: 10,
+    backgroundColor: "#F5F5F5",
+    padding: 5,
+    marginBottom: 20,
+    flexDirection: "column",
+    justifyContent: "center",
   },
-  title: {
-    fontSize: 24,
+
+  inputField: {
+    height: 27,
+    width: 150,
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 5,
+    fontSize: 14,
+  },
+
+  projectName: {
+    marginBottom: 5,
+    alignItems: "center",
+  },
+
+  projectNameAndPatternText: {
+    fontSize: 17,
+  },
+
+  projectInfoAndImage: {
+    flexDirection: "column",
+    marginBottom: 5,
+  },
+
+  projectInfo: {
+    width: "100%",
+  },
+
+  projectInfoText: {
+    fontSize: 17,
     fontWeight: "bold",
-    marginBottom: 20,
   },
-  inputContainer: {
-    marginBottom: 20,
+
+  projectTypeText: {
+    flexDirection: "row",
   },
-  input: {
-    height: 40,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    padding: 10,
+
+  projectToolsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+
+  imagePlaceholder: {
+    width: 150,
+    height: 150,
+    borderRadius: 10,
+    backgroundColor: "#dbdbda",
     marginBottom: 10,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 16,
   },
-  description: {
-    height: 100,
+
+  imagePlaceholderText: {
+    fontSize: 17,
+    fontWeight: "bold",
+    padding: 5,
+  },
+
+  imageContainer: {
+    width: "100%",
+    alignItems: "center",
+  },
+
+  image: {
+    marginTop: 16,
+    width: 150,
+    height: 150,
+    borderRadius: 10,
+    margin: 10
+  },
+
+  imageWithButtons: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
+  icons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "70%",
+    alignItems: "center",
+    marginTop: 10,
+  },
+
+  projectStatusAndPostStatus: {
+    flexDirection: "column",
+  },
+
+  projectStatus: {
+    width: "60%",
+  },
+
+  postStatus: {
+    justifyContent: "center",
+    alignItems: "center",
+    margin: 5,
+    width: "100%",
+  },
+
+  projectStatusText: {
+    fontSize: 13,
+    color: "grey",
+  },
+
+  postStatusText: {
+    fontSize: 17,
+    fontWeight: "bold",
+  },
+
+  rowWithWrappers: {
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "row",
+    marginTop: 10,
+  },
+
+  wrappers: {
+    display: "flex",
+    flexDirection: "row",
+    alignItems: "center",
+    flexWrap: "wrap",
+    maxWidth: "80%",
+  },
+
+  wrapper: {
+    backgroundColor: "#ECF3F9",
+    borderColor: "gray",
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
+    borderRadius: 12,
+    padding: 2,
+    paddingLeft: 17,
+    paddingRight: 17,
+    margin: 5,
+    marginTop: 0,
   },
+
+  wrapperText: {
+    fontSize: 13,
+  },
+
+  projectDescriptionContainer: {
+    marginLeft: 3,
+    marginTop: 10,
+  },
+
+  projectDescriptionText: {
+    fontSize: 14,
+  },
+
+  descriptionInputField: {
+    height: 60,
+    width: "98%",
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 5,
+    fontSize: 16,
+  },
+
+  editBtnContainer: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    zIndex: 1,
+  },
+
+  editBtn: {
+    backgroundColor: "#D9D9D9",
+    justifyContent: "center",
+    fontWeight: "bold",
+    borderColor: "gray",
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 2,
+    height: 30,
+    paddingLeft: 15,
+    paddingRight: 15,
+    margin: 5,
+    marginTop: 0,
+  },
+
+  editBtnText: {
+    fontSize: 15,
+    fontWeight: "bold",
+  },
+
+  buttons: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+  },
+
   button: {
     backgroundColor: "#FF6F61",
     padding: 10,
     borderRadius: 5,
+    marginTop: 10,
   },
+
   buttonText: {
     color: "white",
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
-  },
-  projectImage: {
-    width: 130,
-    height: 130,
-    alignSelf: "center",
-    marginTop: 10,
-    marginBottom: 10,
   },
 });
 
