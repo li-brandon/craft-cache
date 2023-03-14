@@ -315,7 +315,7 @@ const AddProjectScreen = ({ navigation }) => {
                   <Text style={styles.projectInfoText}>Type: </Text>
                   {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
                   <View
-                    style={{ flex: 1, height: typeDropDownIsOpen ? 250 : 50 }}
+                    style={{ flex: 1, height: typeDropDownIsOpen ? 230 : 50 }}
                   >
                     <DropDownPicker
                       open={typeDropDownIsOpen}
@@ -335,7 +335,7 @@ const AddProjectScreen = ({ navigation }) => {
                 <View
                   style={[
                     styles.rowWithWrappers,
-                    typeDropDownIsOpen && { alignItems: "flex-start" },
+                    toolsDropDownIsOpen && { alignItems: "flex-start" },
                   ]}
                 >
                   <Text style={styles.projectInfoText}>Tools: </Text>
@@ -343,7 +343,7 @@ const AddProjectScreen = ({ navigation }) => {
                   <View
                     style={{
                       flex: 1,
-                      height: toolsDropDownIsOpen ? 250 : 50,
+                      height: toolsDropDownIsOpen ? 230 : 50,
                     }}
                   >
                     <DropDownPicker
@@ -361,12 +361,17 @@ const AddProjectScreen = ({ navigation }) => {
                   </View>
                 </View>
 
-                <View style={styles.rowWithWrappers}>
+                <View
+                  style={[
+                    styles.rowWithWrappers,
+                    materialsDropDownIsOpen && { alignItems: "flex-start" },
+                  ]}
+                >
                   <Text style={styles.projectInfoText}>Materials: </Text>
                   <View
                     style={{
                       flex: 1,
-                      height: materialsDropDownIsOpen ? 250 : 50,
+                      height: materialsDropDownIsOpen ? 230 : 50,
                     }}
                   >
                     <DropDownPicker
@@ -423,18 +428,6 @@ const AddProjectScreen = ({ navigation }) => {
                     />
                   </View>
                 </View>
-
-                <View
-                  style={{
-                    flexDirection: "row",
-                    justifyContent: "space-around",
-                    marginTop: 10,
-                  }}
-                >
-                  <Button title="Choose Photo" onPress={choosePhoto} />
-                  <Button title="Take Photo" onPress={takePhoto} />
-                </View>
-
                 <TouchableOpacity
                   style={styles.button}
                   onPress={handleAddProject}
@@ -530,7 +523,7 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     borderRadius: 10,
-    margin: 10
+    margin: 10,
   },
 
   imageWithButtons: {
@@ -612,7 +605,7 @@ const styles = StyleSheet.create({
   },
 
   descriptionInputField: {
-    height: 60,
+    height: 80,
     width: "98%",
     borderColor: "gray",
     borderWidth: 1,

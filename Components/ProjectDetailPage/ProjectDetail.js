@@ -320,7 +320,7 @@ const ProjectDetail = ({ project, navigation }) => {
 
                 <View style={[
                     styles.rowWithWrappers,
-                    typeDropDownIsOpen && { alignItems: "flex-start" },
+                    toolsDropDownIsOpen && { alignItems: "flex-start" },
                   ]}>
                   <Text style={styles.projectInfoText}>Tools: </Text>
                   {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
@@ -351,7 +351,10 @@ const ProjectDetail = ({ project, navigation }) => {
                   )}
                 </View>
 
-                <View style={styles.rowWithWrappers}>
+                <View style={[
+                    styles.rowWithWrappers,
+                    materialsDropDownIsOpen && { alignItems: "flex-start" },
+                  ]}>
                   <Text style={styles.projectInfoText}>Materials: </Text>
                   {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
                   {edit ? (
@@ -520,8 +523,8 @@ const styles = StyleSheet.create({
 
   image: {
     marginTop: 16,
-    width: 200,
-    height: 200,
+    width: 150,
+    height: 150,
     borderRadius: 10,
   },
 
@@ -591,7 +594,7 @@ const styles = StyleSheet.create({
   },
 
   descriptionInputField: {
-    height: 100,
+    height: 70,
     width: "98%",
     borderColor: "gray",
     borderWidth: 1,
