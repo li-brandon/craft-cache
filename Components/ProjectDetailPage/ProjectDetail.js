@@ -226,7 +226,7 @@ const ProjectDetail = ({ project, navigation }) => {
     <KeyboardAvoidingView
       // behavior prop should be position
       behavior={Platform.OS === "ios" ? "position" : "height"}
-      keyboardVerticalOffset={100}
+      keyboardVerticalOffset={80}
     >
       <View style={styles.project}>
         <View>
@@ -532,14 +532,11 @@ const styles = StyleSheet.create({
     flexDirection: "column",
   },
 
-  projectStatus: {
-    width: "60%",
-  },
-
   postStatus: {
     justifyContent: "center",
     alignItems: "center",
-    margin: 5,
+    marginTop: 5,
+    marginBottom: 10,
     width: "100%",
   },
 

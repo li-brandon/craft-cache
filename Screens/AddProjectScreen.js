@@ -103,12 +103,12 @@ const AddProjectScreen = ({ navigation }) => {
     // // Check if the user has entered all the required fields.
     if (
       !name ||
-      !typeValues ||
-      !toolsValues ||
-      !materialsValues ||
       !pattern ||
       !description ||
-      !image
+      !image ||
+      typeValues.length === 0 ||
+      toolsValues.length === 0 ||
+      materialsValues.length === 0
     ) {
       Alert.alert("Please fill in all the required fields");
       return;
@@ -254,7 +254,7 @@ const AddProjectScreen = ({ navigation }) => {
     <KeyboardAvoidingView
       // behavior prop should be position
       behavior={Platform.OS === "ios" ? "position" : "height"}
-      keyboardVerticalOffset={100}
+      keyboardVerticalOffset={10}
     >
       <View style={styles.project}>
         <View>
@@ -327,7 +327,6 @@ const AddProjectScreen = ({ navigation }) => {
                       multiple={true}
                       mode="BADGE"
                       listItemContainerStyle={{ height: 30 }}
-                      containerStyle={{ width: 200 }}
                     />
                   </View>
                 </View>
@@ -356,7 +355,6 @@ const AddProjectScreen = ({ navigation }) => {
                       multiple={true}
                       mode="BADGE"
                       listItemContainerStyle={{ height: 33 }}
-                      containerStyle={{ width: 200 }}
                     />
                   </View>
                 </View>
@@ -384,7 +382,6 @@ const AddProjectScreen = ({ navigation }) => {
                       multiple={true}
                       mode="BADGE"
                       listItemContainerStyle={{ height: 33 }}
-                      containerStyle={{ width: 200 }}
                     />
                   </View>
                 </View>
@@ -428,12 +425,21 @@ const AddProjectScreen = ({ navigation }) => {
                     />
                   </View>
                 </View>
-                <TouchableOpacity
-                  style={styles.button}
-                  onPress={handleAddProject}
-                >
-                  <Text style={styles.buttonText}>Add Project</Text>
-                </TouchableOpacity>
+                <View style={styles.clearAddButtons}>
+                  <TouchableOpacity
+                    style={styles.clearButton}
+                    onPress={clearFields}
+                  >
+                    <Text style={styles.buttonText}>Clear</Text>
+                  </TouchableOpacity>
+
+                  <TouchableOpacity
+                    style={styles.addProjectButton}
+                    onPress={handleAddProject}
+                  >
+                    <Text style={styles.buttonText}>Add Project</Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
           </View>
@@ -447,7 +453,7 @@ const styles = StyleSheet.create({
   project: {
     borderRadius: 10,
     backgroundColor: "#F5F5F5",
-    padding: 5,
+    padding: 10,
     marginBottom: 20,
     flexDirection: "column",
     justifyContent: "center",
@@ -504,7 +510,6 @@ const styles = StyleSheet.create({
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 16,
   },
 
   imagePlaceholderText: {
@@ -516,6 +521,7 @@ const styles = StyleSheet.create({
   imageContainer: {
     width: "100%",
     alignItems: "center",
+    marginBottom: 10,
   },
 
   image: {
@@ -646,8 +652,21 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
 
-  button: {
+  clearAddButtons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 10,
+  },
+
+  addProjectButton: {
     backgroundColor: "#FF6F61",
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+
+  clearButton: {
+    backgroundColor: "#9a9a9a",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
