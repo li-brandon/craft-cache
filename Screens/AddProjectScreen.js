@@ -106,9 +106,9 @@ const AddProjectScreen = ({ navigation }) => {
       !pattern ||
       !description ||
       !image ||
-      typeValues.length === 0 ||
-      toolsValues.length === 0 ||
-      materialsValues.length === 0
+      typeValues.length === 0 
+      // toolsValues.length === 0 ||
+      // materialsValues.length === 0
     ) {
       Alert.alert("Please fill in all the required fields");
       return;
