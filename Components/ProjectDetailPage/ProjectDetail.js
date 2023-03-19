@@ -13,26 +13,44 @@ import {
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { auth, db } from "../../firebase";
-import { collection, doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { collection, doc, getDocs, updateDoc, deleteDoc, query, where } from "firebase/firestore";
 import DropDownPicker from "react-native-dropdown-picker";
 
 const ProjectDetail = ({ project, navigation }) => {
   const [projectState, setProjectState] = useState(project);
   const [showButtons, setshowButtons] = useState(false);
   const [edit, setEdit] = useState(false);
-  const [open, setOpen] = useState(false);
-  const [value, setValue] = useState([
-    'knitting', 'crochet', 'sewing', 'embroidery', 'weaving', 'tailoring'
+  const [typeDropDownIsOpen, setTypeDropDownIsOpen] = useState(false);
+  const [toolsDropDownIsOpen, setToolsDropDownIsOpen] = useState(false);
+  const [materialsDropDownIsOpen, setMaterialsDropDownIsOpen] = useState(false);
+
+  const [typeValues, setTypeValues] = useState([
+    // goes through the projectState.type array and prepares it for the dropdown picker
+    ...projectState.type.map((item) => item),
   ]);
 
-  const [items, setItems] = useState([
-    { label: "Knitting", value: "knitting" },
-    { label: "Crochet", value: "crochet" },
-    { label: "Sewing", value: "sewing" },
-    { label: "Embroidery", value: "embroidery" },
-    { label: "Weaving", value: "weaving" },
-    { label: "Tailoring", value: "tailoring" },
+  const [toolsValues, setToolsValues] = useState([
+    // goes through the projectState.tools array and prepares it for the dropdown picker
+    ...projectState.tools.map((item) => item),
   ]);
+
+  const [materialsValues, setMaterialsValues] = useState([
+    // goes through the projectState.materials array and prepares it for the dropdown picker
+    ...projectState.materials.map((item) => item),
+  ]);
+
+  // states below are the ones that are displayed in DropDownPickers
+  const [typeItems, setTypeItems] = useState([
+    { label: "Knitting", value: "Knitting" },
+    { label: "Crochet", value: "Crochet" },
+    { label: "Sewing", value: "Sewing" },
+    { label: "Embroidery", value: "Embroidery" },
+    { label: "Weaving", value: "Weaving" },
+    { label: "Tailoring", value: "Tailoring" },
+  ]);
+
+  const [toolsItems, setToolsItems] = useState(); // will be set to the tools in user's inventory 
+  const [materialsItems, setMaterialsItems] = useState(); // will be set to the materilas in user's inventory
 
   useEffect(() => {
     // get current user
@@ -40,6 +58,7 @@ const ProjectDetail = ({ project, navigation }) => {
       if (user) {
         // if the current user is the owner of the project, show the post button
         if (user.uid === projectState.userID) {
+          fetchItemsFromInventory();
           setshowButtons(true);
         }
       }
@@ -47,8 +66,54 @@ const ProjectDetail = ({ project, navigation }) => {
     return () => {
       unsubscribe();
     };
-  }, []);
+  }, [projectState.userID]);
 
+  /**
+   * fetchItemsFromInventory(): fetches the user's inventory from the database 
+   * and sets the tools and materials dropdowns to the items in the user's inventory
+   */
+  const fetchItemsFromInventory = async () => {
+    const userID = auth.currentUser.uid;
+    const q = query(collection(db, "inventory"), where("userID", "==", userID));
+    const querySnapshot = await getDocs(q);
+
+    // first we get all the tools and materials from the user's inventory
+    const allTools = [];
+    const allMaterials = [];
+    querySnapshot.forEach((doc) => {
+      if (doc.data().toolOrMaterial === "Tool") { 
+        allTools.push(doc.data().name);
+      } else {
+        allMaterials.push(doc.data().name);
+      }
+    });
+
+    // convert tools, materials to the format that the dropdown picker needs
+    convertedTools = allTools.map((item) => {
+      return { label: item, value: item };
+    });
+    convertedMaterials = allMaterials.map((item) => {
+      return { label: item, value: item };
+    });
+
+    // filter tools, materials to only include the ones that are in the project
+    toolsForProject = allTools.filter((item) => {
+      return projectState.tools.includes(item);
+    });
+    materialsForProject = allMaterials.filter((item) => {
+      return projectState.materials.includes(item);
+    });
+    
+    // set the states to the values that the dropdown pickers need
+    setToolsValues(toolsForProject);
+    setMaterialsValues(materialsForProject);
+    setToolsItems(convertedTools);
+    setMaterialsItems(convertedMaterials);
+  };
+
+  /**
+   * handleDeleteProject(): called when user presses the 'Delete' button  
+   */
   const handleDeleteProject = async () => {
     // prompt user to confirm deletion
     Alert.alert(
@@ -81,6 +146,11 @@ const ProjectDetail = ({ project, navigation }) => {
     );
   };
 
+
+  /**
+   * postOrUnpostProject(): called when user presses POST/UNPOST button.
+   * Updates the state of the project to whether project is posted in the database
+   */
   const postOrUnpostProject = async () => {
     // if project is posted, unpost it
     if (projectState.posted) {
@@ -117,18 +187,31 @@ const ProjectDetail = ({ project, navigation }) => {
     }
   };
 
+  /**
+   * handleEditButtonPress(): Toggles the edit button to be "EDIT" or "DONE". 
+   * If EDIT is pressed, user will enter edit mode.
+   * If DONE is pressed, project details are updated in the database as well as UI
+   */
   const handleEditButtonPress = () => {
     setEdit(!edit); // toggle edit button state
-
     // if "DONE" button is pressed, update project in database
     if (edit) {
       try {
+        // update type array in the projectState to reflect changes made in DropDownPicker
+        setProjectState({
+          ...projectState,
+          type: typeValues,
+          tools: toolsValues,
+          materials: materialsValues,
+        });
+
         const projectRef = doc(collection(db, "projects"), projectState.id);
+
         updateDoc(projectRef, {
           name: projectState.name,
-          type: projectState.type,
-          tools: projectState.tools,
-          materials: projectState.materials,
+          type: typeValues,
+          tools: toolsValues,
+          materials: materialsValues,
           pattern: projectState.pattern,
           description: projectState.description,
           image: projectState.image,
@@ -143,7 +226,7 @@ const ProjectDetail = ({ project, navigation }) => {
     <KeyboardAvoidingView
       // behavior prop should be position
       behavior={Platform.OS === "ios" ? "position" : "height"}
-      keyboardVerticalOffset={100}
+      keyboardVerticalOffset={80}
     >
       <View style={styles.project}>
         <View>
@@ -169,8 +252,8 @@ const ProjectDetail = ({ project, navigation }) => {
               {projectState.posted ? ( // If project is posted, show "POSTED" text
                 <Text style={styles.postStatusText}>POSTED</Text>
               ) : (
-                // If project is not posted, show "NOT POSTED" text
-                <Text style={styles.postStatusText}>NOT POSTED</Text>
+                // If project is not posted, show "DRAFT" text
+                <Text style={styles.postStatusText}>DRAFT</Text>
               )}
             </View>
             <View style={styles.projectStatusAndPostStatus}>
@@ -200,21 +283,28 @@ const ProjectDetail = ({ project, navigation }) => {
                   )}
                 </View>
 
-                <View style={styles.rowWithWrappers}>
+                <View
+                  style={[
+                    styles.rowWithWrappers,
+                    typeDropDownIsOpen && { alignItems: "flex-start" },
+                  ]}
+                >
                   <Text style={styles.projectInfoText}>Type: </Text>
                   {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
                   {edit ? (
-                    <View style={{flex: 1, height: open ? 250 : 50}}>
+                    <View
+                      style={{ flex: 1, height: typeDropDownIsOpen ? 250 : 50 }}
+                    >
                       <DropDownPicker
-                        open={open}
-                        value={value}
-                        items={items}
-                        setOpen={setOpen}
-                        setValue={setValue}
-                        setItems={setItems}
+                        open={typeDropDownIsOpen}
+                        value={typeValues}
+                        items={typeItems}
+                        setOpen={setTypeDropDownIsOpen}
+                        setValue={setTypeValues}
+                        setItems={setTypeItems}
                         multiple={true}
                         mode="BADGE"
-                        listItemContainerStyle={{ height:33 }}
+                        listItemContainerStyle={{ height: 33 }}
                       />
                     </View>
                   ) : (
@@ -228,28 +318,70 @@ const ProjectDetail = ({ project, navigation }) => {
                   )}
                 </View>
 
-                <View style={styles.rowWithWrappers}>
+                <View style={[
+                    styles.rowWithWrappers,
+                    toolsDropDownIsOpen && { alignItems: "flex-start" },
+                  ]}>
                   <Text style={styles.projectInfoText}>Tools: </Text>
-                  <View style={styles.wrappers}>
-                    {/* Tools is an array so iterate through it and create a new view for each */}
-                    {projectState.tools.map((tool) => (
-                      <View style={styles.wrapper}>
-                        <Text style={styles.wrapperText}>{tool}</Text>
-                      </View>
-                    ))}
-                  </View>
+                  {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
+                  {edit ? (
+                    <View
+                      style={{ flex: 1, height: toolsDropDownIsOpen ? 250 : 50 }}
+                    >
+                      <DropDownPicker
+                        open={toolsDropDownIsOpen}
+                        value={toolsValues}
+                        items={toolsItems}
+                        setOpen={setToolsDropDownIsOpen}
+                        setValue={setToolsValues}
+                        setItems={setToolsItems}
+                        multiple={true}
+                        mode="BADGE"
+                        listItemContainerStyle={{ height: 33 }}
+                      />
+                    </View>
+                  ) : (
+                    <View style={styles.wrappers}>
+                      {projectState.tools.map((tool) => (
+                        <View style={styles.wrapper}>
+                          <Text style={styles.wrapperText}>{tool}</Text>
+                        </View>
+                      ))}
+                    </View>
+                  )}
                 </View>
 
-                <View style={styles.rowWithWrappers}>
+                <View style={[
+                    styles.rowWithWrappers,
+                    materialsDropDownIsOpen && { alignItems: "flex-start" },
+                  ]}>
                   <Text style={styles.projectInfoText}>Materials: </Text>
-                  <View style={styles.wrappers}>
-                    {/* Tools is an array so iterate through it and create a new view for each */}
-                    {projectState.materials.map((material) => (
-                      <View style={styles.wrapper}>
-                        <Text style={styles.wrapperText}>{material}</Text>
+                  {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
+                  {edit ? (
+                    <View
+                      style={{ flex: 1, height: materialsDropDownIsOpen ? 250 : 50 }}
+                    >
+                      <DropDownPicker
+                        open={materialsDropDownIsOpen}
+                        value={materialsValues}
+                        items={materialsItems}
+                        setOpen={setMaterialsDropDownIsOpen}
+                        setValue={setMaterialsValues}
+                        setItems={setMaterialsItems}
+                        multiple={true}
+                        mode="BADGE"
+                        listItemContainerStyle={{ height: 33 }}
+                      />
                       </View>
-                    ))}
-                  </View>
+                  ) : (
+                    <View style={styles.wrappers}>
+                      {projectState.materials.map((material) => (
+                        <View style={styles.wrapper}>
+                          <Text style={styles.wrapperText}>{material}</Text>
+                          </View>
+                      ))}
+                      </View>
+                  )}
                 </View>
 
                 <View style={{ marginTop: 10 }}>
@@ -391,8 +523,8 @@ const styles = StyleSheet.create({
 
   image: {
     marginTop: 16,
-    width: 200,
-    height: 200,
+    width: 150,
+    height: 150,
     borderRadius: 10,
   },
 
@@ -400,14 +532,11 @@ const styles = StyleSheet.create({
     flexDirection: "column",
   },
 
-  projectStatus: {
-    width: "60%",
-  },
-
   postStatus: {
     justifyContent: "center",
     alignItems: "center",
-    margin: 5,
+    marginTop: 5,
+    marginBottom: 10,
     width: "100%",
   },
 
@@ -423,6 +552,7 @@ const styles = StyleSheet.create({
 
   rowWithWrappers: {
     display: "flex",
+    alignItems: "center",
     flexDirection: "row",
     marginTop: 10,
   },
@@ -461,7 +591,7 @@ const styles = StyleSheet.create({
   },
 
   descriptionInputField: {
-    height: 100,
+    height: 70,
     width: "98%",
     borderColor: "gray",
     borderWidth: 1,
