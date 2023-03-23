@@ -20,6 +20,11 @@ import * as ImagePicker from "expo-image-picker";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 import DropDownPicker from "react-native-dropdown-picker";
 import Icon from "react-native-vector-icons/MaterialIcons";
+// import { LogBox } from "react-native";
+
+// LogBox.ignoreLogs([
+//   "VirtualizedLists should never be nested inside plain ScrollViews with the same orientation",
+// ]);
 
 const AddProjectScreen = ({ navigation }) => {
   // States
@@ -46,6 +51,7 @@ const AddProjectScreen = ({ navigation }) => {
     { label: "Embroidery", value: "Embroidery" },
     { label: "Weaving", value: "Weaving" },
     { label: "Tailoring", value: "Tailoring" },
+    { label: "Other", value: "Other" },
   ]);
 
   // These will be fetched from Firestore
@@ -106,7 +112,7 @@ const AddProjectScreen = ({ navigation }) => {
       !pattern ||
       !description ||
       !image ||
-      typeValues.length === 0 
+      typeValues.length === 0
       // toolsValues.length === 0 ||
       // materialsValues.length === 0
     ) {
@@ -147,7 +153,7 @@ const AddProjectScreen = ({ navigation }) => {
       // Add the new project to Firestore
       await addDoc(collection(db, "projects"), newProject);
       clearFields();
-      Alert.alert("Project added successfully");
+      navigation.navigate("Projects");
     } catch (error) {
       console.error("Error adding document: ", error);
     }
@@ -256,137 +262,48 @@ const AddProjectScreen = ({ navigation }) => {
       behavior={Platform.OS === "ios" ? "position" : "height"}
       keyboardVerticalOffset={10}
     >
-      <View style={styles.project}>
-        <View>
-          <View style={styles.projectInfoAndImage}>
-            <View style={styles.imageContainer}>
-              {!image && (
-                <View style={styles.imagePlaceholder}>
-                  <Text style={styles.imagePlaceholderText}>
-                    Choose an image
-                  </Text>
-                  <View style={styles.icons}>
+      <ScrollView>
+        <View style={styles.project}>
+          <View>
+            <View style={styles.projectInfoAndImage}>
+              <View style={styles.imageContainer}>
+                {!image && (
+                  <View style={styles.imagePlaceholder}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={styles.imagePlaceholderText}>
+                        Choose an image
+                      </Text>
+                      <Text style={styles.requiredAsterisk}>*</Text>
+                    </View>
+                    <View style={styles.icons}>
+                      <TouchableOpacity onPress={choosePhoto}>
+                        <Icon name="image" size={30} color="black" />
+                      </TouchableOpacity>
+                      <TouchableOpacity onPress={takePhoto}>
+                        <Icon name="photo-camera" size={30} color="black" />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                )}
+                {image && (
+                  <View style={styles.imageWithButtons}>
                     <TouchableOpacity onPress={choosePhoto}>
                       <Icon name="image" size={30} color="black" />
                     </TouchableOpacity>
+                    <Image source={{ uri: image }} style={styles.image} />
                     <TouchableOpacity onPress={takePhoto}>
                       <Icon name="photo-camera" size={30} color="black" />
                     </TouchableOpacity>
                   </View>
-                </View>
-              )}
-              {image && (
-                <View style={styles.imageWithButtons}>
-                  <TouchableOpacity onPress={choosePhoto}>
-                    <Icon name="image" size={30} color="black" />
-                  </TouchableOpacity>
-                  <Image source={{ uri: image }} style={styles.image} />
-                  <TouchableOpacity onPress={takePhoto}>
-                    <Icon name="photo-camera" size={30} color="black" />
-                  </TouchableOpacity>
-                </View>
-              )}
-            </View>
-            <View style={styles.projectStatusAndPostStatus}>
-              <View style={styles.projectInfo}>
-                <View
-                  style={{
-                    display: "flex",
-                    alignContent: "center",
-                    flexDirection: "row",
-                  }}
-                >
-                  <Text style={styles.projectInfoText}>Name: </Text>
-                  {/* if edit state is true, show input text. If not true, show the name as Text*/}
-                  <TextInput
-                    style={styles.inputField}
-                    returnKeyType="done"
-                    onChangeText={(text) => setName(text)}
-                    value={name}
-                  />
-                </View>
-
-                <View
-                  style={[
-                    styles.rowWithWrappers,
-                    typeDropDownIsOpen && { alignItems: "flex-start" },
-                  ]}
-                >
-                  <Text style={styles.projectInfoText}>Type: </Text>
-                  {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
-                  <View
-                    style={{ flex: 1, height: typeDropDownIsOpen ? 230 : 50 }}
-                  >
-                    <DropDownPicker
-                      open={typeDropDownIsOpen}
-                      value={typeValues}
-                      items={typeItems}
-                      setOpen={setTypeDropDownIsOpen}
-                      setValue={setTypeValues}
-                      setItems={setTypeItems}
-                      multiple={true}
-                      mode="BADGE"
-                      listItemContainerStyle={{ height: 30 }}
-                    />
-                  </View>
-                </View>
-
-                <View
-                  style={[
-                    styles.rowWithWrappers,
-                    toolsDropDownIsOpen && { alignItems: "flex-start" },
-                  ]}
-                >
-                  <Text style={styles.projectInfoText}>Tools: </Text>
-                  {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
-                  <View
-                    style={{
-                      flex: 1,
-                      height: toolsDropDownIsOpen ? 230 : 50,
-                    }}
-                  >
-                    <DropDownPicker
-                      open={toolsDropDownIsOpen}
-                      value={toolsValues}
-                      items={toolsItems}
-                      setOpen={setToolsDropDownIsOpen}
-                      setValue={setToolsValues}
-                      setItems={setToolsItems}
-                      multiple={true}
-                      mode="BADGE"
-                      listItemContainerStyle={{ height: 33 }}
-                    />
-                  </View>
-                </View>
-
-                <View
-                  style={[
-                    styles.rowWithWrappers,
-                    materialsDropDownIsOpen && { alignItems: "flex-start" },
-                  ]}
-                >
-                  <Text style={styles.projectInfoText}>Materials: </Text>
-                  <View
-                    style={{
-                      flex: 1,
-                      height: materialsDropDownIsOpen ? 230 : 50,
-                    }}
-                  >
-                    <DropDownPicker
-                      open={materialsDropDownIsOpen}
-                      value={materialsValues}
-                      items={materialsItems}
-                      setOpen={setMaterialsDropDownIsOpen}
-                      setValue={setMaterialsValues}
-                      setItems={setMaterialsItems}
-                      multiple={true}
-                      mode="BADGE"
-                      listItemContainerStyle={{ height: 33 }}
-                    />
-                  </View>
-                </View>
-
-                <View style={{ marginTop: 10 }}>
+                )}
+              </View>
+              <View style={styles.projectStatusAndPostStatus}>
+                <View style={styles.projectInfo}>
                   <View
                     style={{
                       display: "flex",
@@ -394,57 +311,228 @@ const AddProjectScreen = ({ navigation }) => {
                       flexDirection: "row",
                     }}
                   >
-                    <Text style={styles.projectInfoText}>Pattern: </Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginRight: 5,
+                      }}
+                    >
+                      <Text style={styles.projectInfoText}>Name</Text>
+                      <Text style={styles.requiredAsterisk}>*</Text>
+                    </View>
                     {/* if edit state is true, show input text. If not true, show the name as Text*/}
                     <TextInput
                       style={styles.inputField}
                       returnKeyType="done"
-                      onChangeText={(text) => setPattern(text)}
-                      value={pattern}
+                      onChangeText={(text) => setName(text)}
+                      value={name}
                     />
                   </View>
-                </View>
 
-                <View style={{ marginTop: 10 }}>
-                  <Text style={styles.projectInfoText}>Description: </Text>
-                  <View style={styles.projectDescriptionContainer}>
-                    <TextInput
-                      style={styles.descriptionInputField}
-                      editable
-                      multiline
-                      numberOfLines={4}
-                      onKeyPress={({ nativeEvent }) => {
-                        // dismiss keyboard when enter is pressed
-                        if (nativeEvent.key === "Enter") {
-                          Keyboard.dismiss();
-                        }
+                  <View
+                    style={[
+                      styles.rowWithWrappers,
+                      typeDropDownIsOpen && { alignItems: "flex-start" },
+                    ]}
+                  >
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginRight: 5,
                       }}
-                      returnKeyType="done"
-                      onChangeText={(text) => setDescription(text)}
-                      value={description}
-                    />
+                    >
+                      <Text style={styles.projectInfoText}>Type</Text>
+                      <Text style={styles.requiredAsterisk}>*</Text>
+                    </View>
+                    {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
+                    <View
+                      style={{ flex: 1, height: typeDropDownIsOpen ? 180 : 50 }}
+                    >
+                      <DropDownPicker
+                        open={typeDropDownIsOpen}
+                        value={typeValues}
+                        items={typeItems}
+                        placeholder={"Select a type"}
+                        setOpen={setTypeDropDownIsOpen}
+                        setValue={setTypeValues}
+                        setItems={setTypeItems}
+                        multiple={true}
+                        mode="BADGE"
+                        showBadgeDot={false}
+                        maxHeight={130}
+                        listMode="SCROLLVIEW"
+                        listItemContainerStyle={{ height: 30 }}
+                      />
+                    </View>
                   </View>
-                </View>
-                <View style={styles.clearAddButtons}>
-                  <TouchableOpacity
-                    style={styles.clearButton}
-                    onPress={clearFields}
-                  >
-                    <Text style={styles.buttonText}>Clear</Text>
-                  </TouchableOpacity>
 
-                  <TouchableOpacity
-                    style={styles.addProjectButton}
-                    onPress={handleAddProject}
+                  <View
+                    style={[
+                      styles.rowWithWrappers,
+                      toolsDropDownIsOpen && { alignItems: "flex-start" },
+                    ]}
                   >
-                    <Text style={styles.buttonText}>Add Project</Text>
-                  </TouchableOpacity>
+                    <Text style={styles.projectInfoText}>Tools: </Text>
+                    {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
+                    <View
+                      style={{
+                        flex: 1,
+                        height: toolsDropDownIsOpen ? 180 : 50,
+                      }}
+                    >
+                      <DropDownPicker
+                        open={toolsDropDownIsOpen}
+                        value={toolsValues}
+                        items={toolsItems}
+                        placeholder={"Select a tool"}
+                        setOpen={setToolsDropDownIsOpen}
+                        setValue={setToolsValues}
+                        setItems={setToolsItems}
+                        multiple={true}
+                        listMode="SCROLLVIEW"
+                        mode="BADGE"
+                        showBadgeDot={false}
+                        maxHeight={130}
+                        listItemContainerStyle={{ height: 33 }}
+                        ListEmptyComponent={() => (
+                          <Text
+                            style={{
+                              padding: 10,
+                              paddingLeft: 20,
+                              paddingRight: 20,
+                              textAlign: "center",
+                            }}
+                          >
+                            Add a tool to inventory
+                          </Text>
+                        )}
+                      />
+                    </View>
+                  </View>
+
+                  <View
+                    style={[
+                      styles.rowWithWrappers,
+                      materialsDropDownIsOpen && { alignItems: "flex-start" },
+                    ]}
+                  >
+                    <Text style={styles.projectInfoText}>Materials: </Text>
+                    <View
+                      style={{
+                        flex: 1,
+                        height: materialsDropDownIsOpen ? 180 : 50,
+                      }}
+                    >
+                      <DropDownPicker
+                        open={materialsDropDownIsOpen}
+                        value={materialsValues}
+                        items={materialsItems}
+                        placeholder={"Select a material"}
+                        setOpen={setMaterialsDropDownIsOpen}
+                        setValue={setMaterialsValues}
+                        setItems={setMaterialsItems}
+                        multiple={true}
+                        showBadgeDot={false}
+                        maxHeight={130}
+                        listMode="SCROLLVIEW"
+                        mode="BADGE"
+                        listItemContainerStyle={{ height: 33 }}
+                        ListEmptyComponent={() => (
+                          <Text
+                            style={{
+                              padding: 10,
+                              paddingLeft: 20,
+                              paddingRight: 20,
+                              textAlign: "center",
+                            }}
+                          >
+                            Add a material to inventory
+                          </Text>
+                        )}
+                      />
+                    </View>
+                  </View>
+
+                  <View style={{ marginTop: 10 }}>
+                    <View
+                      style={{
+                        display: "flex",
+                        alignContent: "center",
+                        flexDirection: "row",
+                      }}
+                    >
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          marginRight: 5,
+                        }}
+                      >
+                        <Text style={styles.projectInfoText}>Pattern</Text>
+                        <Text style={styles.requiredAsterisk}>*</Text>
+                      </View>
+                      {/* if edit state is true, show input text. If not true, show the name as Text*/}
+                      <TextInput
+                        style={styles.inputField}
+                        returnKeyType="done"
+                        onChangeText={(text) => setPattern(text)}
+                        value={pattern}
+                      />
+                    </View>
+                  </View>
+
+                  <View style={{ marginTop: 10 }}>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginRight: 5,
+                      }}
+                    >
+                      <Text style={styles.projectInfoText}>Description</Text>
+                      <Text style={styles.requiredAsterisk}>*</Text>
+                    </View>
+                    <View style={styles.projectDescriptionContainer}>
+                      <TextInput
+                        style={styles.descriptionInputField}
+                        editable
+                        multiline
+                        numberOfLines={4}
+                        onKeyPress={({ nativeEvent }) => {
+                          // dismiss keyboard when enter is pressed
+                          if (nativeEvent.key === "Enter") {
+                            Keyboard.dismiss();
+                          }
+                        }}
+                        returnKeyType="done"
+                        onChangeText={(text) => setDescription(text)}
+                        value={description}
+                      />
+                    </View>
+                  </View>
+                  <View style={styles.clearAddButtons}>
+                    <TouchableOpacity
+                      style={styles.clearButton}
+                      onPress={clearFields}
+                    >
+                      <Text style={styles.buttonText}>Clear</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={styles.addProjectButton}
+                      onPress={handleAddProject}
+                    >
+                      <Text style={styles.buttonText}>Add Project</Text>
+                    </TouchableOpacity>
+                  </View>
                 </View>
               </View>
             </View>
           </View>
         </View>
-      </View>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
@@ -502,8 +590,8 @@ const styles = StyleSheet.create({
   },
 
   imagePlaceholder: {
-    width: 150,
-    height: 150,
+    width: 170,
+    height: 170,
     borderRadius: 10,
     backgroundColor: "#dbdbda",
     marginBottom: 10,
@@ -525,11 +613,11 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    marginTop: 16,
-    width: 150,
-    height: 150,
+    width: 170,
+    height: 170,
     borderRadius: 10,
     margin: 10,
+    marginTop: 0,
   },
 
   imageWithButtons: {
@@ -677,6 +765,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
+  },
+
+  requiredAsterisk: {
+    color: "red",
+    fontSize: 20,
   },
 });
 

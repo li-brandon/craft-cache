@@ -47,6 +47,7 @@ const ProjectDetail = ({ project, navigation }) => {
     { label: "Embroidery", value: "Embroidery" },
     { label: "Weaving", value: "Weaving" },
     { label: "Tailoring", value: "Tailoring" },
+    { label: "Other", value: "Other"}
   ]);
 
   const [toolsItems, setToolsItems] = useState(); // will be set to the tools in user's inventory 
