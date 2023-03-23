@@ -4,32 +4,17 @@ import { Dummy_expenses } from "../Data/ExpensesData";
 import { useSelector, useDispatch } from 'react-redux';
 import { useContext, useState, useEffect } from "react";
 import { ExpensesContext } from "../Data/expenses-context";
-import ProjectsPageScreen from "./ProjectsPageScreen";
+import HomePageScreen from "./HomePageScreen";
 import { GlobalStyles } from "../Constants/styles";
 import { auth, db } from "../firebase";
 import { LoginContext } from "../Contexts/LoginContext";
 function FrontPageScreen({ navigation, route }) {
-    // const expenseData = useContext(ExpensesContext);
-    // const expenseData = useSelector((state) => state.itemList.expenses)
-    // const [loggedIn, setloggedIn] = useState(true);
-    // useEffect(() => {
-    // const unsubscribe = auth.onAuthStateChanged((user) => {
-    //     if (user) {
-    //         setloggedIn(false);
-    //     }
-    // });
-    //     return unsubscribe;
-    // }, []);
     const { loggedIn, setloggedIn } = useContext(LoginContext);
-    // console.log("loggedin: " + loggedIn);
     return (
         <View style={styles.container}>
-            {!loggedIn &&
-                <View style={styles.textContainer} >
-                    <Text style={styles.text}>Please log in first!</Text>
-                </View>
-            }
-            <ProjectsPageScreen navigation={navigation} />
+            {/* if user logged in, show HomePageScreen. Otherwise redirect user to Login */}
+            {loggedIn ? <HomePageScreen navigation={navigation} /> : navigation.navigate('Login')}
+
         </View>
     );
 };

@@ -3,6 +3,7 @@ import { MyContext } from "./Contexts/MyContext";
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text, View } from "react-native";
 import FrontPageScreen from "./Screens/FrontPageScreen";
+import HomePageScreen from "./Screens/HomePageScreen";
 import ExplorePageScreen from "./Screens/ExplorePageScreen";
 import AddProjectScreen from "./Screens/AddProjectScreen";
 import ManageExpensesScreen from "./Screens/ManageExpensesScreen";
@@ -68,7 +69,7 @@ const FrontPage = function () {
     >
       <Tab.Screen
         name="Home"
-        component={FrontPageScreen}
+        component={HomePageScreen}
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="home-outline" size={size} color={color} />
@@ -137,52 +138,93 @@ export default function App() {
           value={{ loggedIn: isloggedIn, setloggedIn: setIsLoggedIn }}
         >
           <NavigationContainer>
-            <Stack.Navigator
-              screenOptions={{
-                headerStyle: {
-                  backgroundColor: GlobalStyles.colors.primary500,
-                },
-                headerTintColor: "white",
-                tabBarStyle: {
-                  backgroundColor: GlobalStyles.colors.primary500,
-                },
-                tabBarActiveTintColor: GlobalStyles.colors.accent500,
-              }}
-            >
-              <Stack.Screen
-                name="Front Page"
-                component={FrontPage}
-                options={{
-                  headerShown: false,
-                  headerBackVisible: false,
+            {isloggedIn ? ( // if user is logged in, show these screens
+              <Stack.Navigator
+                screenOptions={{
+                  headerStyle: {
+                    backgroundColor: GlobalStyles.colors.primary500,
+                  },
+                  headerTintColor: "white",
+                  tabBarStyle: {
+                    backgroundColor: GlobalStyles.colors.primary500,
+                  },
+                  tabBarActiveTintColor: GlobalStyles.colors.accent500,
                 }}
-              />
-              <Stack.Screen
-                name="Login"
-                component={LoginScreen}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen
-                name="Register"
-                component={RegisterScreen}
-                options={{ headerShown: false }}
-              />
-              <Stack.Screen name="Detail" component={ItemDetailScreen} />
-              <Stack.Screen
-                name="Inventory Detail"
-                component={InventoryDetailScreen}
-              />
-              <Stack.Screen name="User Profile" component={UserProfileScreen} />
-              <Stack.Screen name="Edit Profile" component={EditProfileScreen} />
-              <Stack.Screen
-                name="Add Inventory"
-                component={AddInventoryScreen}
-              />
-              <Stack.Screen
-                name="Reset Password"
-                component={ResetPasswordScreen}
-              />
-            </Stack.Navigator>
+              >
+                <Stack.Screen
+                  name="Front Page"
+                  component={FrontPage}
+                  options={{
+                    headerShown: false,
+                    headerBackVisible: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="Home Page"
+                  component={HomePageScreen}
+                  options={{
+                    headerShown: false,
+                    headerBackVisible: false,
+                  }}
+                />
+                <Stack.Screen
+                  name="Login"
+                  component={LoginScreen}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="Register"
+                  component={RegisterScreen}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen name="Detail" component={ItemDetailScreen} />
+                <Stack.Screen
+                  name="Inventory Detail"
+                  component={InventoryDetailScreen}
+                />
+                <Stack.Screen
+                  name="User Profile"
+                  component={UserProfileScreen}
+                />
+                <Stack.Screen
+                  name="Edit Profile"
+                  component={EditProfileScreen}
+                />
+                <Stack.Screen
+                  name="Add Inventory"
+                  component={AddInventoryScreen}
+                />
+                <Stack.Screen
+                  name="Reset Password"
+                  component={ResetPasswordScreen}
+                />
+              </Stack.Navigator>
+            ) : (
+              // If not logged in, show login screen and register screen
+              <Stack.Navigator
+                screenOptions={{
+                  headerStyle: {
+                    backgroundColor: GlobalStyles.colors.primary500,
+                  },
+                  headerTintColor: "white",
+                  tabBarStyle: {
+                    backgroundColor: GlobalStyles.colors.primary500,
+                  },
+                  tabBarActiveTintColor: GlobalStyles.colors.accent500,
+                }}
+              >
+                <Stack.Screen
+                  name="Login"
+                  component={LoginScreen}
+                  options={{ headerShown: false }}
+                />
+                <Stack.Screen
+                  name="Register"
+                  component={RegisterScreen}
+                  options={{ headerShown: false }}
+                />
+              </Stack.Navigator>
+            )}
           </NavigationContainer>
         </LoginContext.Provider>
       </MyContext.Provider>

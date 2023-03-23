@@ -108,7 +108,7 @@ const LoginScreen = ({ navigation }) => {
     //     },
     //   },
     // ]);
-    navigation.replace("Register");
+    navigation.navigate("Register");
   };
 
   return (
@@ -164,12 +164,12 @@ const LoginScreen = ({ navigation }) => {
         >
           <Text style={styles.buttonOutlineText}>Reset Password</Text>
         </TouchableOpacity> */}
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={handleBack}
           style={[styles.button, styles.cancelButtonOutline]}
         >
           <Text style={styles.cancelButtonOutlineText}>Cancel</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     </KeyboardAvoidingView>
   );
