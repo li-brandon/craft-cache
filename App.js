@@ -49,14 +49,14 @@ const FrontPage = function () {
         headerTintColor: GlobalStyles.colors.gray700,
         tabBarStyle: { backgroundColor: GlobalStyles.colors.primary50 },
         tabBarActiveTintColor: GlobalStyles.colors.gray700,
-        headerRight: ({ tintColor }) => (
-          <IconButton
-            icon="log-in-outline"
-            color={tintColor}
-            size={24}
-            onPress={ToManage.bind(this, navigation)}
-          />
-        ),
+        // headerRight: ({ tintColor }) => (
+        //   <IconButton
+        //     icon="log-in-outline"
+        //     color={tintColor}
+        //     size={24}
+        //     onPress={ToManage.bind(this, navigation)}
+        //   />
+        // ),
         headerLeft: ({ tintColor }) => (
           <IconButton
             icon="person-circle-outline"
