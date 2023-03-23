@@ -91,7 +91,7 @@ const UserProfileScreen = ({ navigation, route }) => {
       <View style={styles.userInfo}>
         <View style={styles.buttons}>
           <TouchableOpacity
-            onPress={SignOutHandler.bind(this, "Front Page")}
+            onPress={SignOutHandler.bind(this, "Login")}
             style={styles.followButton}
           >
             <Text style={styles.editProfileButtonText}>Sign out</Text>
