@@ -118,11 +118,11 @@ const FrontPage = function () {
 export default function App() {
   const [projects, setProjects] = useState([]);
   const [inventory, setInventory] = useState([]);
-  const [isloggedIn, setIsLoggedIn] = useState(false);
+  const [isloggedIn, setIsLoggedIn] = useState("null");
   const getAuthState = function () {
     auth.onAuthStateChanged((user) => {
       if (user) {
-        setIsLoggedIn(true);
+        setIsLoggedIn(user.uid);
       }
     });
   };
@@ -138,7 +138,7 @@ export default function App() {
           value={{ loggedIn: isloggedIn, setloggedIn: setIsLoggedIn }}
         >
           <NavigationContainer>
-            {isloggedIn ? ( // if user is logged in, show these screens
+            {isloggedIn != "null" ? ( // if user is logged in, show these screens
               <Stack.Navigator
                 screenOptions={{
                   headerStyle: {

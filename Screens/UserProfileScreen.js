@@ -17,6 +17,7 @@ import Project from "../Components/ProjectsPage/Project";
 import { MyContext } from "../Contexts/MyContext";
 
 import hat from "../Components/assets/flower-bucket-hat.jpg";
+import { LoginContext } from "../Contexts/LoginContext";
 
 const UserProfileScreen = ({ navigation, route }) => {
   const { projects, setProjects } = React.useContext(MyContext);
@@ -43,7 +44,7 @@ const UserProfileScreen = ({ navigation, route }) => {
     // you have one. Use User.getToken() instead.
     const uid = user.uid;
   }
-
+  const context = useContext(LoginContext);
   // TODO: Have props passed from RegisterSceen.js instead of making a call
   useEffect(async () => {
     const userDocRef = doc(db, "users", user.uid);
@@ -71,6 +72,10 @@ const UserProfileScreen = ({ navigation, route }) => {
       .catch((error) => {
         // An error happened.
       });
+  };
+  const FollowHandler = function () {
+
+    console.log("follow");
   };
 
   const ResetPasswordHandler = function (email) {
@@ -123,14 +128,23 @@ const UserProfileScreen = ({ navigation, route }) => {
           <Text style={styles.stat}>{numFollowing} Following</Text>
         </View>
 
-        <View style={styles.buttons}>
-          <TouchableOpacity style={styles.followButton}>
+        {context.loggedIn != user.uid ? <View style={styles.buttons}>
+          <TouchableOpacity
+            style={styles.followButton}
+            onPress={FollowHandler}
+          >
             <Text style={styles.followButtonText}>Follow</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.messageButton}>
+          <TouchableOpacity
+            style={styles.messageButton}
+
+          >
             <Text style={styles.messageButtonText}>Message</Text>
           </TouchableOpacity>
         </View>
+          : <View></View>
+
+        }
       </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
