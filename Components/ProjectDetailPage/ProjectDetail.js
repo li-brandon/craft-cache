@@ -10,10 +10,19 @@ import {
   KeyboardAvoidingView,
   Platform,
   Keyboard,
+  ScrollView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { auth, db } from "../../firebase";
-import { collection, doc, getDocs, updateDoc, deleteDoc, query, where } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  query,
+  where,
+} from "firebase/firestore";
 import DropDownPicker from "react-native-dropdown-picker";
 
 const ProjectDetail = ({ project, navigation }) => {
@@ -47,10 +56,10 @@ const ProjectDetail = ({ project, navigation }) => {
     { label: "Embroidery", value: "Embroidery" },
     { label: "Weaving", value: "Weaving" },
     { label: "Tailoring", value: "Tailoring" },
-    { label: "Other", value: "Other"}
+    { label: "Other", value: "Other" },
   ]);
 
-  const [toolsItems, setToolsItems] = useState(); // will be set to the tools in user's inventory 
+  const [toolsItems, setToolsItems] = useState(); // will be set to the tools in user's inventory
   const [materialsItems, setMaterialsItems] = useState(); // will be set to the materilas in user's inventory
 
   useEffect(() => {
@@ -70,7 +79,7 @@ const ProjectDetail = ({ project, navigation }) => {
   }, [projectState.userID]);
 
   /**
-   * fetchItemsFromInventory(): fetches the user's inventory from the database 
+   * fetchItemsFromInventory(): fetches the user's inventory from the database
    * and sets the tools and materials dropdowns to the items in the user's inventory
    */
   const fetchItemsFromInventory = async () => {
@@ -82,7 +91,7 @@ const ProjectDetail = ({ project, navigation }) => {
     const allTools = [];
     const allMaterials = [];
     querySnapshot.forEach((doc) => {
-      if (doc.data().toolOrMaterial === "Tool") { 
+      if (doc.data().toolOrMaterial === "Tool") {
         allTools.push(doc.data().name);
       } else {
         allMaterials.push(doc.data().name);
@@ -104,7 +113,7 @@ const ProjectDetail = ({ project, navigation }) => {
     materialsForProject = allMaterials.filter((item) => {
       return projectState.materials.includes(item);
     });
-    
+
     // set the states to the values that the dropdown pickers need
     setToolsValues(toolsForProject);
     setMaterialsValues(materialsForProject);
@@ -113,7 +122,7 @@ const ProjectDetail = ({ project, navigation }) => {
   };
 
   /**
-   * handleDeleteProject(): called when user presses the 'Delete' button  
+   * handleDeleteProject(): called when user presses the 'Delete' button
    */
   const handleDeleteProject = async () => {
     // prompt user to confirm deletion
@@ -146,7 +155,6 @@ const ProjectDetail = ({ project, navigation }) => {
       { cancelable: false }
     );
   };
-
 
   /**
    * postOrUnpostProject(): called when user presses POST/UNPOST button.
@@ -189,14 +197,27 @@ const ProjectDetail = ({ project, navigation }) => {
   };
 
   /**
-   * handleEditButtonPress(): Toggles the edit button to be "EDIT" or "DONE". 
+   * handleEditButtonPress(): Toggles the edit button to be "EDIT" or "DONE".
    * If EDIT is pressed, user will enter edit mode.
    * If DONE is pressed, project details are updated in the database as well as UI
    */
   const handleEditButtonPress = () => {
     setEdit(!edit); // toggle edit button state
     // if "DONE" button is pressed, update project in database
+
+    // first check that all required fields are filled in
     if (edit) {
+      if (
+        !projectState.name ||
+        !projectState.pattern ||
+        !projectState.description ||
+        typeValues.length === 0
+      ) {
+        Alert.alert("Please fill in all required fields");
+        // keep the edit button as "DONE" if there are unfilled required fields
+        setEdit(true);
+      }
+
       try {
         // update type array in the projectState to reflect changes made in DropDownPicker
         setProjectState({
@@ -229,8 +250,8 @@ const ProjectDetail = ({ project, navigation }) => {
       behavior={Platform.OS === "ios" ? "position" : "height"}
       keyboardVerticalOffset={80}
     >
-      <View style={styles.project}>
-        <View>
+      <ScrollView>
+        <View style={styles.project}>
           {showButtons ? (
             <View style={styles.editBtnContainer}>
               <TouchableOpacity
@@ -266,79 +287,144 @@ const ProjectDetail = ({ project, navigation }) => {
                     flexDirection: "row",
                   }}
                 >
-                  <Text style={styles.projectInfoText}>Name: </Text>
                   {/* if edit state is true, show input text. If not true, show the name as Text*/}
                   {edit ? (
-                    <TextInput
-                      style={styles.inputField}
-                      returnKeyType="done"
-                      onChangeText={(text) =>
-                        setProjectState({ ...projectState, name: text })
-                      }
-                      value={projectState.name}
-                    />
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text style={styles.projectInfoText}>Name</Text>
+                      <Text style={styles.requiredAsterisk}>*</Text>
+                      <TextInput
+                        style={styles.inputField}
+                        returnKeyType="done"
+                        onChangeText={(text) =>
+                          setProjectState({ ...projectState, name: text })
+                        }
+                        value={projectState.name}
+                      />
+                    </View>
                   ) : (
-                    <Text style={styles.projectNameAndPatternText}>
-                      {projectState.name}
-                    </Text>
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        marginRight: 5,
+                      }}
+                    >
+                      <Text style={styles.projectInfoText}>Name: </Text>
+                      <Text style={styles.projectNameAndPatternText}>
+                        {projectState.name}
+                      </Text>
+                    </View>
+                  )}
+                </View>
+
+                <View>
+                  {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
+                  {edit ? (
+                    <View
+                      style={[
+                        styles.rowWithWrappers,
+                        typeDropDownIsOpen && { alignItems: "flex-start" },
+                      ]}
+                    >
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          marginRight: 5,
+                        }}
+                      >
+                        <Text style={styles.projectInfoText}>Type</Text>
+                        <Text style={styles.requiredAsterisk}>*</Text>
+                      </View>
+                      <View
+                        style={{
+                          flex: 1,
+                          height: typeDropDownIsOpen ? 180 : 50,
+                        }}
+                      >
+                        <DropDownPicker
+                          open={typeDropDownIsOpen}
+                          value={typeValues}
+                          items={typeItems}
+                          placeholder={"Select a type"}
+                          setOpen={setTypeDropDownIsOpen}
+                          setValue={setTypeValues}
+                          setItems={setTypeItems}
+                          multiple={true}
+                          mode="BADGE"
+                          showBadgeDot={false}
+                          maxHeight={130}
+                          listMode="SCROLLVIEW"
+                          listItemContainerStyle={{ height: 30 }}
+                        />
+                      </View>
+                    </View>
+                  ) : (
+                    <View
+                      style={[
+                        styles.rowWithWrappers,
+                        typeDropDownIsOpen && { alignItems: "flex-start" },
+                      ]}
+                    >
+                      <Text style={styles.projectInfoText}>Type: </Text>
+
+                      <View style={styles.wrappers}>
+                        {projectState.type.map((type) => (
+                          <View style={styles.wrapper}>
+                            <Text style={styles.wrapperText}>{type}</Text>
+                          </View>
+                        ))}
+                      </View>
+                    </View>
                   )}
                 </View>
 
                 <View
                   style={[
                     styles.rowWithWrappers,
-                    typeDropDownIsOpen && { alignItems: "flex-start" },
+                    toolsDropDownIsOpen && { alignItems: "flex-start" },
                   ]}
                 >
-                  <Text style={styles.projectInfoText}>Type: </Text>
-                  {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
-                  {edit ? (
-                    <View
-                      style={{ flex: 1, height: typeDropDownIsOpen ? 250 : 50 }}
-                    >
-                      <DropDownPicker
-                        open={typeDropDownIsOpen}
-                        value={typeValues}
-                        items={typeItems}
-                        setOpen={setTypeDropDownIsOpen}
-                        setValue={setTypeValues}
-                        setItems={setTypeItems}
-                        multiple={true}
-                        mode="BADGE"
-                        listItemContainerStyle={{ height: 33 }}
-                      />
-                    </View>
-                  ) : (
-                    <View style={styles.wrappers}>
-                      {projectState.type.map((type) => (
-                        <View style={styles.wrapper}>
-                          <Text style={styles.wrapperText}>{type}</Text>
-                        </View>
-                      ))}
-                    </View>
-                  )}
-                </View>
-
-                <View style={[
-                    styles.rowWithWrappers,
-                    toolsDropDownIsOpen && { alignItems: "flex-start" },
-                  ]}>
                   <Text style={styles.projectInfoText}>Tools: </Text>
                   {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
                   {edit ? (
                     <View
-                      style={{ flex: 1, height: toolsDropDownIsOpen ? 250 : 50 }}
+                      style={{
+                        flex: 1,
+                        height: toolsDropDownIsOpen ? 180 : 50,
+                      }}
                     >
                       <DropDownPicker
                         open={toolsDropDownIsOpen}
                         value={toolsValues}
                         items={toolsItems}
+                        placeholder={"Select a tool"}
                         setOpen={setToolsDropDownIsOpen}
                         setValue={setToolsValues}
                         setItems={setToolsItems}
                         multiple={true}
+                        listMode="SCROLLVIEW"
                         mode="BADGE"
+                        showBadgeDot={false}
+                        maxHeight={130}
                         listItemContainerStyle={{ height: 33 }}
+                        ListEmptyComponent={() => (
+                          <Text
+                            style={{
+                              padding: 10,
+                              paddingLeft: 20,
+                              paddingRight: 20,
+                              textAlign: "center",
+                            }}
+                          >
+                            Add a tool to inventory
+                          </Text>
+                        )}
                       />
                     </View>
                   ) : (
@@ -352,36 +438,57 @@ const ProjectDetail = ({ project, navigation }) => {
                   )}
                 </View>
 
-                <View style={[
+                <View
+                  style={[
                     styles.rowWithWrappers,
                     materialsDropDownIsOpen && { alignItems: "flex-start" },
-                  ]}>
+                  ]}
+                >
                   <Text style={styles.projectInfoText}>Materials: </Text>
                   {/* if edit state is true, show drop down picker. If not true, show the types as Text*/}
                   {edit ? (
                     <View
-                      style={{ flex: 1, height: materialsDropDownIsOpen ? 250 : 50 }}
+                      style={{
+                        flex: 1,
+                        height: materialsDropDownIsOpen ? 180 : 50,
+                      }}
                     >
                       <DropDownPicker
                         open={materialsDropDownIsOpen}
                         value={materialsValues}
                         items={materialsItems}
+                        placeholder={"Select a material"}
                         setOpen={setMaterialsDropDownIsOpen}
                         setValue={setMaterialsValues}
                         setItems={setMaterialsItems}
                         multiple={true}
+                        showBadgeDot={false}
+                        maxHeight={130}
+                        listMode="SCROLLVIEW"
                         mode="BADGE"
                         listItemContainerStyle={{ height: 33 }}
+                        ListEmptyComponent={() => (
+                          <Text
+                            style={{
+                              padding: 10,
+                              paddingLeft: 20,
+                              paddingRight: 20,
+                              textAlign: "center",
+                            }}
+                          >
+                            Add a material to inventory
+                          </Text>
+                        )}
                       />
-                      </View>
+                    </View>
                   ) : (
                     <View style={styles.wrappers}>
                       {projectState.materials.map((material) => (
                         <View style={styles.wrapper}>
                           <Text style={styles.wrapperText}>{material}</Text>
-                          </View>
+                        </View>
                       ))}
-                      </View>
+                    </View>
                   )}
                 </View>
 
@@ -393,72 +500,103 @@ const ProjectDetail = ({ project, navigation }) => {
                       flexDirection: "row",
                     }}
                   >
-                    <Text style={styles.projectInfoText}>Pattern: </Text>
                     {/* if edit state is true, show input text. If not true, show the name as Text*/}
                     {edit ? (
-                      <TextInput
-                        style={styles.inputField}
-                        returnKeyType="done"
-                        onChangeText={(text) =>
-                          setProjectState({ ...projectState, pattern: text })
-                        }
-                        value={projectState.pattern}
-                      />
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                      >
+                        <Text style={styles.projectInfoText}>Pattern</Text>
+                        <Text style={styles.requiredAsterisk}>*</Text>
+                        <TextInput
+                          style={styles.inputField}
+                          returnKeyType="done"
+                          onChangeText={(text) =>
+                            setProjectState({ ...projectState, pattern: text })
+                          }
+                          value={projectState.pattern}
+                        />
+                      </View>
                     ) : (
-                      <Text style={styles.projectNameAndPatternText}>
-                        {projectState.pattern}
-                      </Text>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          marginRight: 5,
+                        }}
+                      >
+                        <Text style={styles.projectInfoText}>Name: </Text>
+                        <Text style={styles.projectNameAndPatternText}>
+                          {projectState.pattern}
+                        </Text>
+                      </View>
                     )}
                   </View>
                 </View>
 
                 <View style={{ marginTop: 10 }}>
-                  <Text style={styles.projectInfoText}>Description: </Text>
-                  <View style={styles.projectDescriptionContainer}>
-                    {edit ? (
-                      <TextInput
-                        style={styles.descriptionInputField}
-                        editable
-                        multiline
-                        numberOfLines={4}
-                        value={projectState.description}
-                        onKeyPress={({ nativeEvent }) => {
-                          // dismiss keyboard when enter is pressed
-                          if (nativeEvent.key === "Enter") {
-                            Keyboard.dismiss();
-                          }
+                  {edit ? (
+                    <View>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          marginRight: 5,
                         }}
-                        returnKeyType="done"
-                        onChangeText={(text) =>
-                          setProjectState({
-                            ...projectState,
-                            description: text,
-                          })
-                        }
-                      />
-                    ) : (
+                      >
+                        <Text style={styles.projectInfoText}>Description</Text>
+                        <Text style={styles.requiredAsterisk}>*</Text>
+                      </View>
+                      <View style={styles.projectDescriptionContainer}>
+                        <TextInput
+                          style={styles.descriptionInputField}
+                          editable
+                          multiline
+                          numberOfLines={4}
+                          value={projectState.description}
+                          onKeyPress={({ nativeEvent }) => {
+                            // dismiss keyboard when enter is pressed
+                            if (nativeEvent.key === "Enter") {
+                              Keyboard.dismiss();
+                            }
+                          }}
+                          returnKeyType="done"
+                          onChangeText={(text) =>
+                            setProjectState({
+                              ...projectState,
+                              description: text,
+                            })
+                          }
+                        />
+                      </View>
+                    </View>
+                  ) : (
+                    <View>
+                      <Text style={styles.projectInfoText}>Description: </Text>
+
                       <Text style={styles.projectDescriptionText}>
                         {projectState.description}
                       </Text>
-                    )}
-                  </View>
+                    </View>
+                  )}
                 </View>
               </View>
             </View>
           </View>
         </View>
-      </View>
-
-      {/* Only show buttons if the project belongs to current signed in user */}
-      {showButtons && (
-        <View style={styles.buttons}>
-          <Button title="Delete Project" onPress={handleDeleteProject} />
-          <Button
-            title={projectState.posted ? "Unpost Project" : "Post Project"}
-            onPress={postOrUnpostProject}
-          />
-        </View>
-      )}
+        {/* Only show buttons if the project belongs to current signed in user */}
+        {showButtons && (
+          <View style={styles.buttons}>
+            <Button title="Delete Project" onPress={handleDeleteProject} />
+            <Button
+              title={projectState.posted ? "Unpost Project" : "Post Project"}
+              onPress={postOrUnpostProject}
+            />
+          </View>
+        )}
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
@@ -471,6 +609,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#F5F5F5",
     padding: 5,
     marginBottom: 20,
+    marginTop: 10,
     flexDirection: "column",
     justifyContent: "center",
   },
@@ -588,6 +727,7 @@ const styles = StyleSheet.create({
   },
 
   projectDescriptionText: {
+    marginTop: 5,
     fontSize: 14,
   },
 
@@ -631,5 +771,11 @@ const styles = StyleSheet.create({
   buttons: {
     flexDirection: "row",
     justifyContent: "space-around",
+  },
+
+  requiredAsterisk: {
+    color: "red",
+    fontSize: 20,
+    marginRight: 5,
   },
 });
