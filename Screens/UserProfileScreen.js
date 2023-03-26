@@ -16,8 +16,6 @@ import { doc, getDoc } from "firebase/firestore";
 import Project from "../Components/ProjectsPage/Project";
 import { MyContext } from "../Contexts/MyContext";
 
-import hat from "../Components/assets/flower-bucket-hat.jpg";
-
 const UserProfileScreen = ({ navigation, route }) => {
   const { projects, setProjects } = React.useContext(MyContext);
   const user = auth.currentUser;
@@ -30,6 +28,7 @@ const UserProfileScreen = ({ navigation, route }) => {
   const [publishedProjects, setPublishedProjects] = useState("");
   const [savedProjects, setSavedProjects] = useState("");
   const [bio, setBio] = useState("");
+  const [image, setImage] = useState("");
 
   if (user !== null) {
     // The user object has basic properties such as display name, email, etc.
@@ -57,6 +56,7 @@ const UserProfileScreen = ({ navigation, route }) => {
       setPublishedProjects(docSnap.data().publishedProjects);
       setSavedProjects(docSnap.data().savedProjects);
       setBio(docSnap.data().bio);
+      setImage(docSnap.data().image);
     } else {
       console.log("No such document!");
     }
@@ -111,7 +111,7 @@ const UserProfileScreen = ({ navigation, route }) => {
         </View>
       </View>
 
-      <Image style={styles.profileImage} source={hat} />
+      <Image style={styles.profileImage} source={{ uri: image }} />
 
       <View style={styles.userInfo}>
         <Text style={styles.username}>{username}</Text>

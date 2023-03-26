@@ -12,6 +12,10 @@ import {
 
 import { auth, db, storage } from "../firebase";
 import { doc, collection, addDoc, updateDoc, getDoc } from "firebase/firestore";
+import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
+import * as ImagePicker from "expo-image-picker";
+import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
+import Icon from "react-native-vector-icons/MaterialIcons";
 
 const EditProfileScreen = ({ navigation }) => {
   const [username, setUsername] = useState("");
@@ -23,6 +27,9 @@ const EditProfileScreen = ({ navigation }) => {
   const [bio, setBio] = useState("");
   const [user, setUser] = useState(null);
   const [avatar, setAvatar] = useState("");
+  const [image, setImage] = useState(null);
+  const [imageUri, setImageUri] = useState(null);
+  const [imageRef, setImageRef] = useState(null);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -36,6 +43,7 @@ const EditProfileScreen = ({ navigation }) => {
             setEmail(docSnap.data().email);
             setPassword(docSnap.data().password);
             setPhone(docSnap.data().phone);
+            setImage(docSnap.data().image);
           }
         }
         fetchOriginalData();
@@ -50,22 +58,46 @@ const EditProfileScreen = ({ navigation }) => {
   }, []);
 
   const handleSave = async () => {
-    const unsubscribe = auth.onAuthStateChanged((user) => {
+    const userInformation = {
+      username: username,
+      email: email,
+      phone: phone,
+      password: password,
+      bio: bio,
+      image: image,
+    };
+
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
       if (user) {
         try {
-          updateDoc(doc(db, "users", user.uid), {
-            username: username,
-            email: email,
-            phone: phone,
-            password: password,
-            bio: bio,
-          });
-          // clearFields();
+          if (imageUri) {
+            const snapshot = await uploadImageAsync(imageRef, imageUri);
+            const downloadURL = await getDownloadURL(snapshot.ref);
+            userInformation.image = downloadURL;
+          }
+
+          await updateDoc(doc(db, "users", user.uid), userInformation);
           Alert.alert("Changes saved");
           navigation.navigate("User Profile");
         } catch (error) {
-          console.error("Error adding document: ", error);
+          console.log("Error adding document: ", error);
         }
+
+        // try {
+        //   updateDoc(doc(db, "users", user.uid), {
+        //     username: username,
+        //     email: email,
+        //     phone: phone,
+        //     password: password,
+        //     bio: bio,
+        //     image: image,
+        //   });
+        //   // clearFields();
+        //   Alert.alert("Changes saved");
+        //   navigation.navigate("User Profile");
+        // } catch (error) {
+        //   console.error("Error adding document: ", error);
+        // }
       } else {
         console.log("User not logged in");
       }
@@ -74,13 +106,82 @@ const EditProfileScreen = ({ navigation }) => {
     return unsubscribe;
   };
 
-  const handleChooseAvatar = () => {
-    // TODO: Implement avatar selection logic
+  // uploadImageAsync uploads the image to storage and returns the snapshot of the upload
+  const uploadImageAsync = async (imageRef, uri) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    return uploadBytes(imageRef, blob);
   };
 
+  // choosePhoto launches the image picker and allows the user to choose a photo
+  const choosePhoto = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    // If the user didn't cancel the image picker, convert the image to JPEG, upload the image to storage, and set the image in state
+    if (!result.canceled) {
+      const uri = result.assets[0].uri; // Get the uri of the image
+      try {
+        const manipResult = await manipulateAsync(
+          uri,
+          [{ resize: { width: 500 } }],
+          { compress: 0.5, format: SaveFormat.JPEG }
+        );
+        const imageRef = ref(storage, "profileImages/" + uri.split("/").pop());
+        setImageUri(manipResult.uri);
+        setImageRef(imageRef);
+        setImage(manipResult.uri);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
+
+  // takePhoto launches the camera and allows the user to take a photo
+  const takePhoto = async () => {
+    // Check if the user has granted camera permissions
+    const cameraPermission = await ImagePicker.getCameraPermissionsAsync();
+    if (!cameraPermission.granted) {
+      // If the user has not granted camera permissions, request them
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status !== "granted") {
+        alert("Sorry, we need camera permissions to make this work!");
+        return;
+      }
+    }
+
+    // Launch the camera
+    const result = await ImagePicker.launchCameraAsync({
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 1,
+    });
+
+    // If the user cancels the camera, return
+    if (!result.canceled) {
+      const uri = result.assets[0].uri; // Get the uri of the image
+      try {
+        const manipResult = await manipulateAsync(
+          uri,
+          [{ resize: { width: 500 } }],
+          { compress: 0.5, format: SaveFormat.JPEG }
+        );
+        const imageRef = ref(storage, "profileImages/" + uri.split("/").pop());
+        setImageUri(manipResult.uri);
+        setImageRef(imageRef);
+        setImage(manipResult.uri);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+  };
   return (
     <View style={styles.container}>
-      <View style={styles.avatarContainer}>
+      {/* <View style={styles.avatarContainer}>
         {avatar ? (
           <Image style={styles.avatar} source={{ uri: avatar }} />
         ) : (
@@ -90,6 +191,40 @@ const EditProfileScreen = ({ navigation }) => {
           >
             <Text style={styles.avatarPlaceholderText}>Choose Avatar</Text>
           </TouchableOpacity>
+        )}
+      </View> */}
+      <View style={styles.imageContainer}>
+        {!image && (
+          <View style={styles.imagePlaceholder}>
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
+              <Text style={styles.imagePlaceholderText}>Choose an image</Text>
+              <Text style={styles.requiredAsterisk}>*</Text>
+            </View>
+            <View style={styles.icons}>
+              <TouchableOpacity onPress={choosePhoto}>
+                <Icon name="image" size={30} color="black" />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={takePhoto}>
+                <Icon name="photo-camera" size={30} color="black" />
+              </TouchableOpacity>
+            </View>
+          </View>
+        )}
+        {image && (
+          <View style={styles.imageWithButtons}>
+            <TouchableOpacity onPress={choosePhoto}>
+              <Icon name="image" size={30} color="black" />
+            </TouchableOpacity>
+            <Image source={{ uri: image }} style={styles.image} />
+            <TouchableOpacity onPress={takePhoto}>
+              <Icon name="photo-camera" size={30} color="black" />
+            </TouchableOpacity>
+          </View>
         )}
       </View>
       <TextInput
@@ -192,6 +327,44 @@ const styles = StyleSheet.create({
   saveButtonText: {
     fontSize: 16,
     color: "#FFFFFF",
+  },
+  imageContainer: {
+    width: "100%",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  image: {
+    width: 170,
+    height: 170,
+    borderRadius: 10,
+    margin: 10,
+    marginTop: 0,
+  },
+  imageWithButtons: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  icons: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "70%",
+    alignItems: "center",
+    marginTop: 10,
+  },
+  imagePlaceholder: {
+    width: 170,
+    height: 170,
+    borderRadius: 10,
+    backgroundColor: "#dbdbda",
+    marginBottom: 10,
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  imagePlaceholderText: {
+    fontSize: 17,
+    fontWeight: "bold",
+    padding: 5,
   },
 });
 
