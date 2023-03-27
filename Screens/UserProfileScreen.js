@@ -12,16 +12,18 @@ import {
 
 import { useFocusEffect } from "@react-navigation/native";
 
-import { getAuth, signOut, sendPasswordResetEmail } from "firebase/auth";
+import { getAuth, signOut, sendPasswordResetEmail, onAuthStateChanged } from "firebase/auth";
 import { auth, db, resetByEmail } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Project from "../Components/ProjectsPage/Project";
 import { MyContext } from "../Contexts/MyContext";
+import { LoginContext } from "../Contexts/LoginContext";
 import userIcon from "../Components/assets/user-icon.png";
 
 const UserProfileScreen = ({ navigation, route }) => {
   const { projects, setProjects } = React.useContext(MyContext);
-  const user = auth.currentUser;
+  const { loggedIn, setloggedIn } = React.useContext(LoginContext);
+  const [user, setUser] = useState(null);
   const userEmail = user ? user.email : null;
 
   const [username, setUsername] = useState("");
@@ -33,22 +35,37 @@ const UserProfileScreen = ({ navigation, route }) => {
   const [bio, setBio] = useState("");
   const [image, setImage] = useState(null);
 
-  if (user !== null) {
-    // The user object has basic properties such as display name, email, etc.
-    const displayName = user.displayName;
-    const userEmail = user.email;
-    const photoURL = user.photoURL;
-    const emailVerified = user.emailVerified;
-    // console.log(userEmail);
-    // The user's ID, unique to the Firebase project. Do NOT use
-    // this value to authenticate with your backend server, if
-    // you have one. Use User.getToken() instead.
-    const uid = user.uid;
-  }
+  useEffect(() => {
+    // get current user
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+    });
+    return () => {
+      unsubscribe();
+    }
+
+  }, []);
+
 
   // TODO: Have props passed from RegisterSceen.js instead of making a call
   useFocusEffect(
     React.useCallback(() => {
+      const user = auth.currentUser;
+      const userEmail = user ? user.email : null;
+
+      if (user !== null) {
+        // The user object has basic properties such as display name, email, etc.
+        const displayName = user.displayName;
+        const userEmail = user.email;
+        const photoURL = user.photoURL;
+        const emailVerified = user.emailVerified;
+        // console.log(userEmail);
+        // The user's ID, unique to the Firebase project. Do NOT use
+        // this value to authenticate with your backend server, if
+        // you have one. Use User.getToken() instead.
+        const uid = user.uid;
+      }
+
       async function fetchData() {
         const userDocRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(userDocRef);
@@ -77,14 +94,13 @@ const UserProfileScreen = ({ navigation, route }) => {
   
 
   const SignOutHandler = function (page) {
+    // sign the user out and redirect to the login page 
     signOut(auth)
       .then(() => {
-        console.log("Sign-out successful.");
-        navigation.replace(page);
-      })
-      .catch((error) => {
-        // An error happened.
-      });
+        setloggedIn(false);
+        navigation.navigate(page);
+      }
+      )
   };
 
   const ResetPasswordHandler = function (email) {

@@ -30,19 +30,19 @@ const EditProfileScreen = ({ navigation }) => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        async function fetchOriginalData() {
+        async function fetchOriginalData(userInformation) {
           const userDocRef = doc(db, "users", user.uid);
           const docSnap = await getDoc(userDocRef);
           if (docSnap.exists()) {
             console.log("Document data:", docSnap.data());
-            setUsername(docSnap.data().username);
-            setEmail(docSnap.data().email);
-            setPassword(docSnap.data().password);
-            setPhone(docSnap.data().phone);
-            setImage(docSnap.data().image);
+            setUsername(userInformation.username || docSnap.data().username);
+            setEmail(userInformation.email || docSnap.data().email);
+            setPassword(userInformation.password || docSnap.data().password);
+            setPhone(userInformation.phone || docSnap.data().phone);
+            setImage(userInformation.image || docSnap.data().image);
           }
         }
-        fetchOriginalData();
+        fetchOriginalData({});
       } else {
         // Redirect to login screen if user is not logged in
         navigation.navigate("Login");
@@ -63,27 +63,24 @@ const EditProfileScreen = ({ navigation }) => {
       image: image,
     };
 
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        try {
-          if (imageUri) {
-            const snapshot = await uploadImageAsync(imageRef, imageUri);
-            const downloadURL = await getDownloadURL(snapshot.ref);
-            userInformation.image = downloadURL;
-          }
+    try {
+      if (imageUri) {
+        const snapshot = await uploadImageAsync(imageRef, imageUri);
+        const downloadURL = await getDownloadURL(snapshot.ref);
+        userInformation.image = downloadURL;
+      }
 
-          await updateDoc(doc(db, "users", user.uid), userInformation);
-          Alert.alert("Changes saved");
-          navigation.navigate("User Profile");
-        } catch (error) {
-          console.log("Error adding document: ", error);
-        }
+      const user = auth.currentUser;
+      if (user) {
+        await updateDoc(doc(db, "users", user.uid), userInformation);
+        Alert.alert("Changes saved");
+        navigation.navigate("User Profile");
       } else {
         console.log("User not logged in");
       }
-    });
-
-    return unsubscribe;
+    } catch (error) {
+      console.log("Error adding document: ", error);
+    }
   };
 
   // uploadImageAsync uploads the image to storage and returns the snapshot of the upload
