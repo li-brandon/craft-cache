@@ -10,13 +10,14 @@ import {
   FlatList,
 } from "react-native";
 
+import { useFocusEffect } from "@react-navigation/native";
+
 import { getAuth, signOut, sendPasswordResetEmail } from "firebase/auth";
 import { auth, db, resetByEmail } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Project from "../Components/ProjectsPage/Project";
 import { MyContext } from "../Contexts/MyContext";
-
-import hat from "../Components/assets/flower-bucket-hat.jpg";
+import userIcon from "../Components/assets/user-icon.png";
 
 const UserProfileScreen = ({ navigation, route }) => {
   const { projects, setProjects } = React.useContext(MyContext);
@@ -30,6 +31,7 @@ const UserProfileScreen = ({ navigation, route }) => {
   const [publishedProjects, setPublishedProjects] = useState("");
   const [savedProjects, setSavedProjects] = useState("");
   const [bio, setBio] = useState("");
+  const [image, setImage] = useState(null);
 
   if (user !== null) {
     // The user object has basic properties such as display name, email, etc.
@@ -45,22 +47,34 @@ const UserProfileScreen = ({ navigation, route }) => {
   }
 
   // TODO: Have props passed from RegisterSceen.js instead of making a call
-  useEffect(async () => {
-    const userDocRef = doc(db, "users", user.uid);
-    const docSnap = await getDoc(userDocRef);
-
-    if (docSnap.exists()) {
-      console.log("Document data:", docSnap.data());
-      setUsername(docSnap.data().username);
-      setNumFollowers(docSnap.data().numFollowers);
-      setNumFollowing(docSnap.data().numFollowing);
-      setPublishedProjects(docSnap.data().publishedProjects);
-      setSavedProjects(docSnap.data().savedProjects);
-      setBio(docSnap.data().bio);
-    } else {
-      console.log("No such document!");
-    }
-  }, []);
+  useFocusEffect(
+    React.useCallback(() => {
+      async function fetchData() {
+        const userDocRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(userDocRef);
+  
+        if (docSnap.exists()) {
+          console.log("Document data:", docSnap.data());
+          setUsername(docSnap.data().username);
+          setNumFollowers(docSnap.data().numFollowers);
+          setNumFollowing(docSnap.data().numFollowing);
+          setPublishedProjects(docSnap.data().publishedProjects);
+          setSavedProjects(docSnap.data().savedProjects);
+          setBio(docSnap.data().bio);
+          setImage(docSnap.data().image);
+        } else {
+          console.log("No such document!");
+        }
+      }
+      
+      fetchData(); // call the async function immediately
+  
+      return () => {
+        // clean-up function
+      };
+    }, [])
+  );
+  
 
   const SignOutHandler = function (page) {
     signOut(auth)
@@ -111,7 +125,7 @@ const UserProfileScreen = ({ navigation, route }) => {
         </View>
       </View>
 
-      <Image style={styles.profileImage} source={hat} />
+      <Image style={styles.profileImage} source={image ? { uri: image } : userIcon} />
 
       <View style={styles.userInfo}>
         <Text style={styles.username}>{username}</Text>

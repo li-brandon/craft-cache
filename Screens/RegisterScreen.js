@@ -64,6 +64,8 @@ const RegisterScreen = ({ navigation }) => {
             bio: "",
             savedProjects: [],
             publishedProjects: [],
+            image: "",
+            following: [],
           });
           clearFields();
           Alert.alert("User registered successfully");
