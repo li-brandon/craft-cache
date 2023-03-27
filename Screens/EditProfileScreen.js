@@ -22,11 +22,7 @@ const EditProfileScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
-
-  //TODO: Implement these fields
   const [bio, setBio] = useState("");
-  const [user, setUser] = useState(null);
-  const [avatar, setAvatar] = useState("");
   const [image, setImage] = useState(null);
   const [imageUri, setImageUri] = useState(null);
   const [imageRef, setImageRef] = useState(null);
@@ -82,22 +78,6 @@ const EditProfileScreen = ({ navigation }) => {
         } catch (error) {
           console.log("Error adding document: ", error);
         }
-
-        // try {
-        //   updateDoc(doc(db, "users", user.uid), {
-        //     username: username,
-        //     email: email,
-        //     phone: phone,
-        //     password: password,
-        //     bio: bio,
-        //     image: image,
-        //   });
-        //   // clearFields();
-        //   Alert.alert("Changes saved");
-        //   navigation.navigate("User Profile");
-        // } catch (error) {
-        //   console.error("Error adding document: ", error);
-        // }
       } else {
         console.log("User not logged in");
       }

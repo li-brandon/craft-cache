@@ -10,6 +10,8 @@ import {
   FlatList,
 } from "react-native";
 
+import { useFocusEffect } from "@react-navigation/native";
+
 import { getAuth, signOut, sendPasswordResetEmail } from "firebase/auth";
 import { auth, db, resetByEmail } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
@@ -44,23 +46,25 @@ const UserProfileScreen = ({ navigation, route }) => {
   }
 
   // TODO: Have props passed from RegisterSceen.js instead of making a call
-  useEffect(async () => {
-    const userDocRef = doc(db, "users", user.uid);
-    const docSnap = await getDoc(userDocRef);
+  useFocusEffect(
+    React.useCallback(async () => {
+      const userDocRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(userDocRef);
 
-    if (docSnap.exists()) {
-      console.log("Document data:", docSnap.data());
-      setUsername(docSnap.data().username);
-      setNumFollowers(docSnap.data().numFollowers);
-      setNumFollowing(docSnap.data().numFollowing);
-      setPublishedProjects(docSnap.data().publishedProjects);
-      setSavedProjects(docSnap.data().savedProjects);
-      setBio(docSnap.data().bio);
-      setImage(docSnap.data().image);
-    } else {
-      console.log("No such document!");
-    }
-  }, []);
+      if (docSnap.exists()) {
+        console.log("Document data:", docSnap.data());
+        setUsername(docSnap.data().username);
+        setNumFollowers(docSnap.data().numFollowers);
+        setNumFollowing(docSnap.data().numFollowing);
+        setPublishedProjects(docSnap.data().publishedProjects);
+        setSavedProjects(docSnap.data().savedProjects);
+        setBio(docSnap.data().bio);
+        setImage(docSnap.data().image);
+      } else {
+        console.log("No such document!");
+      }
+    }, [])
+  );
 
   const SignOutHandler = function (page) {
     signOut(auth)
