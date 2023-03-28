@@ -24,6 +24,7 @@ import ProjectsPageScreen from "./Screens/ProjectsPageScreen";
 import LoginScreen from "./Screens/LoginScreen";
 import UserProfileScreen from "./Screens/UserProfileScreen";
 import EditProfileScreen from "./Screens/EditProfileScreen";
+import ProfileScreen from "./Screens/ProfileScreen";
 import ResetPasswordScreen from "./Screens/ResetPasswordScreen";
 const auth = getAuth();
 import RegisterScreen from "./Screens/RegisterScreen";
@@ -190,6 +191,7 @@ export default function App() {
                   name="Edit Profile"
                   component={EditProfileScreen}
                 />
+                <Stack.Screen name="Profile" component={ProfileScreen} />
                 <Stack.Screen
                   name="Add Inventory"
                   component={AddInventoryScreen}
