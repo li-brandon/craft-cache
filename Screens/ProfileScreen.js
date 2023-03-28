@@ -73,6 +73,8 @@ const ProfileScreen = ({ navigation, route }) => {
   }, []);
 
   const followUser = async () => {
+    console.log(profileID);
+    console.log(user.uid);
     // Add profile to the current user's following
     const userDoc = doc(db, "users", user.uid);
     await updateDoc(userDoc, {
@@ -84,6 +86,13 @@ const ProfileScreen = ({ navigation, route }) => {
     await updateDoc(profileDoc, {
       followers: arrayUnion(doc(db, "users", user.uid)),
     });
+
+    // Update the number of followers for the profile
+    const profileDocRef = doc(db, "users", profileID);
+    const profileDocSnap = await getDoc(profileDocRef);
+    const profileDocData = profileDocSnap.data();
+    const profileNumFollowers = profileDocData.followers.length;
+    setNumFollowers(profileNumFollowers);
   };
 
   const unfollowUser = () => {};
