@@ -34,7 +34,10 @@ const InventoryDetail = ({ inventoryItem }) => {
                   Size: {inventoryItemState.size}
                 </Text>
                 <Text style={styles.inventoryItemInfoText}>
-                  Categories: {inventoryItemState.category}
+                  Categorie(s): {inventoryItemState.category}
+                </Text>
+                <Text style={styles.inventoryItemInfoText}>
+                  Count: {inventoryItemState.count}
                 </Text>
                 <Text style={styles.inventoryItemInfoText}>
                   Description: {inventoryItemState.description}

@@ -100,6 +100,7 @@ const AddInventoryScreen = ({ navigation }) => {
       await addDoc(collection(db, "inventory"), newInventory);
       clearFields();
       Alert.alert("Inventory added successfully");
+      navigation.navigate("Inventory");
     } catch (error) {
       console.error("Error adding document: ", error);
     }
@@ -191,40 +192,100 @@ const AddInventoryScreen = ({ navigation }) => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.inputContainer}>
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginRight: 5,
+          }}
+        >
+          <Text style={styles.InventoryInputHeaderText}>Name</Text>
+          <Text style={styles.requiredAsterisk}>*</Text>
+        </View>
         <TextInput
           style={styles.input}
-          placeholder="Name"
+          placeholder="ex: 5mm Crochet Hook"
           value={name}
           onChangeText={(text) => setName(text)}
         />
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginRight: 5,
+          }}
+        >
+          <Text style={styles.InventoryInputHeaderText}>Brand</Text>
+          <Text style={styles.requiredAsterisk}>*</Text>
+        </View>
         <TextInput
           style={styles.input}
-          placeholder="Brand"
+          placeholder="ex: Caron Simply Soft | Rifle Paper Co."
           value={brand}
           onChangeText={(text) => setBrand(text)}
         />
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginRight: 5,
+          }}
+        >
+          <Text style={styles.InventoryInputHeaderText}>Category</Text>
+          <Text style={styles.requiredAsterisk}>*</Text>
+        </View>
         <TextInput
           style={styles.input}
-          placeholder="Category"
+          placeholder="ex: Knitting | Crochet | Sewing"
           value={category}
           onChangeText={(text) => setCategory(text)}
         />
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginRight: 5,
+          }}
+        >
+          <Text style={styles.InventoryInputHeaderText}>Size/Weight</Text>
+          <Text style={styles.requiredAsterisk}>*</Text>
+        </View>
         <TextInput
           style={styles.input}
-          placeholder="Size"
+          placeholder="ex: 5mm | 45 inches wide | aran weight"
           value={size}
           onChangeText={(text) => setSize(text)}
         />
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginRight: 5,
+          }}
+        >
+          <Text style={styles.InventoryInputHeaderText}>Count</Text>
+          <Text style={styles.requiredAsterisk}>*</Text>
+        </View>
         <TextInput
           style={styles.input}
           keyboardType="numeric"
-          placeholder="Count"
+          placeholder="ex: 2 | 6 yards"
           value={count}
           onChangeText={(text) => setCount(text)}
         />
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginRight: 5,
+          }}
+        >
+          <Text style={styles.InventoryInputHeaderText}>Description</Text>
+          <Text style={styles.requiredAsterisk}>*</Text>
+        </View>
         <TextInput
           style={styles.description}
-          placeholder="Description"
+          placeholder="ex: Purple fabric with a white daisy pattern. Daisies are each an inch wide spread evenly across the fabric."
           editable
           multiline
           numberOfLines={4}
@@ -233,9 +294,8 @@ const AddInventoryScreen = ({ navigation }) => {
           blurOnSubmit={true} // prevent new line when return button is pressed
           onChangeText={(text) => setDescription(text)}
         />
-
         <View style="pickerContainer">
-          <Text style={styles.label}>Select where to add:</Text>
+          <Text style={styles.label}>Select a category:</Text>
           <Picker
             style={styles.picker}
             selectedValue={selectedValue}
@@ -247,7 +307,16 @@ const AddInventoryScreen = ({ navigation }) => {
             <Picker.Item label="Material" value="Material" />
           </Picker>
         </View>
-
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginRight: 5,
+          }}
+        >
+          <Text style={styles.InventoryInputHeaderText}>Upload Photo</Text>
+          <Text style={styles.requiredAsterisk}>*</Text>
+        </View>
         {image && (
           <Image source={{ uri: image }} style={styles.inventoryImage} />
         )}
@@ -256,11 +325,12 @@ const AddInventoryScreen = ({ navigation }) => {
           <Button title="Choose Photo" onPress={choosePhoto} />
           {/* <Button title="Take Photo" onPress={takePhoto} /> */}
         </View>
-
       </View>
-      <TouchableOpacity style={styles.button} onPress={handleAddInventory}>
-        <Text style={styles.buttonText}>Add Inventory</Text>
-      </TouchableOpacity>
+      <View style={{ marginBottom: 60 }}>
+        <TouchableOpacity style={styles.button} onPress={handleAddInventory}>
+          <Text style={styles.buttonText}>Add Inventory</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 };
@@ -278,6 +348,14 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     marginBottom: 20,
+  },
+  InventoryInputHeaderText: {
+    fontSize: 17,
+    fontWeight: "bold",
+  },
+  requiredAsterisk: {
+    color: "red",
+    fontSize: 20,
   },
   input: {
     height: 40,
@@ -326,7 +404,7 @@ const styles = StyleSheet.create({
   },
 
   picker: {
-    height:170,
+    height: 170,
   },
 });
 
