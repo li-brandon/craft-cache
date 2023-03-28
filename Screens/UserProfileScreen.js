@@ -102,6 +102,10 @@ const UserProfileScreen = ({ navigation, route }) => {
       }
       )
   };
+  const FollowHandler = function () {
+
+    console.log("follow");
+  };
 
   const ResetPasswordHandler = function (email) {
     sendPasswordResetEmail(auth, email)
@@ -153,14 +157,23 @@ const UserProfileScreen = ({ navigation, route }) => {
           <Text style={styles.stat}>{numFollowing} Following</Text>
         </View>
 
-        <View style={styles.buttons}>
-          <TouchableOpacity style={styles.followButton}>
+        {context.loggedIn != user.uid ? <View style={styles.buttons}>
+          <TouchableOpacity
+            style={styles.followButton}
+            onPress={FollowHandler}
+          >
             <Text style={styles.followButtonText}>Follow</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.messageButton}>
+          <TouchableOpacity
+            style={styles.messageButton}
+
+          >
             <Text style={styles.messageButtonText}>Message</Text>
           </TouchableOpacity>
         </View>
+          : <View></View>
+
+        }
       </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
