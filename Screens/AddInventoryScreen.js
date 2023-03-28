@@ -99,7 +99,6 @@ const AddInventoryScreen = ({ navigation }) => {
       // Add the new project to Firestore
       await addDoc(collection(db, "inventory"), newInventory);
       clearFields();
-      Alert.alert("Inventory added successfully");
       navigation.navigate("Inventory");
     } catch (error) {
       console.error("Error adding document: ", error);
