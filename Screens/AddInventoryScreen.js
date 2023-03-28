@@ -10,6 +10,8 @@ import {
   Button,
   Keyboard,
   ScrollView,
+  Pressable,
+  Modal,
 } from "react-native";
 import { MyContext } from "../Contexts/MyContext";
 import { auth, db, storage } from "../firebase";
@@ -143,6 +145,9 @@ const AddInventoryScreen = ({ navigation }) => {
     }
   };
 
+  // yardage
+  const [modalVisible, setModalVisible] = useState(false);
+
   // TODO: Implement camera functionality
   // takePhoto launches the camera and allows the user to take a photo with the camera
   // const takePhoto = async () => {
@@ -190,6 +195,45 @@ const AddInventoryScreen = ({ navigation }) => {
 
   return (
     <ScrollView style={styles.container}>
+      <View style={styles.centeredView}>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <View style={styles.centeredView}>
+            <View style={styles.modalView}>
+              <Text style={styles.modalText}>Hello World!</Text>
+              <Pressable style={[styles.modalButton, styles.buttonClose]}>
+                <Text style={styles.textStyle}>Calculate</Text>
+              </Pressable>
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  margin: 5,
+                }}
+              >
+                <Pressable
+                  style={[styles.modalButton, styles.buttonClose]}
+                  onPress={() => setModalVisible(!modalVisible)}
+                >
+                  <Text style={styles.textStyle}>Close</Text>
+                </Pressable>
+                <Pressable
+                  style={[styles.modalButton, styles.buttonClose]}
+                  onPress={() => setModalVisible(!modalVisible)}
+                >
+                  <Text style={styles.textStyle}>Add to Count Input Field</Text>
+                </Pressable>
+              </View>
+            </View>
+          </View>
+        </Modal>
+      </View>
       <View style={styles.inputContainer}>
         <View
           style={{
@@ -264,11 +308,17 @@ const AddInventoryScreen = ({ navigation }) => {
         >
           <Text style={styles.InventoryInputHeaderText}>Count</Text>
           <Text style={styles.requiredAsterisk}>*</Text>
+          <Pressable
+            style={[styles.openModalButton, styles.modalButtonOpen]}
+            onPress={() => setModalVisible(true)}
+          >
+            <Text>Calculate Yardage</Text>
+          </Pressable>
         </View>
         <TextInput
           style={styles.input}
           keyboardType="numeric"
-          placeholder="ex: 2 | 6 yards"
+          placeholder="ex: 2 skeins | 6 yards"
           value={count}
           onChangeText={(text) => setCount(text)}
         />
@@ -382,6 +432,40 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: "bold",
     textAlign: "center",
+  },
+  openModalButton: {
+    borderRadius: 20,
+    padding: 5,
+    elevation: 2,
+    margin: 10,
+  },
+  modalButton: {
+    borderRadius: 10,
+    padding: 10,
+    elevation: 2,
+    margin: 10,
+    backgroundColor: "white",
+  },
+  modalButtonOpen: {
+    backgroundColor: "#F194FF",
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 5,
+    backgroundColor: "pink",
+    borderRadius: 20,
+    padding: 20,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
   },
   inventoryImage: {
     width: 130,
