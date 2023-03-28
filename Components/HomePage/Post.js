@@ -2,22 +2,53 @@ import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { FontAwesome, SimpleLineIcons } from "@expo/vector-icons";
 import userIcon from "../assets/user-icon.png";
+import { useFocusEffect } from "@react-navigation/native";
 
+import { auth, db } from "../../firebase";
 
-export default function Post ({ project }) {
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  getDoc,
+  doc,
+} from "firebase/firestore";
+
+export default function Post({ project, navigation }) {
+  const viewUserProfile = async function () {
+    const docRef = doc(db, "users", project.userID);
+
+    try {
+      const docSnap = await getDoc(docRef);
+      // console.log(docSnap.data());
+
+      navigation.navigate("Profile", {
+        userInfo: docSnap.data(),
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <View style={styles.projectPost}>
       <View style={styles.userOfPostAndOptionsButton}>
         <View style={styles.userOfPost}>
           <View>
-            <Image
-              source={project.userImage ? { uri: project.userImage } : userIcon}
-              style={styles.userImage}
-              alt="User Icon"
-            />
+            <TouchableOpacity onPress={viewUserProfile.bind(this, "Profile")}>
+              <Image
+                source={
+                  project.userImage ? { uri: project.userImage } : userIcon
+                }
+                style={styles.userImage}
+                alt="User Icon"
+              />
+            </TouchableOpacity>
           </View>
-          <Text style={styles.userName}>{project.username}</Text>
+          <TouchableOpacity onPress={viewUserProfile.bind(this, "Profile")}>
+            <Text style={styles.userName}>{project.username}</Text>
+          </TouchableOpacity>
         </View>
         <View>
           <SimpleLineIcons name="options" size={20} />
@@ -45,32 +76,34 @@ export default function Post ({ project }) {
           <Text style={styles.projectNameText}>{project.name}</Text>
         </View>
         <View style={styles.projectInfoContainer}>
-          <Text style={styles.projectInfoText}>Type:{" "}
+          <Text style={styles.projectInfoText}>
+            Type:{" "}
             {project.type.map((type, index) => {
-                if (index === project.type.length - 1) {
-                    return type;
-                } else {
-                    return type + ", ";
-                }
+              if (index === project.type.length - 1) {
+                return type;
+              } else {
+                return type + ", ";
+              }
             })}
           </Text>
-          <Text style={styles.projectInfoText}>Tool(s):{" "}
+          <Text style={styles.projectInfoText}>
+            Tool(s):{" "}
             {project.tools.map((tool, index) => {
-                if (index === project.tools.length - 1) {
-                    return tool;
-                } else {
-                    return tool + ", ";
-                }
+              if (index === project.tools.length - 1) {
+                return tool;
+              } else {
+                return tool + ", ";
+              }
             })}
           </Text>
           <Text style={styles.projectInfoText}>
             Materials:{" "}
             {project.materials.map((material, index) => {
-                if (index === project.materials.length - 1) {
-                    return material;
-                } else {
-                    return material + ", ";
-                }
+              if (index === project.materials.length - 1) {
+                return material;
+              } else {
+                return material + ", ";
+              }
             })}
           </Text>
           <Text style={styles.projectInfoText}>Pattern: {project.pattern}</Text>
@@ -79,14 +112,20 @@ export default function Post ({ project }) {
           </Text>
         </View>
         <View style={styles.projectStatusContainer}>
-          <Text style={styles.projectStatusText}>Started: {project.startDate}</Text>
-          <Text style={styles.projectStatusText}>Last Updated: {project.lastUpdated}</Text>
-          <Text style={styles.projectStatusText}>Status: {project.inProgress ? "In progress" : "Finished"}</Text>
+          <Text style={styles.projectStatusText}>
+            Started: {project.startDate}
+          </Text>
+          <Text style={styles.projectStatusText}>
+            Last Updated: {project.lastUpdated}
+          </Text>
+          <Text style={styles.projectStatusText}>
+            Status: {project.inProgress ? "In progress" : "Finished"}
+          </Text>
         </View>
       </View>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   projectPost: {
