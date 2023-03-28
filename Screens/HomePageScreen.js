@@ -1,4 +1,4 @@
-import { ScrollView, View, Text, StyleSheet, Image } from "react-native";
+import { ScrollView, View, Text, StyleSheet, Image, RefreshControl } from "react-native";
 import React, { useState, useEffect } from "react";
 import Post from "../Components/HomePage/Post";
 import { useFocusEffect } from "@react-navigation/native";
@@ -16,7 +16,7 @@ function HomePageScreen({ navigation }) {
   const [projects, setProjects] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [refresh, setRefresh] = useState(false);
-
+  const [isRefreshing, setIsRefreshing] = useState(false);
   useEffect(() => {
     // get current user
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -33,7 +33,7 @@ function HomePageScreen({ navigation }) {
     React.useCallback(() => {
       let tempProjects = [];
       const q = query(collection(db, "projects"), where("posted", "==", true));
-
+      // console.log("effect refresh")
       // get all projects that are posted and add to tempProjects
       getDocs(q)
         .then((querySnapshot) => {
@@ -65,7 +65,8 @@ function HomePageScreen({ navigation }) {
         .catch((error) => {
           console.log("Error getting documents: ", error);
         });
-    }, [])
+      setIsRefreshing(false);
+    }, [isRefreshing])
   );
 
   function sortProjectsByStartDate(projects) {
@@ -76,9 +77,17 @@ function HomePageScreen({ navigation }) {
     });
     return sortedProjects;
   }
-
+  const onRefresh = () => {
+    setIsRefreshing(true);
+  };
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container}
+      refreshControl={
+        <RefreshControl
+          refreshing={isRefreshing}
+          onRefresh={onRefresh}
+        />
+      }>
       {projects.map((project, index) => (
         <Post key={index} project={project} navigation={navigation} />
       ))}
