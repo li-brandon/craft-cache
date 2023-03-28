@@ -33,7 +33,7 @@ function HomePageScreen({ navigation }) {
     React.useCallback(() => {
       let tempProjects = [];
       const q = query(collection(db, "projects"), where("posted", "==", true));
-      console.log("effect refresh")
+      // console.log("effect refresh")
       // get all projects that are posted and add to tempProjects
       getDocs(q)
         .then((querySnapshot) => {
@@ -65,6 +65,7 @@ function HomePageScreen({ navigation }) {
         .catch((error) => {
           console.log("Error getting documents: ", error);
         });
+      setIsRefreshing(false);
     }, [isRefreshing])
   );
 
@@ -78,7 +79,6 @@ function HomePageScreen({ navigation }) {
   }
   const onRefresh = () => {
     setIsRefreshing(true);
-    setIsRefreshing(false);
   };
   return (
     <ScrollView style={styles.container}
