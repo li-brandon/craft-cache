@@ -10,18 +10,20 @@ import {
   FlatList,
 } from "react-native";
 
-import { getAuth, signOut, sendPasswordResetEmail } from "firebase/auth";
+import { useFocusEffect } from "@react-navigation/native";
+
+import { getAuth, signOut, sendPasswordResetEmail, onAuthStateChanged } from "firebase/auth";
 import { auth, db, resetByEmail } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Project from "../Components/ProjectsPage/Project";
 import { MyContext } from "../Contexts/MyContext";
-
-import hat from "../Components/assets/flower-bucket-hat.jpg";
 import { LoginContext } from "../Contexts/LoginContext";
+import userIcon from "../Components/assets/user-icon.png";
 
 const UserProfileScreen = ({ navigation, route }) => {
   const { projects, setProjects } = React.useContext(MyContext);
-  const user = auth.currentUser;
+  const { loggedIn, setloggedIn } = React.useContext(LoginContext);
+  const [user, setUser] = useState(null);
   const userEmail = user ? user.email : null;
 
   const [username, setUsername] = useState("");
@@ -31,47 +33,74 @@ const UserProfileScreen = ({ navigation, route }) => {
   const [publishedProjects, setPublishedProjects] = useState("");
   const [savedProjects, setSavedProjects] = useState("");
   const [bio, setBio] = useState("");
+  const [image, setImage] = useState(null);
 
-  if (user !== null) {
-    // The user object has basic properties such as display name, email, etc.
-    const displayName = user.displayName;
-    const userEmail = user.email;
-    const photoURL = user.photoURL;
-    const emailVerified = user.emailVerified;
-    // console.log(userEmail);
-    // The user's ID, unique to the Firebase project. Do NOT use
-    // this value to authenticate with your backend server, if
-    // you have one. Use User.getToken() instead.
-    const uid = user.uid;
-  }
-  const context = useContext(LoginContext);
-  // TODO: Have props passed from RegisterSceen.js instead of making a call
-  useEffect(async () => {
-    const userDocRef = doc(db, "users", user.uid);
-    const docSnap = await getDoc(userDocRef);
-
-    if (docSnap.exists()) {
-      console.log("Document data:", docSnap.data());
-      setUsername(docSnap.data().username);
-      setNumFollowers(docSnap.data().numFollowers);
-      setNumFollowing(docSnap.data().numFollowing);
-      setPublishedProjects(docSnap.data().publishedProjects);
-      setSavedProjects(docSnap.data().savedProjects);
-      setBio(docSnap.data().bio);
-    } else {
-      console.log("No such document!");
+  useEffect(() => {
+    // get current user
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+    });
+    return () => {
+      unsubscribe();
     }
+
   }, []);
 
+
+  // TODO: Have props passed from RegisterSceen.js instead of making a call
+  useFocusEffect(
+    React.useCallback(() => {
+      const user = auth.currentUser;
+      const userEmail = user ? user.email : null;
+
+      if (user !== null) {
+        // The user object has basic properties such as display name, email, etc.
+        const displayName = user.displayName;
+        const userEmail = user.email;
+        const photoURL = user.photoURL;
+        const emailVerified = user.emailVerified;
+        // console.log(userEmail);
+        // The user's ID, unique to the Firebase project. Do NOT use
+        // this value to authenticate with your backend server, if
+        // you have one. Use User.getToken() instead.
+        const uid = user.uid;
+      }
+
+      async function fetchData() {
+        const userDocRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(userDocRef);
+  
+        if (docSnap.exists()) {
+          console.log("Document data:", docSnap.data());
+          setUsername(docSnap.data().username);
+          setNumFollowers(docSnap.data().numFollowers);
+          setNumFollowing(docSnap.data().numFollowing);
+          setPublishedProjects(docSnap.data().publishedProjects);
+          setSavedProjects(docSnap.data().savedProjects);
+          setBio(docSnap.data().bio);
+          setImage(docSnap.data().image);
+        } else {
+          console.log("No such document!");
+        }
+      }
+      
+      fetchData(); // call the async function immediately
+  
+      return () => {
+        // clean-up function
+      };
+    }, [])
+  );
+  
+
   const SignOutHandler = function (page) {
+    // sign the user out and redirect to the login page 
     signOut(auth)
       .then(() => {
-        console.log("Sign-out successful.");
-        navigation.replace(page);
-      })
-      .catch((error) => {
-        // An error happened.
-      });
+        setloggedIn(false);
+        navigation.navigate(page);
+      }
+      )
   };
   const FollowHandler = function () {
 
@@ -116,7 +145,7 @@ const UserProfileScreen = ({ navigation, route }) => {
         </View>
       </View>
 
-      <Image style={styles.profileImage} source={hat} />
+      <Image style={styles.profileImage} source={image ? { uri: image } : userIcon} />
 
       <View style={styles.userInfo}>
         <Text style={styles.username}>{username}</Text>
