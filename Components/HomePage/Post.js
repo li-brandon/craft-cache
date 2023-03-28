@@ -21,10 +21,10 @@ export default function Post({ project, navigation }) {
 
     try {
       const docSnap = await getDoc(docRef);
-      // console.log(docSnap.data());
 
       navigation.navigate("Profile", {
-        userInfo: docSnap.data(),
+        profileInfo: docSnap.data(),
+        profileID: docSnap.id,
       });
     } catch (error) {
       console.log(error);

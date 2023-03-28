@@ -13,20 +13,31 @@ import {
 import { useFocusEffect } from "@react-navigation/native";
 
 import {
+  collection,
+  getDocs,
+  query,
+  where,
+  getDoc,
+  doc,
+  updateDoc,
+  arrayUnion,
+  arrayRemove,
+} from "firebase/firestore";
+
+import {
   getAuth,
   signOut,
   sendPasswordResetEmail,
   onAuthStateChanged,
 } from "firebase/auth";
 import { auth, db, resetByEmail } from "../firebase";
-import { doc, getDoc } from "firebase/firestore";
 import Project from "../Components/ProjectsPage/Project";
 import { MyContext } from "../Contexts/MyContext";
 import { LoginContext } from "../Contexts/LoginContext";
 import userIcon from "../Components/assets/user-icon.png";
 
 const ProfileScreen = ({ navigation, route }) => {
-  const { userInfo } = route.params;
+  const { profileInfo, profileID } = route.params;
 
   const { projects, setProjects } = React.useContext(MyContext);
   const { loggedIn, setloggedIn } = React.useContext(LoginContext);
@@ -43,14 +54,39 @@ const ProfileScreen = ({ navigation, route }) => {
   const [image, setImage] = useState(null);
 
   useEffect(() => {
-    setUsername(userInfo.username);
-    setNumFollowers(userInfo.numFollowers);
-    setNumFollowing(userInfo.numFollowing);
-    setPublishedProjects(userInfo.publishedProjects);
-    setSavedProjects(userInfo.savedProjects);
-    setBio(userInfo.bio);
-    setImage(userInfo.image);
+    // Set passed in profile info
+    setUsername(profileInfo.username);
+    // setNumFollowers(profileInfo.numFollowers);
+    // setNumFollowing(profileInfo.numFollowing);
+    setPublishedProjects(profileInfo.publishedProjects);
+    setSavedProjects(profileInfo.savedProjects);
+    setBio(profileInfo.bio);
+    setImage(profileInfo.image);
+
+    // Get current user info
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+    });
+    return () => {
+      unsubscribe();
+    };
   }, []);
+
+  const followUser = async () => {
+    // Add profile to the current user's following
+    const userDoc = doc(db, "users", user.uid);
+    await updateDoc(userDoc, {
+      following: arrayUnion(doc(db, "users", profileID)),
+    });
+
+    // Add current user reference to the profile's followers list
+    const profileDoc = doc(db, "users", profileID);
+    await updateDoc(profileDoc, {
+      followers: arrayUnion(doc(db, "users", user.uid)),
+    });
+  };
+
+  const unfollowUser = () => {};
 
   return (
     <View style={styles.container}>
@@ -70,7 +106,10 @@ const ProfileScreen = ({ navigation, route }) => {
         </View>
 
         <View style={styles.buttons}>
-          <TouchableOpacity style={styles.followButton}>
+          <TouchableOpacity
+            style={styles.followButton}
+            onPress={followUser.bind(this, "Profile")}
+          >
             <Text style={styles.followButtonText}>Follow</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.messageButton}>

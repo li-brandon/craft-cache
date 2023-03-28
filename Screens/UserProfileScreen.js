@@ -12,7 +12,12 @@ import {
 
 import { useFocusEffect } from "@react-navigation/native";
 
-import { getAuth, signOut, sendPasswordResetEmail, onAuthStateChanged } from "firebase/auth";
+import {
+  getAuth,
+  signOut,
+  sendPasswordResetEmail,
+  onAuthStateChanged,
+} from "firebase/auth";
 import { auth, db, resetByEmail } from "../firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Project from "../Components/ProjectsPage/Project";
@@ -42,10 +47,8 @@ const UserProfileScreen = ({ navigation, route }) => {
     });
     return () => {
       unsubscribe();
-    }
-
+    };
   }, []);
-
 
   // TODO: Have props passed from RegisterSceen.js instead of making a call
   useFocusEffect(
@@ -69,7 +72,7 @@ const UserProfileScreen = ({ navigation, route }) => {
       async function fetchData() {
         const userDocRef = doc(db, "users", user.uid);
         const docSnap = await getDoc(userDocRef);
-  
+
         if (docSnap.exists()) {
           console.log("Document data:", docSnap.data());
           setUsername(docSnap.data().username);
@@ -83,24 +86,21 @@ const UserProfileScreen = ({ navigation, route }) => {
           console.log("No such document!");
         }
       }
-      
+
       fetchData(); // call the async function immediately
-  
+
       return () => {
         // clean-up function
       };
     }, [])
   );
-  
 
   const SignOutHandler = function (page) {
-    // sign the user out and redirect to the login page 
-    signOut(auth)
-      .then(() => {
-        setloggedIn(false);
-        navigation.navigate(page);
-      }
-      )
+    // sign the user out and redirect to the login page
+    signOut(auth).then(() => {
+      setloggedIn(false);
+      navigation.navigate(page);
+    });
   };
 
   const ResetPasswordHandler = function (email) {
@@ -141,7 +141,10 @@ const UserProfileScreen = ({ navigation, route }) => {
         </View>
       </View>
 
-      <Image style={styles.profileImage} source={image ? { uri: image } : userIcon} />
+      <Image
+        style={styles.profileImage}
+        source={image ? { uri: image } : userIcon}
+      />
 
       <View style={styles.userInfo}>
         <Text style={styles.username}>{username}</Text>
