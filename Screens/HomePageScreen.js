@@ -89,7 +89,7 @@ function HomePageScreen({ navigation }) {
         />
       }>
       {projects.map((project, index) => (
-        <Post key={index} project={project} navigation={navigation} />
+        <Post key={index} project={project} navigation={navigation}/>
       ))}
     </ScrollView>
   );

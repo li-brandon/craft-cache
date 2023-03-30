@@ -13,9 +13,14 @@ import {
   where,
   getDoc,
   doc,
+  updateDoc,
 } from "firebase/firestore";
 
-export default function Post({ project, navigation }) {
+export default function Post({ project: initialProject, navigation }) {
+  const [project, setProject] = React.useState(initialProject);
+  const [tapCount, setTapCount] = React.useState(0);
+
+
   const viewUserProfile = async function () {
     const docRef = doc(db, "users", project.userID);
 
@@ -31,7 +36,47 @@ export default function Post({ project, navigation }) {
     }
   };
 
+  const handleDoubleTap = () => {
+    setTapCount(tapCount + 1);
+    setTimeout(() => setTapCount(0), 500); // reset tap count after 500ms
+
+    if (tapCount === 1) {
+      handleHeartClicked();
+    }
+  };
+
+  const handleHeartClicked = async function () {
+    // first check if user is logged in
+    if (!auth.currentUser) {
+      return;
+    }
+
+    // check if user has already liked the project
+    const user = auth.currentUser.uid;
+    let updatedProject = { ...project };
+    if (project.usersThatLiked.includes(user)) {
+      // if so, remove the user from the array of users who liked the project
+      const index = project.usersThatLiked.indexOf(user);
+      updatedProject.usersThatLiked.splice(index, 1);
+      updatedProject.numLikes--;
+    } else {
+      // if not, add the user to the array of users who liked the project
+      updatedProject.usersThatLiked.push(user);
+      updatedProject.numLikes++;
+    }
+
+    // update the project in the database
+    const projectRef = doc(db, "projects", project.id);
+    try {
+      await updateDoc(projectRef, updatedProject);
+      setProject(updatedProject);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
+    <TouchableOpacity onPress={handleDoubleTap} activeOpacity={1}>
     <View style={styles.projectPost}>
       <View style={styles.userOfPostAndOptionsButton}>
         <View style={styles.userOfPost}>
@@ -63,13 +108,29 @@ export default function Post({ project, navigation }) {
       </View>
       <View style={styles.postInteractionIcons}>
         <View style={styles.likeCommentShareIcons}>
-          <FontAwesome name="heart" style={styles.interactionIcon} />
+          {/* render the TouchableOpacity if user is logged in */}
+          {auth.currentUser && (
+          <TouchableOpacity onPress={handleHeartClicked.bind(this)}>
+            <FontAwesome
+              name={
+                project.usersThatLiked.includes(auth.currentUser.uid)
+                  ? "heart"
+                  : "heart-o"
+              }
+              style={styles.interactionIcon}
+            />
+          </TouchableOpacity>
+          )}
+
           <FontAwesome name="comment-o" style={styles.interactionIcon} />
           <FontAwesome name="share-alt" style={styles.interactionIcon} />
         </View>
         <View>
           <FontAwesome name="bookmark" style={styles.saveIcon} />
         </View>
+      </View>
+      <View style={styles.projectLikesContainer}>
+        <Text style={styles.projectLikesText}>{project.numLikes} likes</Text>
       </View>
       <View>
         <View style={styles.projectNameContainer}>
@@ -124,6 +185,7 @@ export default function Post({ project, navigation }) {
         </View>
       </View>
     </View>
+    </TouchableOpacity>
   );
 }
 
@@ -191,6 +253,10 @@ const styles = StyleSheet.create({
   },
   saveIcon: {
     fontSize: 27,
+  },
+
+  projectLikesContainer: {
+    marginBottom: 10,
   },
 
   projectNameContainer: {
