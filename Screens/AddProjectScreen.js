@@ -135,6 +135,8 @@ const AddProjectScreen = ({ navigation }) => {
       description: description,
       userID: user,
       image: image,
+      numLikes: 0,
+      usersThatLiked: [],
     };
 
     const date = getCurrentDate();
