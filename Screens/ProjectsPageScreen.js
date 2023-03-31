@@ -6,6 +6,9 @@ import { MyContext } from "../Contexts/MyContext";
 import { auth, db } from "../firebase";
 import { TouchableOpacity } from "react-native";
 import { Component } from 'react';
+import { CheckBox } from '@rneui/themed';
+// import CheckBox from '@react-native-community/checkbox';
+import DropDownPicker from 'react-native-dropdown-picker';
 import { View, TextField, Text, Button, Colors } from 'react-native';
 import { collection, getDocs, query, where } from "firebase/firestore";
 // import { Checkox } from '@react-native-community/checkbox;
@@ -14,6 +17,23 @@ function ProjectsPageScreen({ navigation }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [posted, setIsPosted] = useState(true);
   const [categoryFilter, setCategoryFilter] = useState(["Embroidery", "Crochet", "Knitting", "Sewing"]);
+  //drop down 
+  const [typeDropDownIsOpen, setTypeDropDownIsOpen] = useState(false);
+  const [toolsDropDownIsOpen, setToolsDropDownIsOpen] = useState(false);
+  const [materialsDropDownIsOpen, setMaterialsDropDownIsOpen] = useState(false);
+  const [typeValues, setTypeValues] = useState(["Embroidery", "Crochet", "Knitting", "Sewing"]);
+  const [toolsValues, setToolsValues] = useState([]);
+  const [materialsValues, setMaterialsValues] = useState([]);
+
+  const [typeItems, setTypeItems] = useState([
+    { label: "Knitting", value: "Knitting" },
+    { label: "Crochet", value: "Crochet" },
+    { label: "Sewing", value: "Sewing" },
+    { label: "Embroidery", value: "Embroidery" },
+    // { label: "Weaving", value: "Weaving" },
+    // { label: "Tailoring", value: "Tailoring" },
+    // { label: "Other", value: "Other" },
+  ]);
 
   useEffect(() => {
     // get current user
@@ -25,6 +45,14 @@ function ProjectsPageScreen({ navigation }) {
       unsubscribe();
     };
   }, []);
+
+  useEffect(() => {
+    if (typeValues.length == 0) {
+      setTypeValues(["Embroidery", "Crochet", "Knitting", "Sewing"]);
+    }
+    console.log("typeValues", typeValues);
+    console.log("typeItems", typeItems);
+  }, [typeValues]);
 
   // useFocusEffect is similar to useEffect, but it is called when the screen is focused
   useFocusEffect(
@@ -38,7 +66,7 @@ function ProjectsPageScreen({ navigation }) {
           where("userID", "==", userID),
           where("posted", "==", posted),
           // where("type", "array-contains", "Embroidery"),
-          where("type", "array-contains-any", categoryFilter),
+          where("type", "array-contains-any", typeValues),
         );
 
         getDocs(q).then((querySnapshot) => {
@@ -50,15 +78,45 @@ function ProjectsPageScreen({ navigation }) {
       } else {
         setProjects([]); // clear projects since there is no user
       }
-    }, [currentUser, posted, categoryFilter])
+    }, [currentUser, posted, categoryFilter, typeValues])
   );
 
   return (
     <View style={styles.container}>
-
-      <Button label={'Press'}
+      <View
+        style={{ flex: 1, height: 50 }}
+      >
+        <DropDownPicker
+          open={typeDropDownIsOpen}
+          value={typeValues}
+          items={typeItems}
+          placeholder={"Select a type"}
+          setOpen={setTypeDropDownIsOpen}
+          setValue={setTypeValues}
+          setItems={setTypeItems}
+          multiple={true}
+          mode="BADGE"
+          showBadgeDot={false}
+          maxHeight={130}
+          listMode="SCROLLVIEW"
+          listItemContainerStyle={{ height: 30 }}
+        />
+      </View>
+      <CheckBox
+        center
+        title="posted"
+        checked={posted}
         onPress={() => setIsPosted(!posted)}
-        title="unposted" ></Button>
+      />
+      {/* <CheckBox
+        center
+        title="Embroidery"
+        checked={categoryFilter == ["Embroidery"]}
+        onPress={() => setIsPosted(!posted)}
+      /> */}
+      {/* <Button label={'Press'}
+        onPress={() => setIsPosted(!posted)}
+        title={posted ? "posted" : "unposted"} ></Button> */}
       <Button label={'Press'}
         onPress={() => setCategoryFilter(["Embroidery"])}
         title="Embroidery" ></Button>
@@ -68,9 +126,6 @@ function ProjectsPageScreen({ navigation }) {
       <Button label={'Press'}
         onPress={() => setCategoryFilter(["Embroidery", "Crochet", "Knitting", "Sewing"])}
         title="All" ></Button>
-      {/* <CheckBox value={!posted}
-        onValueChange={() => setIsPosted(!posted)}
-        label="unposted" /> */}
 
       <ScrollView style={styles.container}>
         {projects.map((project, index) => (
