@@ -27,7 +27,8 @@
     "react-native-reanimated": "~2.14.4",
     "react-native-ui-lib": "^7.1.1",
     "react-native-vector-icons": "^9.2.0",
-    "react-redux": "^8.0.5"
+    "react-redux": "^8.0.5",
+    "react-share": "^4.4.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"
