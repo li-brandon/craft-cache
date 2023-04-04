@@ -1,9 +1,8 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity, Share, Alert } from "react-native";
 import React from "react";
 import { FontAwesome, SimpleLineIcons } from "@expo/vector-icons";
 import userIcon from "../assets/user-icon.png";
 import { useFocusEffect } from "@react-navigation/native";
-
 import { auth, db } from "../../firebase";
 
 import {
@@ -75,6 +74,26 @@ export default function Post({ project: initialProject, navigation }) {
     }
   };
 
+  const handleShare = async () => {
+    try {
+      const result = await Share.share({
+        url : project.image,
+        message: `Check out this project I found on Craft Cache!`,
+      });
+      if (result.action === Share.sharedAction) {
+        if (result.activityType) {
+          // shared with activity type of result.activityType
+        } else {
+          // shared
+        }
+      } else if (result.action === Share.dismissedAction) {
+        // dismissed
+      }
+    } catch (error) {
+      Alert.alert(error.message)
+    }
+  };
+
   return (
     <TouchableOpacity onPress={handleDoubleTap} activeOpacity={1}>
     <View style={styles.projectPost}>
@@ -123,10 +142,10 @@ export default function Post({ project: initialProject, navigation }) {
           )}
 
           <FontAwesome name="comment-o" style={styles.interactionIcon} />
-          <FontAwesome name="share-alt" style={styles.interactionIcon} />
+          <FontAwesome name="share-alt" style={styles.interactionIcon} onPress={handleShare} />
         </View>
         <View>
-          <FontAwesome name="bookmark" style={styles.saveIcon} />
+          <FontAwesome name="bookmark-o" style={styles.saveIcon} />
         </View>
       </View>
       <View style={styles.projectLikesContainer}>
