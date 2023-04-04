@@ -3,10 +3,6 @@ import React from "react";
 import { FontAwesome, SimpleLineIcons } from "@expo/vector-icons";
 import userIcon from "../assets/user-icon.png";
 import { useFocusEffect } from "@react-navigation/native";
-// import {
-//   PinterestShareButton,
-// } from "react-share";
- 
 import { auth, db } from "../../firebase";
 
 import {
@@ -82,7 +78,7 @@ export default function Post({ project: initialProject, navigation }) {
     try {
       const result = await Share.share({
         url : project.image,
-        message: `Check out this project I found on Craft Cache! ${project.name} by ${project.username}`,
+        message: `Check out this project I found on Craft Cache!`,
       });
       if (result.action === Share.sharedAction) {
         if (result.activityType) {
@@ -149,7 +145,7 @@ export default function Post({ project: initialProject, navigation }) {
           <FontAwesome name="share-alt" style={styles.interactionIcon} onPress={handleShare} />
         </View>
         <View>
-          <FontAwesome name="bookmark" style={styles.saveIcon} />
+          <FontAwesome name="bookmark-o" style={styles.saveIcon} />
         </View>
       </View>
       <View style={styles.projectLikesContainer}>
