@@ -21,7 +21,7 @@ function ProjectsPageScreen({ navigation }) {
   const [typeDropDownIsOpen, setTypeDropDownIsOpen] = useState(false);
   const [toolsDropDownIsOpen, setToolsDropDownIsOpen] = useState(false);
   const [materialsDropDownIsOpen, setMaterialsDropDownIsOpen] = useState(false);
-  const [typeValues, setTypeValues] = useState(["Embroidery", "Crochet", "Knitting", "Sewing"]);
+  const [typeValues, setTypeValues] = useState([]);
   const [toolsValues, setToolsValues] = useState([]);
   const [materialsValues, setMaterialsValues] = useState([]);
 
@@ -46,27 +46,41 @@ function ProjectsPageScreen({ navigation }) {
     };
   }, []);
 
-  useEffect(() => {
-    if (typeValues.length == 0) {
-      setTypeValues(["Embroidery", "Crochet", "Knitting", "Sewing"]);
-    }
-    console.log("typeValues", typeValues);
-    console.log("typeItems", typeItems);
-  }, [typeValues]);
+  // useEffect(() => {
+  //   console.log(typeValues.length)
+  //   if (typeValues.length == 0) {
+  //     setTypeValues(["Embroidery", "Crochet", "Knitting", "Sewing"]);
+  //   }
+  //   console.log("typeValues", typeValues);
+  //   console.log("typeItems", typeItems);
+  // }, [typeValues]);
 
+
+  const TypeValueHandler = async (value) => {
+    if (value.length == 0) {
+      await setTypeValues(["Embroidery", "Crochet", "Knitting", "Sewing"]);
+    } else {
+      await setTypeValues(value);
+    }
+
+    console.log("typeValues", typeValues);
+  }
   // useFocusEffect is similar to useEffect, but it is called when the screen is focused
   useFocusEffect(
     React.useCallback(() => {
       if (currentUser) {
         const userID = currentUser.uid;
         const tempProjects = [];
-
+        // console.log(typeValues.length)
+        // if (typeValues.length == 0) {
+        //   setTypeValues(["Embroidery", "Crochet", "Knitting", "Sewing"]);
+        // }
         const q = query(
           collection(db, "projects"),
           where("userID", "==", userID),
           where("posted", "==", posted),
           // where("type", "array-contains", "Embroidery"),
-          where("type", "array-contains-any", typeValues),
+          where("type", "array-contains-any", typeValues.length != 0 ? typeValues : ["Embroidery", "Crochet", "Knitting", "Sewing"]),
         );
 
         getDocs(q).then((querySnapshot) => {
@@ -78,9 +92,8 @@ function ProjectsPageScreen({ navigation }) {
       } else {
         setProjects([]); // clear projects since there is no user
       }
-    }, [currentUser, posted, categoryFilter, typeValues])
+    }, [currentUser, posted, typeValues])
   );
-
   return (
     <View style={styles.container}>
       <View
@@ -92,7 +105,7 @@ function ProjectsPageScreen({ navigation }) {
           items={typeItems}
           placeholder={"Select a type"}
           setOpen={setTypeDropDownIsOpen}
-          setValue={setTypeValues}
+          setValue={TypeValueHandler}
           setItems={setTypeItems}
           multiple={true}
           mode="BADGE"
