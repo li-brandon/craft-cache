@@ -167,6 +167,7 @@ const ProjectDetail = ({ project, navigation }) => {
         const projectRef = doc(collection(db, "projects"), projectState.id);
         await updateDoc(projectRef, {
           posted: false,
+          timePosted: null,
         });
 
         // update UI to show that project is not posted
@@ -183,6 +184,7 @@ const ProjectDetail = ({ project, navigation }) => {
         const projectRef = doc(collection(db, "projects"), projectState.id);
         await updateDoc(projectRef, {
           posted: true,
+          timePosted: new Date(),
         });
 
         // update UI to show that project is posted
@@ -228,6 +230,7 @@ const ProjectDetail = ({ project, navigation }) => {
         });
 
         const projectRef = doc(collection(db, "projects"), projectState.id);
+        const newLastUpdatedDate = getCurrentDate();
 
         updateDoc(projectRef, {
           name: projectState.name,
@@ -237,12 +240,26 @@ const ProjectDetail = ({ project, navigation }) => {
           pattern: projectState.pattern,
           description: projectState.description,
           image: projectState.image,
+          lastUpdated: newLastUpdatedDate,
         });
       } catch (error) {
         console.error("Error updating project: ", error);
       }
     }
   };
+
+    // getCurrentDate returns the current date in the format MM/DD/YYYY
+    const getCurrentDate = () => {
+      const currentDate = new Date();
+      const month = currentDate.getMonth() + 1;
+      const day = currentDate.getDate();
+      const year = currentDate.getFullYear();
+  
+      const formattedDate = `${month}/${day}/${year}`;
+  
+      return formattedDate;
+    };
+  
 
   return (
     <KeyboardAvoidingView

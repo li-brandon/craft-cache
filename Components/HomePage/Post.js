@@ -1,4 +1,12 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, Share, Alert } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  Share,
+  Alert,
+} from "react-native";
 import React from "react";
 import { FontAwesome, SimpleLineIcons } from "@expo/vector-icons";
 import userIcon from "../assets/user-icon.png";
@@ -18,7 +26,6 @@ import {
 export default function Post({ project: initialProject, navigation }) {
   const [project, setProject] = React.useState(initialProject);
   const [tapCount, setTapCount] = React.useState(0);
-
 
   const viewUserProfile = async function () {
     const docRef = doc(db, "users", project.userID);
@@ -77,7 +84,7 @@ export default function Post({ project: initialProject, navigation }) {
   const handleShare = async () => {
     try {
       const result = await Share.share({
-        url : project.image,
+        url: project.image,
         message: `Check out this project I found on Craft Cache!`,
       });
       if (result.action === Share.sharedAction) {
@@ -90,12 +97,11 @@ export default function Post({ project: initialProject, navigation }) {
         // dismissed
       }
     } catch (error) {
-      Alert.alert(error.message)
+      Alert.alert(error.message);
     }
   };
 
   return (
-    <TouchableOpacity onPress={handleDoubleTap} activeOpacity={1}>
     <View style={styles.projectPost}>
       <View style={styles.userOfPostAndOptionsButton}>
         <View style={styles.userOfPost}>
@@ -118,31 +124,36 @@ export default function Post({ project: initialProject, navigation }) {
           <SimpleLineIcons name="options" size={20} />
         </View>
       </View>
-      <View style={styles.projectImageContainer}>
+      <TouchableOpacity style={styles.projectImageContainer} onPress={handleDoubleTap} activeOpacity={1}>
         <Image
           source={{ uri: project.image }}
           style={styles.projectImage}
           alt="Project Image"
+          onPress={handleDoubleTap}
         />
-      </View>
+      </TouchableOpacity>
       <View style={styles.postInteractionIcons}>
         <View style={styles.likeCommentShareIcons}>
           {/* render the TouchableOpacity if user is logged in */}
           {auth.currentUser && (
-          <TouchableOpacity onPress={handleHeartClicked.bind(this)}>
-            <FontAwesome
-              name={
-                project.usersThatLiked.includes(auth.currentUser.uid)
-                  ? "heart"
-                  : "heart-o"
-              }
-              style={styles.interactionIcon}
-            />
-          </TouchableOpacity>
+            <TouchableOpacity onPress={handleHeartClicked.bind(this)}>
+              <FontAwesome
+                name={
+                  project.usersThatLiked.includes(auth.currentUser.uid)
+                    ? "heart"
+                    : "heart-o"
+                }
+                style={styles.interactionIcon}
+              />
+            </TouchableOpacity>
           )}
 
           <FontAwesome name="comment-o" style={styles.interactionIcon} />
-          <FontAwesome name="share-alt" style={styles.interactionIcon} onPress={handleShare} />
+          <FontAwesome
+            name="share-alt"
+            style={styles.interactionIcon}
+            onPress={handleShare}
+          />
         </View>
         <View>
           <FontAwesome name="bookmark-o" style={styles.saveIcon} />
@@ -204,7 +215,6 @@ export default function Post({ project: initialProject, navigation }) {
         </View>
       </View>
     </View>
-    </TouchableOpacity>
   );
 }
 
@@ -284,6 +294,7 @@ const styles = StyleSheet.create({
 
   projectNameText: {
     fontSize: 17,
+    fontWeight: "bold",
   },
 
   projectInfo: {
@@ -296,7 +307,7 @@ const styles = StyleSheet.create({
   },
 
   projectInfoText: {
-    fontSize: 13,
+    fontSize: 15,
   },
 
   imageContainer: {
@@ -320,7 +331,11 @@ const styles = StyleSheet.create({
   },
 
   projectStatusText: {
-    fontSize: 13,
+    fontSize: 14,
     color: "grey",
+  },
+
+  projectLikesText: {
+    fontSize: 15,
   },
 });
