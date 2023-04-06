@@ -1,4 +1,14 @@
-import { StyleSheet, Text, View, Image, TouchableOpacity, Share, Alert } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
+  Share,
+  Alert,
+  Animated,
+  Easing,
+} from "react-native";
 import React from "react";
 import { FontAwesome, SimpleLineIcons } from "@expo/vector-icons";
 import userIcon from "../assets/user-icon.png";
@@ -18,17 +28,18 @@ import {
 export default function Post({ project: initialProject, navigation }) {
   const [project, setProject] = React.useState(initialProject);
   const [tapCount, setTapCount] = React.useState(0);
-
+  const [animationValue, setAnimationValue] = React.useState(
+    new Animated.Value(0)
+  );
 
   const viewUserProfile = async function () {
     const docRef = doc(db, "users", project.userID);
-
     try {
       const docSnap = await getDoc(docRef);
-
       navigation.navigate("Profile", {
         profileInfo: docSnap.data(),
         profileID: docSnap.id,
+        visitingOwnProfile: auth.currentUser.uid === project.userID,
       });
     } catch (error) {
       console.log(error);
@@ -62,6 +73,7 @@ export default function Post({ project: initialProject, navigation }) {
       // if not, add the user to the array of users who liked the project
       updatedProject.usersThatLiked.push(user);
       updatedProject.numLikes++;
+      animateHeart();
     }
 
     // update the project in the database
@@ -74,10 +86,22 @@ export default function Post({ project: initialProject, navigation }) {
     }
   };
 
+  const animateHeart = () => {
+    Animated.timing(animationValue, {
+      toValue: 1,
+      duration: 600,
+      easing: Easing.elastic(1),
+      useNativeDriver: true,
+    }).start(() => {
+      animationValue.setValue(0);
+    });
+  };
+  
+
   const handleShare = async () => {
     try {
       const result = await Share.share({
-        url : project.image,
+        url: project.image,
         message: `Check out this project I found on Craft Cache!`,
       });
       if (result.action === Share.sharedAction) {
@@ -90,12 +114,11 @@ export default function Post({ project: initialProject, navigation }) {
         // dismissed
       }
     } catch (error) {
-      Alert.alert(error.message)
+      Alert.alert(error.message);
     }
   };
 
   return (
-    <TouchableOpacity onPress={handleDoubleTap} activeOpacity={1}>
     <View style={styles.projectPost}>
       <View style={styles.userOfPostAndOptionsButton}>
         <View style={styles.userOfPost}>
@@ -118,31 +141,60 @@ export default function Post({ project: initialProject, navigation }) {
           <SimpleLineIcons name="options" size={20} />
         </View>
       </View>
-      <View style={styles.projectImageContainer}>
+
+      <TouchableOpacity
+        style={styles.projectImageContainer}
+        onPress={handleDoubleTap}
+        activeOpacity={1}
+      >
         <Image
           source={{ uri: project.image }}
           style={styles.projectImage}
           alt="Project Image"
+          onPress={handleDoubleTap}
         />
-      </View>
+        <Animated.View
+          style={[
+            styles.heartAnimation,
+            {
+              opacity: animationValue,
+              transform: [
+                {
+                  scale: animationValue.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.3, 1.5],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FontAwesome name="heart" size={50} color="red" />
+        </Animated.View>
+      </TouchableOpacity>
+
       <View style={styles.postInteractionIcons}>
         <View style={styles.likeCommentShareIcons}>
           {/* render the TouchableOpacity if user is logged in */}
           {auth.currentUser && (
-          <TouchableOpacity onPress={handleHeartClicked.bind(this)}>
-            <FontAwesome
-              name={
-                project.usersThatLiked.includes(auth.currentUser.uid)
-                  ? "heart"
-                  : "heart-o"
-              }
-              style={styles.interactionIcon}
-            />
-          </TouchableOpacity>
+            <TouchableOpacity onPress={handleHeartClicked.bind(this)}>
+              <FontAwesome
+                name={
+                  project.usersThatLiked.includes(auth.currentUser.uid)
+                    ? "heart"
+                    : "heart-o"
+                }
+                style={styles.interactionIcon}
+              />
+            </TouchableOpacity>
           )}
 
           <FontAwesome name="comment-o" style={styles.interactionIcon} />
-          <FontAwesome name="share-alt" style={styles.interactionIcon} onPress={handleShare} />
+          <FontAwesome
+            name="share-alt"
+            style={styles.interactionIcon}
+            onPress={handleShare}
+          />
         </View>
         <View>
           <FontAwesome name="bookmark-o" style={styles.saveIcon} />
@@ -204,7 +256,6 @@ export default function Post({ project: initialProject, navigation }) {
         </View>
       </View>
     </View>
-    </TouchableOpacity>
   );
 }
 
@@ -284,6 +335,7 @@ const styles = StyleSheet.create({
 
   projectNameText: {
     fontSize: 17,
+    fontWeight: "bold",
   },
 
   projectInfo: {
@@ -296,7 +348,7 @@ const styles = StyleSheet.create({
   },
 
   projectInfoText: {
-    fontSize: 13,
+    fontSize: 15,
   },
 
   imageContainer: {
@@ -320,7 +372,21 @@ const styles = StyleSheet.create({
   },
 
   projectStatusText: {
-    fontSize: 13,
+    fontSize: 14,
     color: "grey",
+  },
+
+  projectLikesText: {
+    fontSize: 15,
+  },
+
+  heartAnimation: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100%",
   },
 });

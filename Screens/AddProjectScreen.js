@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,12 +7,11 @@ import {
   TouchableOpacity,
   Alert,
   Image,
-  Button,
   Keyboard,
   ScrollView,
   KeyboardAvoidingView,
+  RefreshControl,
 } from "react-native";
-import { MyContext } from "../Contexts/MyContext";
 import { auth, db, storage } from "../firebase";
 import { collection, addDoc, getDocs, query, where } from "firebase/firestore";
 import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
@@ -20,11 +19,6 @@ import * as ImagePicker from "expo-image-picker";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
 import DropDownPicker from "react-native-dropdown-picker";
 import Icon from "react-native-vector-icons/MaterialIcons";
-// import { LogBox } from "react-native";
-
-// LogBox.ignoreLogs([
-//   "VirtualizedLists should never be nested inside plain ScrollViews with the same orientation",
-// ]);
 
 const AddProjectScreen = ({ navigation }) => {
   // States
@@ -58,12 +52,15 @@ const AddProjectScreen = ({ navigation }) => {
   const [toolsItems, setToolsItems] = useState([]);
   const [materialsItems, setMaterialsItems] = useState([]);
 
+  // Refresh control state
+  const [refreshing, setRefreshing] = useState(false);
+
   // Get the user id from firebase auth
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        fetchItemsFromInventory(user.uid);
         setUser(user.uid);
+        fetchItemsFromInventory(user.uid);
       } else {
         // Redirect to login screen if user is not logged in
         navigation.navigate("Login");
@@ -76,6 +73,9 @@ const AddProjectScreen = ({ navigation }) => {
 
   //fetchItemsFromInventory fetches the user's inventory items from Firestore
   const fetchItemsFromInventory = async (userID) => {
+    if (!userID) {
+      return;
+    }
     const q = query(collection(db, "inventory"), where("userID", "==", userID));
     const querySnapshot = await getDocs(q);
 
@@ -258,13 +258,30 @@ const AddProjectScreen = ({ navigation }) => {
     setImage(null);
   };
 
+  // onRefresh is called when the user pulls down to refresh the page
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    try {
+      // fetch updated data here
+      fetchItemsFromInventory(user);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refreshing]);
+
   return (
     <KeyboardAvoidingView
       // behavior prop should be position
       behavior={Platform.OS === "ios" ? "position" : "height"}
       keyboardVerticalOffset={10}
     >
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+      >
         <View style={styles.project}>
           <View>
             <View style={styles.projectInfoAndImage}>
@@ -308,29 +325,22 @@ const AddProjectScreen = ({ navigation }) => {
                 <View style={styles.projectInfo}>
                   <View
                     style={{
-                      display: "flex",
-                      alignContent: "center",
                       flexDirection: "row",
+                      alignItems: "center",
+                      marginRight: 5,
                     }}
                   >
-                    <View
-                      style={{
-                        flexDirection: "row",
-                        alignItems: "center",
-                        marginRight: 5,
-                      }}
-                    >
-                      <Text style={styles.projectInfoText}>Name</Text>
-                      <Text style={styles.requiredAsterisk}>*</Text>
-                    </View>
-                    {/* if edit state is true, show input text. If not true, show the name as Text*/}
-                    <TextInput
-                      style={styles.inputField}
-                      returnKeyType="done"
-                      onChangeText={(text) => setName(text)}
-                      value={name}
-                    />
+                    <Text style={styles.projectInfoText}>Name</Text>
+                    <Text style={styles.requiredAsterisk}>*</Text>
                   </View>
+                  {/* if edit state is true, show input text. If not true, show the name as Text*/}
+                  <TextInput
+                    style={styles.input}
+                    placeholder="ex: Flower Bucket Hat"
+                    returnKeyType="done"
+                    onChangeText={(text) => setName(text)}
+                    value={name}
+                  />
 
                   <View
                     style={[
@@ -364,8 +374,13 @@ const AddProjectScreen = ({ navigation }) => {
                         mode="BADGE"
                         showBadgeDot={false}
                         maxHeight={130}
+                        style={styles.dropDownPicker}
                         listMode="SCROLLVIEW"
                         listItemContainerStyle={{ height: 30 }}
+                        dropDownContainerStyle={{
+                          borderColor: "#ccc",
+                          backgroundColor: "#F5F5F5",
+                        }}
                       />
                     </View>
                   </View>
@@ -381,7 +396,7 @@ const AddProjectScreen = ({ navigation }) => {
                     <View
                       style={{
                         flex: 1,
-                        height: toolsDropDownIsOpen ? 180 : 50,
+                        height: toolsDropDownIsOpen ? 140 : 50,
                       }}
                     >
                       <DropDownPicker
@@ -396,20 +411,30 @@ const AddProjectScreen = ({ navigation }) => {
                         listMode="SCROLLVIEW"
                         mode="BADGE"
                         showBadgeDot={false}
-                        maxHeight={130}
-                        listItemContainerStyle={{ height: 33 }}
+                        maxHeight={100}
+                        style={styles.dropDownPicker}
+                        listItemContainerStyle={{ height: 30 }}
                         ListEmptyComponent={() => (
-                          <Text
-                            style={{
-                              padding: 10,
-                              paddingLeft: 20,
-                              paddingRight: 20,
-                              textAlign: "center",
-                            }}
-                          >
-                            Add a tool to inventory
-                          </Text>
+                          <TouchableOpacity onPress={() => {
+                            navigation.navigate("Add Inventory");
+                          }}>
+                            <Text
+                              style={{
+                                padding: 10,
+                                paddingLeft: 20,
+                                paddingRight: 20,
+                                textAlign: "center",
+                                fontStyle: "italic",
+                              }}
+                            >
+                              Add a tool to inventory
+                            </Text>
+                          </TouchableOpacity>
                         )}
+                        dropDownContainerStyle={{
+                          borderColor: "#ccc",
+                          backgroundColor: "#F5F5F5",
+                        }}
                       />
                     </View>
                   </View>
@@ -424,7 +449,7 @@ const AddProjectScreen = ({ navigation }) => {
                     <View
                       style={{
                         flex: 1,
-                        height: materialsDropDownIsOpen ? 180 : 50,
+                        height: materialsDropDownIsOpen ? 140 : 50,
                       }}
                     >
                       <DropDownPicker
@@ -437,55 +462,58 @@ const AddProjectScreen = ({ navigation }) => {
                         setItems={setMaterialsItems}
                         multiple={true}
                         showBadgeDot={false}
-                        maxHeight={130}
+                        maxHeight={100}
                         listMode="SCROLLVIEW"
                         mode="BADGE"
-                        listItemContainerStyle={{ height: 33 }}
+                        listItemContainerStyle={{ height: 30 }}
+                        style={styles.dropDownPicker}
                         ListEmptyComponent={() => (
-                          <Text
-                            style={{
-                              padding: 10,
-                              paddingLeft: 20,
-                              paddingRight: 20,
-                              textAlign: "center",
-                            }}
-                          >
-                            Add a material to inventory
-                          </Text>
+                          <TouchableOpacity onPress={() => {
+                            navigation.navigate("Add Inventory");
+                          }}>
+                            <Text
+                              style={{
+                                padding: 10,
+                                paddingLeft: 20,
+                                paddingRight: 20,
+                                textAlign: "center",
+                                fontStyle: "italic",
+                              }}
+                            >
+                              Add a tool to inventory
+                            </Text>
+                          </TouchableOpacity>
                         )}
+                        dropDownContainerStyle={{
+                          borderColor: "#ccc",
+                          backgroundColor: "#F5F5F5",
+                        }}
                       />
                     </View>
                   </View>
 
-                  <View style={{ marginTop: 10 }}>
+                  <View>
                     <View
                       style={{
-                        display: "flex",
-                        alignContent: "center",
                         flexDirection: "row",
+                        alignItems: "center",
+                        marginRight: 5,
                       }}
                     >
-                      <View
-                        style={{
-                          flexDirection: "row",
-                          alignItems: "center",
-                          marginRight: 5,
-                        }}
-                      >
-                        <Text style={styles.projectInfoText}>Pattern</Text>
-                        <Text style={styles.requiredAsterisk}>*</Text>
-                      </View>
-                      {/* if edit state is true, show input text. If not true, show the name as Text*/}
-                      <TextInput
-                        style={styles.inputField}
-                        returnKeyType="done"
-                        onChangeText={(text) => setPattern(text)}
-                        value={pattern}
-                      />
+                      <Text style={styles.projectInfoText}>Pattern</Text>
+                      <Text style={styles.requiredAsterisk}>*</Text>
                     </View>
+                    {/* if edit state is true, show input text. If not true, show the name as Text*/}
+                    <TextInput
+                      style={styles.input}
+                      placeholder="ex: self drafted"
+                      returnKeyType="done"
+                      onChangeText={(text) => setPattern(text)}
+                      value={pattern}
+                    />
                   </View>
 
-                  <View style={{ marginTop: 10 }}>
+                  <View>
                     <View
                       style={{
                         flexDirection: "row",
@@ -498,7 +526,8 @@ const AddProjectScreen = ({ navigation }) => {
                     </View>
                     <View style={styles.projectDescriptionContainer}>
                       <TextInput
-                        style={styles.descriptionInputField}
+                        style={styles.description}
+                        placeholder="ex: I made this hat for my daughter and she loves it!"
                         editable
                         multiline
                         numberOfLines={4}
@@ -514,6 +543,7 @@ const AddProjectScreen = ({ navigation }) => {
                       />
                     </View>
                   </View>
+
                   <View style={styles.clearAddButtons}>
                     <TouchableOpacity
                       style={styles.clearButton}
@@ -549,14 +579,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
 
-  inputField: {
-    height: 27,
-    width: 150,
-    borderColor: "gray",
+  input: {
+    height: 40,
     borderWidth: 1,
+    borderColor: "#ccc",
     borderRadius: 5,
-    padding: 5,
-    fontSize: 14,
+    padding: 10,
+    marginBottom: 10,
   },
 
   projectName: {
@@ -592,11 +621,10 @@ const styles = StyleSheet.create({
   },
 
   imagePlaceholder: {
-    width: 170,
-    height: 170,
+    width: 155,
+    height: 155,
     borderRadius: 10,
     backgroundColor: "#dbdbda",
-    marginBottom: 10,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -605,7 +633,7 @@ const styles = StyleSheet.create({
   imagePlaceholderText: {
     fontSize: 17,
     fontWeight: "bold",
-    padding: 5,
+    padding: 3,
   },
 
   imageContainer: {
@@ -615,11 +643,12 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    width: 170,
-    height: 170,
+    width: 155,
+    height: 155,
     borderRadius: 10,
     margin: 10,
     marginTop: 0,
+    marginBottom: 0,
   },
 
   imageWithButtons: {
@@ -661,10 +690,7 @@ const styles = StyleSheet.create({
   },
 
   rowWithWrappers: {
-    display: "flex",
-    alignItems: "center",
-    flexDirection: "row",
-    marginTop: 10,
+    marginBottom: 10,
   },
 
   wrappers: {
@@ -691,25 +717,18 @@ const styles = StyleSheet.create({
     fontSize: 13,
   },
 
-  projectDescriptionContainer: {
-    marginLeft: 3,
-    marginTop: 10,
-  },
-
   projectDescriptionText: {
     fontSize: 14,
   },
 
-  descriptionInputField: {
+  description: {
     height: 80,
-    width: "98%",
-    borderColor: "gray",
     borderWidth: 1,
+    borderColor: "#ccc",
     borderRadius: 5,
-    padding: 5,
-    fontSize: 16,
+    padding: 10,
+    marginBottom: 10,
   },
-
   editBtnContainer: {
     position: "absolute",
     top: 0,
@@ -772,6 +791,13 @@ const styles = StyleSheet.create({
   requiredAsterisk: {
     color: "red",
     fontSize: 20,
+  },
+
+  dropDownPicker: {
+    borderColor: "#ccc",
+    borderRadius: 5,
+    marginBottom: 10,
+    backgroundColor: "#F5F5F5",
   },
 });
 

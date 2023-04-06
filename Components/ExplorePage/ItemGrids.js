@@ -21,10 +21,9 @@ function CategoryGrids({ imageUri, color, onPress }) {
 const styles = StyleSheet.create({
   grid: {
     flex: 1,
-    margin: 16,
-    height: 150,
+    margin: 20,
+    height: 135,
     borderRadius: 8,
-    // backgroundColor: 'white',
     shadowColor: "black",
     shadowOpacity: 0.25,
     shadowRadius: 8,
@@ -32,7 +31,7 @@ const styles = StyleSheet.create({
   },
   gridInner: {
     flex: 1,
-    padding: 16,
+    padding: 5,
     borderRadius: 8,
     justifyContent: "center",
     // alignItems: "center",
@@ -41,8 +40,8 @@ const styles = StyleSheet.create({
     opacity: 0.2,
   },
   image: {
-    width: 120,
-    height: 120,
+    width: 145,
+    height: 145,
     borderRadius: 8,
   },
 });
