@@ -621,11 +621,10 @@ const styles = StyleSheet.create({
   },
 
   imagePlaceholder: {
-    width: 170,
-    height: 170,
+    width: 155,
+    height: 155,
     borderRadius: 10,
     backgroundColor: "#dbdbda",
-    marginBottom: 10,
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
@@ -634,7 +633,7 @@ const styles = StyleSheet.create({
   imagePlaceholderText: {
     fontSize: 17,
     fontWeight: "bold",
-    padding: 5,
+    padding: 3,
   },
 
   imageContainer: {
@@ -644,11 +643,12 @@ const styles = StyleSheet.create({
   },
 
   image: {
-    width: 170,
-    height: 170,
+    width: 155,
+    height: 155,
     borderRadius: 10,
     margin: 10,
     marginTop: 0,
+    marginBottom: 0,
   },
 
   imageWithButtons: {
