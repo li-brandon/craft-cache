@@ -415,16 +415,21 @@ const AddProjectScreen = ({ navigation }) => {
                         style={styles.dropDownPicker}
                         listItemContainerStyle={{ height: 30 }}
                         ListEmptyComponent={() => (
-                          <Text
-                            style={{
-                              padding: 10,
-                              paddingLeft: 20,
-                              paddingRight: 20,
-                              textAlign: "center",
-                            }}
-                          >
-                            Add a tool to inventory
-                          </Text>
+                          <TouchableOpacity onPress={() => {
+                            navigation.navigate("Add Inventory");
+                          }}>
+                            <Text
+                              style={{
+                                padding: 10,
+                                paddingLeft: 20,
+                                paddingRight: 20,
+                                textAlign: "center",
+                                fontStyle: "italic",
+                              }}
+                            >
+                              Add a tool to inventory
+                            </Text>
+                          </TouchableOpacity>
                         )}
                         dropDownContainerStyle={{
                           borderColor: "#ccc",
@@ -463,16 +468,21 @@ const AddProjectScreen = ({ navigation }) => {
                         listItemContainerStyle={{ height: 30 }}
                         style={styles.dropDownPicker}
                         ListEmptyComponent={() => (
-                          <Text
-                            style={{
-                              padding: 10,
-                              paddingLeft: 20,
-                              paddingRight: 20,
-                              textAlign: "center",
-                            }}
-                          >
-                            Add a material to inventory
-                          </Text>
+                          <TouchableOpacity onPress={() => {
+                            navigation.navigate("Add Inventory");
+                          }}>
+                            <Text
+                              style={{
+                                padding: 10,
+                                paddingLeft: 20,
+                                paddingRight: 20,
+                                textAlign: "center",
+                                fontStyle: "italic",
+                              }}
+                            >
+                              Add a tool to inventory
+                            </Text>
+                          </TouchableOpacity>
                         )}
                         dropDownContainerStyle={{
                           borderColor: "#ccc",

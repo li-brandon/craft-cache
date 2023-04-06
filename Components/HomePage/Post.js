@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   Share,
   Alert,
+  Animated,
+  Easing,
 } from "react-native";
 import React from "react";
 import { FontAwesome, SimpleLineIcons } from "@expo/vector-icons";
@@ -26,6 +28,9 @@ import {
 export default function Post({ project: initialProject, navigation }) {
   const [project, setProject] = React.useState(initialProject);
   const [tapCount, setTapCount] = React.useState(0);
+  const [animationValue, setAnimationValue] = React.useState(
+    new Animated.Value(0)
+  );
 
   const viewUserProfile = async function () {
     const docRef = doc(db, "users", project.userID);
@@ -69,6 +74,7 @@ export default function Post({ project: initialProject, navigation }) {
       // if not, add the user to the array of users who liked the project
       updatedProject.usersThatLiked.push(user);
       updatedProject.numLikes++;
+      animateHeart();
     }
 
     // update the project in the database
@@ -80,6 +86,18 @@ export default function Post({ project: initialProject, navigation }) {
       console.log(error);
     }
   };
+
+  const animateHeart = () => {
+    Animated.timing(animationValue, {
+      toValue: 1,
+      duration: 600,
+      easing: Easing.elastic(1),
+      useNativeDriver: true,
+    }).start(() => {
+      animationValue.setValue(0);
+    });
+  };
+  
 
   const handleShare = async () => {
     try {
@@ -124,14 +142,38 @@ export default function Post({ project: initialProject, navigation }) {
           <SimpleLineIcons name="options" size={20} />
         </View>
       </View>
-      <TouchableOpacity style={styles.projectImageContainer} onPress={handleDoubleTap} activeOpacity={1}>
+
+      <TouchableOpacity
+        style={styles.projectImageContainer}
+        onPress={handleDoubleTap}
+        activeOpacity={1}
+      >
         <Image
           source={{ uri: project.image }}
           style={styles.projectImage}
           alt="Project Image"
           onPress={handleDoubleTap}
         />
+        <Animated.View
+          style={[
+            styles.heartAnimation,
+            {
+              opacity: animationValue,
+              transform: [
+                {
+                  scale: animationValue.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0.3, 1.5],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <FontAwesome name="heart" size={50} color="red" />
+        </Animated.View>
       </TouchableOpacity>
+
       <View style={styles.postInteractionIcons}>
         <View style={styles.likeCommentShareIcons}>
           {/* render the TouchableOpacity if user is logged in */}
@@ -337,5 +379,15 @@ const styles = StyleSheet.create({
 
   projectLikesText: {
     fontSize: 15,
+  },
+
+  heartAnimation: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    justifyContent: "center",
+    alignItems: "center",
+    width: "100%",
+    height: "100%",
   },
 });
