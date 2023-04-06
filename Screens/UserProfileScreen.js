@@ -19,7 +19,14 @@ import {
   onAuthStateChanged,
 } from "firebase/auth";
 import { auth, db, resetByEmail } from "../firebase";
-import { doc, getDoc } from "firebase/firestore";
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  getDoc,
+  doc,
+} from "firebase/firestore";
 import Project from "../Components/ProjectsPage/Project";
 import { MyContext } from "../Contexts/MyContext";
 import { LoginContext } from "../Contexts/LoginContext";
@@ -35,7 +42,7 @@ const UserProfileScreen = ({ navigation, route }) => {
   const [numFollowers, setNumFollowers] = useState("");
   const [numFollowing, setNumFollowing] = useState("");
   const [numPosts, setNumPosts] = useState("");
-  const [publishedProjects, setPublishedProjects] = useState("");
+  const [publishedProjects, setPublishedProjects] = useState([]);
   const [savedProjects, setSavedProjects] = useState("");
   const [bio, setBio] = useState("");
   const [image, setImage] = useState(null);
@@ -78,10 +85,23 @@ const UserProfileScreen = ({ navigation, route }) => {
           setUsername(docSnap.data().username);
           setNumFollowers(docSnap.data().numFollowers);
           setNumFollowing(docSnap.data().numFollowing);
-          setPublishedProjects(docSnap.data().publishedProjects);
+
           setSavedProjects(docSnap.data().savedProjects);
           setBio(docSnap.data().bio);
           setImage(docSnap.data().image);
+          // publishedProjects isn't set up yet so we will just fetch all posts that are posted by current user
+          const q = query(
+            collection(db, "projects"),
+            where("userID", "==", user.uid),
+            where("posted", "==", true)
+          );
+          getDocs(q).then((querySnapshot) => {
+            const tempProjects = [];
+            querySnapshot.forEach((doc) => {
+              tempProjects.push({ ...doc.data(), id: doc.id });
+            });
+            setPublishedProjects(tempProjects);
+          });
         } else {
           console.log("No such document!");
         }
@@ -167,7 +187,7 @@ const UserProfileScreen = ({ navigation, route }) => {
       </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        {projects.map((project, index) => (
+        {publishedProjects.map((project, index) => (
           <Project key={index} project={project} navigation={navigation} />
         ))}
       </ScrollView>

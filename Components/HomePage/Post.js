@@ -34,13 +34,12 @@ export default function Post({ project: initialProject, navigation }) {
 
   const viewUserProfile = async function () {
     const docRef = doc(db, "users", project.userID);
-
     try {
       const docSnap = await getDoc(docRef);
-
       navigation.navigate("Profile", {
         profileInfo: docSnap.data(),
         profileID: docSnap.id,
+        visitingOwnProfile: auth.currentUser.uid === project.userID,
       });
     } catch (error) {
       console.log(error);

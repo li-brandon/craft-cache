@@ -37,7 +37,7 @@ import { LoginContext } from "../Contexts/LoginContext";
 import userIcon from "../Components/assets/user-icon.png";
 
 const ProfileScreen = ({ navigation, route }) => {
-  const { profileInfo, profileID } = route.params;
+  const { profileInfo, profileID, visitingOwnProfile } = route.params;
 
   const { projects, setProjects } = React.useContext(MyContext);
   const { loggedIn, setloggedIn } = React.useContext(LoginContext);
@@ -48,7 +48,7 @@ const ProfileScreen = ({ navigation, route }) => {
   const [numFollowers, setNumFollowers] = useState("");
   const [numFollowing, setNumFollowing] = useState("");
   const [numPosts, setNumPosts] = useState("");
-  const [publishedProjects, setPublishedProjects] = useState("");
+  const [publishedProjects, setPublishedProjects] = useState([]);
   const [savedProjects, setSavedProjects] = useState("");
   const [bio, setBio] = useState("");
   const [image, setImage] = useState(null);
@@ -58,7 +58,6 @@ const ProfileScreen = ({ navigation, route }) => {
     setUsername(profileInfo.username);
     // setNumFollowers(profileInfo.numFollowers);
     // setNumFollowing(profileInfo.numFollowing);
-    setPublishedProjects(profileInfo.publishedProjects);
     setSavedProjects(profileInfo.savedProjects);
     setBio(profileInfo.bio);
     setImage(profileInfo.image);
@@ -66,6 +65,22 @@ const ProfileScreen = ({ navigation, route }) => {
     // Get current user info
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
+      // profileID is the ID of the profile when we click on a user's profile from a Post
+      if (profileID) {
+        // get all projects published by the profile user
+        const q = query(
+          collection(db, "projects"),
+          where("userID", "==", profileID),
+          where("posted", "==", true)
+        );
+        getDocs(q).then((querySnapshot) => {
+          const tempProjects = [];
+          querySnapshot.forEach((doc) => {
+            tempProjects.push({ ...doc.data(), id: doc.id });
+          });
+          setPublishedProjects(tempProjects);
+        });
+      }
     });
     return () => {
       unsubscribe();
@@ -128,7 +143,7 @@ const ProfileScreen = ({ navigation, route }) => {
       </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        {projects.map((project, index) => (
+        {publishedProjects.map((project, index) => (
           <Project key={index} project={project} navigation={navigation} />
         ))}
       </ScrollView>
