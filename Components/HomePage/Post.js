@@ -27,10 +27,37 @@ import {
 
 export default function Post({ project: initialProject, navigation }) {
   const [project, setProject] = React.useState(initialProject);
+  const [saved, setSaved] = React.useState(initialProject.saved);
   const [tapCount, setTapCount] = React.useState(0);
   const [animationValue, setAnimationValue] = React.useState(
     new Animated.Value(0)
   );
+
+  React.useEffect(() => {
+    // get current user
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      // get the savedProjects of the current user and check if the current project is in the array
+      if (user) {
+        const userDocRef = doc(db, "users", user.uid);
+        getDoc(userDocRef).then((doc) => {
+          if (doc.exists()) {
+            const savedProjects = doc.data().savedProjects;
+            if (savedProjects.includes(project.id)) {
+              setSaved(true);
+            } else {
+              setSaved(false);
+            }
+          }
+        });
+      }
+    });
+
+    return () => {
+      unsubscribe();
+    }
+  }, []);
+    
+
 
   const viewUserProfile = async function () {
     const docRef = doc(db, "users", project.userID);
@@ -96,7 +123,6 @@ export default function Post({ project: initialProject, navigation }) {
       animationValue.setValue(0);
     });
   };
-  
 
   const handleShare = async () => {
     try {
@@ -116,6 +142,40 @@ export default function Post({ project: initialProject, navigation }) {
     } catch (error) {
       Alert.alert(error.message);
     }
+  };
+
+  const handleSaveProject = async () => {
+    // first check if user is logged in
+    if (!auth.currentUser) {
+      return;
+    }
+
+    // check if user has already saved the project
+    const user = auth.currentUser.uid;
+
+    // each user has a savedProjects array in their document, which contains id of projects they have saved
+    const userRef = doc(db, "users", user);
+    try {
+      const userDoc = await getDoc(userRef);
+      const savedProjects = userDoc.data().savedProjects;
+
+      // first take care of case user unsaves a project
+      if (savedProjects.includes(project.id)) {
+        // if so, remove the project from the array of saved projects 
+        const index = savedProjects.indexOf(project.id);
+        savedProjects.splice(index, 1);
+      } else { // then take care of case user saves a project
+        savedProjects.push(project.id);
+      }
+
+      setSaved(!saved); // update the saved state
+      // update the user's document in the database
+      await updateDoc(userRef, { savedProjects });
+    }
+    catch (error) {
+      console.log(error);
+    }
+
   };
 
   return (
@@ -197,7 +257,12 @@ export default function Post({ project: initialProject, navigation }) {
           />
         </View>
         <View>
-          <FontAwesome name="bookmark-o" style={styles.saveIcon} />
+          <TouchableOpacity onPress={handleSaveProject}>
+            <FontAwesome
+              name={saved ? "bookmark" : "bookmark-o"}
+              style={styles.interactionIcon}
+            />
+          </TouchableOpacity>
         </View>
       </View>
       <View style={styles.projectLikesContainer}>

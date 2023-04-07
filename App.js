@@ -9,6 +9,7 @@ import AddProjectScreen from "./Screens/AddProjectScreen";
 import ManageExpensesScreen from "./Screens/ManageExpensesScreen";
 import InventoryPageScreen from "./Screens/InventoryPageScreen";
 import ItemDetailScreen from "./Screens/ItemDetailScreen";
+import SavedProjectsScreen from "./Screens/SavedProjectsScreen";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
@@ -199,6 +200,10 @@ export default function App() {
                 <Stack.Screen
                   name="Reset Password"
                   component={ResetPasswordScreen}
+                />
+                <Stack.Screen
+                  name="Saved Projects"
+                  component={SavedProjectsScreen}
                 />
               </Stack.Navigator>
             ) : (
