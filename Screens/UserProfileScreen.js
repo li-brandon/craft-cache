@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   StyleSheet,
   Text,
@@ -8,6 +8,8 @@ import {
   Button,
   ScrollView,
   FlatList,
+  Modal,
+  TouchableWithoutFeedback,
 } from "react-native";
 
 import { useFocusEffect } from "@react-navigation/native";
@@ -31,6 +33,7 @@ import Project from "../Components/ProjectsPage/Project";
 import { MyContext } from "../Contexts/MyContext";
 import { LoginContext } from "../Contexts/LoginContext";
 import userIcon from "../Components/assets/user-icon.png";
+import { FontAwesome } from "@expo/vector-icons";
 
 const UserProfileScreen = ({ navigation, route }) => {
   const { projects, setProjects } = React.useContext(MyContext);
@@ -46,6 +49,9 @@ const UserProfileScreen = ({ navigation, route }) => {
   const [savedProjects, setSavedProjects] = useState("");
   const [bio, setBio] = useState("");
   const [image, setImage] = useState(null);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const modalRef = useRef();
 
   useEffect(() => {
     // get current user
@@ -136,29 +142,20 @@ const UserProfileScreen = ({ navigation, route }) => {
       });
   };
 
+  const handleOutsideClick = () => {
+    setModalVisible(false);
+  };
+
   return (
     <View style={styles.container}>
-      <View style={styles.userInfo}>
-        <View style={styles.buttons}>
-          <TouchableOpacity
-            onPress={SignOutHandler.bind(this, "Login")}
-            style={styles.followButton}
-          >
-            <Text style={styles.editProfileButtonText}>Sign out</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={ResetPasswordHandler.bind(this, userEmail)}
-            style={styles.followButton}
-          >
-            <Text style={styles.editProfileButtonText}>Reset Password</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => navigation.navigate("Edit Profile")}
-            style={styles.followButton}
-          >
-            <Text style={styles.editProfileButtonText}>Edit Profile</Text>
-          </TouchableOpacity>
-        </View>
+      <View style={styles.iconContainer}>
+        <FontAwesome
+          name="bars"
+          size={24}
+          color="black"
+          style={styles.barsIcon}
+          onPress={() => setModalVisible(true)}
+        />
       </View>
 
       <Image
@@ -185,12 +182,63 @@ const UserProfileScreen = ({ navigation, route }) => {
           </TouchableOpacity>
         </View>
       </View>
-
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {publishedProjects.map((project, index) => (
           <Project key={index} project={project} navigation={navigation} />
         ))}
       </ScrollView>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <TouchableWithoutFeedback onPress={handleOutsideClick}>
+          <View style={styles.modalContainer} ref={modalRef}>
+            <View style={styles.modalView}>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => {
+                  setModalVisible(!modalVisible);
+                  navigation.navigate("Edit Profile");
+                }}
+              >
+                <Text style={styles.modalText}>Edit Profile</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => {
+                  setModalVisible(!modalVisible);
+                  navigation.navigate("Saved Projects");
+                }}
+              >
+                <Text style={styles.modalText}>Saved Projects</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => {
+                  setModalVisible(!modalVisible);
+                  ResetPasswordHandler.bind(this, userEmail);
+                }}
+              >
+                <Text style={styles.modalText}>Reset Password</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.modalButton}
+                onPress={() => {
+                  setModalVisible(!modalVisible);
+                  SignOutHandler.bind(this, "Login");
+                }}
+              >
+                <Text style={styles.modalText}>Sign Out</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
     </View>
   );
 };
@@ -203,6 +251,11 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: "#F5FCFF",
   },
+  iconContainer: {
+    flexDirection: "row-reverse",
+    width: "90%",
+    marginTop: 10,
+  },
   contentContainer: {
     padding: 15,
   },
@@ -214,12 +267,12 @@ const styles = StyleSheet.create({
     width: 150,
     height: 150,
     borderRadius: 75,
-    marginBottom: 20,
-    marginTop: 80,
+    marginBottom: 10,
+    marginTop: 20,
   },
   userInfo: {
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 0,
   },
   username: {
     fontSize: 28,
@@ -281,6 +334,45 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontWeight: "bold",
     fontSize: 14,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  centeredView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 22,
+  },
+  modalView: {
+    margin: 20,
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 35,
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  modalButton: {
+    backgroundColor: "#3897f1",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+    marginBottom: 10,
+  },
+  modalText: {
+    color: "#fff",
+    fontWeight: "bold",
+    fontSize: 16,
   },
 });
 
