@@ -130,7 +130,7 @@ function ProjectsPageScreen({ navigation }) {
       {/* <Button label={'Press'}
         onPress={() => setIsPosted(!posted)}
         title={posted ? "posted" : "unposted"} ></Button> */}
-      <Button label={'Press'}
+      {/* <Button label={'Press'}
         onPress={() => setCategoryFilter(["Embroidery"])}
         title="Embroidery" ></Button>
       <Button label={'Press'}
@@ -138,7 +138,7 @@ function ProjectsPageScreen({ navigation }) {
         title="Sewing" ></Button>
       <Button label={'Press'}
         onPress={() => setCategoryFilter(["Embroidery", "Crochet", "Knitting", "Sewing"])}
-        title="All" ></Button>
+        title="All" ></Button> */}
 
       <ScrollView style={styles.container}>
         {projects.map((project, index) => (
