@@ -136,9 +136,9 @@ const ProfileScreen = ({ navigation, route }) => {
           >
             <Text style={styles.followButtonText}>Follow</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.messageButton}>
+          {/* <TouchableOpacity style={styles.messageButton}>
             <Text style={styles.messageButtonText}>Message</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
       </View>
 

@@ -173,14 +173,7 @@ const UserProfileScreen = ({ navigation, route }) => {
           <Text style={styles.stat}>{numFollowing} Following</Text>
         </View>
 
-        <View style={styles.buttons}>
-          <TouchableOpacity style={styles.followButton}>
-            <Text style={styles.followButtonText}>Follow</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.messageButton}>
-            <Text style={styles.messageButtonText}>Message</Text>
-          </TouchableOpacity>
-        </View>
+       
       </View>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {publishedProjects.map((project, index) => (
