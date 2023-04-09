@@ -197,9 +197,6 @@ export default function Post({ project: initialProject, navigation }) {
             <Text style={styles.userName}>{project.username}</Text>
           </TouchableOpacity>
         </View>
-        <View>
-          <SimpleLineIcons name="options" size={20} />
-        </View>
       </View>
 
       <TouchableOpacity
