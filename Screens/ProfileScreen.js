@@ -171,11 +171,11 @@ const styles = StyleSheet.create({
     height: 150,
     borderRadius: 75,
     marginBottom: 20,
-    marginTop: 80,
+    marginTop: 40,
   },
   userInfo: {
     alignItems: "center",
-    marginTop: 20,
+    marginTop: 0,
   },
   username: {
     fontSize: 28,
