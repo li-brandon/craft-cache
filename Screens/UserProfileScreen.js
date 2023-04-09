@@ -230,7 +230,7 @@ const UserProfileScreen = ({ navigation, route }) => {
                 style={styles.modalButton}
                 onPress={() => {
                   setModalVisible(!modalVisible);
-                  SignOutHandler.bind(this, "Login");
+                  SignOutHandler("Login");
                 }}
               >
                 <Text style={styles.modalText}>Sign Out</Text>

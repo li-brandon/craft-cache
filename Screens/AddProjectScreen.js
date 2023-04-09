@@ -480,7 +480,7 @@ const AddProjectScreen = ({ navigation }) => {
                                 fontStyle: "italic",
                               }}
                             >
-                              Add a tool to inventory
+                              Add a material to inventory
                             </Text>
                           </TouchableOpacity>
                         )}

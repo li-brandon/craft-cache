@@ -92,6 +92,7 @@ function HomePageScreen({ navigation }) {
 
         // wait for all promises to resolve before updating state
         Promise.all(promises).then(() => {
+          setProjects([]); // clear projects before setting new ones
           // filter and sort projects by start date and show the most recent first
           tempProjects = sortProjectsDescendingOrder(tempProjects);
           setProjects(tempProjects);
@@ -114,6 +115,7 @@ function HomePageScreen({ navigation }) {
 
   const onRefresh = React.useCallback(() => {
     setRefresh(true);
+    // clear projects
     try {
       fetchPosts();
     } catch (error) {
@@ -131,11 +133,7 @@ function HomePageScreen({ navigation }) {
       }
     >
       {projects.map((project) => (
-        <Post
-          key={project.id}
-          project={project}
-          navigation={navigation}
-        />
+        <Post key={project.id} project={project} navigation={navigation} />
       ))}
     </ScrollView>
   );
