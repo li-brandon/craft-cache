@@ -109,7 +109,8 @@ const styles = StyleSheet.create({
   },
 
   projectNameText: {
-    fontSize: 17,
+    fontSize: 20,
+    fontWeight: "bold",
   },
 
   projectInfoAndImage: {
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
   },
 
   projectInfoText: {
-    fontSize: 13,
+    fontSize: 15,
   },
 
   imageContainer: {
@@ -151,7 +152,7 @@ const styles = StyleSheet.create({
   },
 
   projectStatusText: {
-    fontSize: 13,
+    fontSize: 14,
     color: "grey",
   },
 

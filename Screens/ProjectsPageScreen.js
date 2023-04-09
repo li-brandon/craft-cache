@@ -1,39 +1,31 @@
-import { ScrollView, StyleSheet, AsyncStorage } from "react-native";
-import React, { useState, useEffect, createContext, useContext } from "react";
+import { ScrollView, StyleSheet, Modal } from "react-native";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import Project from "../Components/ProjectsPage/Project";
 import { MyContext } from "../Contexts/MyContext";
 import { auth, db } from "../firebase";
 import { TouchableOpacity } from "react-native";
-import { Component } from 'react';
-import { CheckBox } from '@rneui/themed';
-// import CheckBox from '@react-native-community/checkbox';
-import DropDownPicker from 'react-native-dropdown-picker';
-import { View, TextField, Text, Button, Colors } from 'react-native';
+import { Component } from "react";
+import { CheckBox } from "@rneui/themed";
+import { View, TextField, Text, TouchableWithoutFeedback } from "react-native";
 import { collection, getDocs, query, where } from "firebase/firestore";
-// import { Checkox } from '@react-native-community/checkbox;
+import { FontAwesome } from "@expo/vector-icons";
+
 function ProjectsPageScreen({ navigation }) {
   const { projects, setProjects } = useContext(MyContext);
   const [currentUser, setCurrentUser] = useState(null);
-  const [posted, setIsPosted] = useState(true);
-  const [categoryFilter, setCategoryFilter] = useState(["Embroidery", "Crochet", "Knitting", "Sewing"]);
-  //drop down 
-  const [typeDropDownIsOpen, setTypeDropDownIsOpen] = useState(false);
-  const [toolsDropDownIsOpen, setToolsDropDownIsOpen] = useState(false);
-  const [materialsDropDownIsOpen, setMaterialsDropDownIsOpen] = useState(false);
-  const [typeValues, setTypeValues] = useState([]);
-  const [toolsValues, setToolsValues] = useState([]);
-  const [materialsValues, setMaterialsValues] = useState([]);
 
-  const [typeItems, setTypeItems] = useState([
-    { label: "Knitting", value: "Knitting" },
-    { label: "Crochet", value: "Crochet" },
-    { label: "Sewing", value: "Sewing" },
-    { label: "Embroidery", value: "Embroidery" },
-    // { label: "Weaving", value: "Weaving" },
-    // { label: "Tailoring", value: "Tailoring" },
-    // { label: "Other", value: "Other" },
-  ]);
+  const [knitting, setKnitting] = useState(true);
+  const [crochet, setCrochet] = useState(true);
+  const [sewing, setSewing] = useState(true);
+  const [embroidery, setEmbroidery] = useState(true);
+  const [weaving, setWeaving] = useState(true);
+  const [tailoring, setTailoring] = useState(true);
+  const [other, setOther] = useState(true);
+  const [posted, setPosted] = useState(true);
+
+  const [modalVisible, setModalVisible] = useState(false);
+  const modalRef = useRef();
 
   useEffect(() => {
     // get current user
@@ -46,41 +38,30 @@ function ProjectsPageScreen({ navigation }) {
     };
   }, []);
 
-  // useEffect(() => {
-  //   console.log(typeValues.length)
-  //   if (typeValues.length == 0) {
-  //     setTypeValues(["Embroidery", "Crochet", "Knitting", "Sewing"]);
-  //   }
-  //   console.log("typeValues", typeValues);
-  //   console.log("typeItems", typeItems);
-  // }, [typeValues]);
-
-
-  const TypeValueHandler = async (value) => {
-    if (value.length == 0) {
-      await setTypeValues(["Embroidery", "Crochet", "Knitting", "Sewing"]);
-    } else {
-      await setTypeValues(value);
-    }
-
-    console.log("typeValues", typeValues);
-  }
   // useFocusEffect is similar to useEffect, but it is called when the screen is focused
   useFocusEffect(
     React.useCallback(() => {
       if (currentUser) {
         const userID = currentUser.uid;
         const tempProjects = [];
-        // console.log(typeValues.length)
-        // if (typeValues.length == 0) {
-        //   setTypeValues(["Embroidery", "Crochet", "Knitting", "Sewing"]);
-        // }
+        const typeValues = [];
+
+        if (knitting) typeValues.push("Knitting");
+        if (crochet) typeValues.push("Crochet");
+        if (sewing) typeValues.push("Sewing");
+        if (embroidery) typeValues.push("Embroidery");
+        if (weaving) typeValues.push("Weaving");
+        if (tailoring) typeValues.push("Tailoring");
+        if (other) typeValues.push("Other");
+
+        if (typeValues.length === 0) {
+          setProjects([]);
+          return;
+        }
         const q = query(
           collection(db, "projects"),
           where("userID", "==", userID),
-          where("posted", "==", posted),
-          // where("type", "array-contains", "Embroidery"),
-          where("type", "array-contains-any", typeValues.length != 0 ? typeValues : ["Embroidery", "Crochet", "Knitting", "Sewing"]),
+          where("type", "array-contains-any", typeValues)
         );
 
         getDocs(q).then((querySnapshot) => {
@@ -92,55 +73,135 @@ function ProjectsPageScreen({ navigation }) {
       } else {
         setProjects([]); // clear projects since there is no user
       }
-    }, [currentUser, posted, typeValues])
+    }, [
+      currentUser,
+      knitting,
+      crochet,
+      sewing,
+      embroidery,
+      weaving,
+      tailoring,
+      other,
+    ])
   );
+
+  const handleOutsideClick = () => {
+    setModalVisible(false);
+  };
+
+  const handleClearPressed = () => {
+    setKnitting(false);
+    setCrochet(false);
+    setSewing(false);
+    setEmbroidery(false);
+    setWeaving(false);
+    setTailoring(false);
+    setOther(false);
+  };
+
   return (
     <View style={styles.container}>
-      <View
-        style={{ flex: 1, height: 50 }}
-      >
-        <DropDownPicker
-          open={typeDropDownIsOpen}
-          value={typeValues}
-          items={typeItems}
-          placeholder={"Select a type"}
-          setOpen={setTypeDropDownIsOpen}
-          setValue={TypeValueHandler}
-          setItems={setTypeItems}
-          multiple={true}
-          mode="BADGE"
-          showBadgeDot={false}
-          maxHeight={130}
-          listMode="SCROLLVIEW"
-          listItemContainerStyle={{ height: 30 }}
+      <View style={styles.iconContainer}>
+        <FontAwesome
+          // filter with the lines icon
+          name="filter"
+          size={24}
+          color="black"
+          style={styles.barsIcon}
+          onPress={() => setModalVisible(true)}
         />
       </View>
-      <CheckBox
-        center
-        title="posted"
-        checked={posted}
-        onPress={() => setIsPosted(!posted)}
-      />
-      {/* <CheckBox
-        center
-        title="Embroidery"
-        checked={categoryFilter == ["Embroidery"]}
-        onPress={() => setIsPosted(!posted)}
-      /> */}
-      {/* <Button label={'Press'}
-        onPress={() => setIsPosted(!posted)}
-        title={posted ? "posted" : "unposted"} ></Button> */}
-      {/* <Button label={'Press'}
-        onPress={() => setCategoryFilter(["Embroidery"])}
-        title="Embroidery" ></Button>
-      <Button label={'Press'}
-        onPress={() => setCategoryFilter(["Sewing"])}
-        title="Sewing" ></Button>
-      <Button label={'Press'}
-        onPress={() => setCategoryFilter(["Embroidery", "Crochet", "Knitting", "Sewing"])}
-        title="All" ></Button> */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <TouchableWithoutFeedback onPress={handleOutsideClick}>
+          <View style={styles.modalContainer} ref={modalRef}>
+            <View style={styles.modalView}>
+              <View style={styles.modalHeader}>
+                <Text style={styles.modalText}>Sort By</Text>
+                {/* clear button */}
+                <TouchableOpacity
+                  style={styles.clearButton}
+                  onPress={handleClearPressed}
+                >
+                  <Text style={styles.clearButtonText}>Clear</Text>
+                </TouchableOpacity>
+              </View>
 
-      <ScrollView style={styles.container}>
+              {/* <CheckBox
+                center
+                wrapperStyle={{ marginBottom: -10}}
+                title="posted"
+                checked={posted}
+                onPress={() => setIsPosted(!posted)}
+              /> */}
+              <CheckBox
+                center
+                wrapperStyle={{ marginBottom: -10 }}
+                textStyle={{ fontSize: 16 }}
+                title="Knitting"
+                checked={knitting}
+                onPress={() => setKnitting(!knitting)}
+              />
+              <CheckBox
+                center
+                wrapperStyle={{ marginBottom: -10 }}
+                textStyle={{ fontSize: 16 }}
+                title="Crochet"
+                checked={crochet}
+                onPress={() => setCrochet(!crochet)}
+              />
+              <CheckBox
+                center
+                wrapperStyle={{ marginBottom: -10 }}
+                textStyle={{ fontSize: 16 }}
+                title="Sewing"
+                checked={sewing}
+                onPress={() => setSewing(!sewing)}
+              />
+              <CheckBox
+                center
+                wrapperStyle={{ marginBottom: -10 }}
+                textStyle={{ fontSize: 16 }}
+                title="Embroidery"
+                checked={embroidery}
+                onPress={() => setEmbroidery(!embroidery)}
+              />
+              <CheckBox
+                center
+                wrapperStyle={{ marginBottom: -10 }}
+                textStyle={{ fontSize: 16 }}
+                title="Weaving"
+                checked={weaving}
+                onPress={() => setWeaving(!weaving)}
+              />
+              <CheckBox
+                center
+                wrapperStyle={{ marginBottom: -10 }}
+                textStyle={{ fontSize: 16 }}
+                title="Tailoring"
+                checked={tailoring}
+                onPress={() => setTailoring(!tailoring)}
+              />
+              <CheckBox
+                center
+                wrapperStyle={{ marginBottom: -10 }}
+                textStyle={{ fontSize: 16 }}
+                title="Other"
+                checked={other}
+                onPress={() => setOther(!other)}
+              />
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+      </Modal>
+
+      <ScrollView>
         {projects.map((project, index) => (
           <Project key={index} project={project} navigation={navigation} />
         ))}
@@ -154,6 +215,58 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 15,
     backgroundColor: "white",
+  },
+  iconContainer: {
+    flexDirection: "row-reverse",
+    width: "100%",
+    marginTop: 5,
+    marginBottom: 20,
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalView: {
+    width: "80%",
+    height: "48%",
+    backgroundColor: "white",
+    borderRadius: 20,
+    padding: 25,
+    alignItems: "left",
+    shadowColor: "#000",
+    elevation: 5,
+  },
+  modalText: {
+    marginBottom: 10,
+    textAlign: "center",
+    fontSize: 20,
+  },
+
+  checkbox: {
+    marginBottom: 0,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+  },
+
+  clearButton: {
+    backgroundColor: "#dcdcdc",
+    borderRadius: 15,
+    padding: 10,
+    paddingTop: 5,
+    paddingBottom: 5,
+    elevation: 2,
+    width: 60,
+    marginTop: -8,
+  },
+  clearButtonText: {
+    fontSize: 17,
+    color: "#000",
   },
 });
 
