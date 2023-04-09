@@ -356,6 +356,7 @@ const styles = StyleSheet.create({
   },
   userName: {
     fontWeight: "bold",
+    fontSize: 16,
   },
   projectImageContainer: {
     justifyContent: "center",
