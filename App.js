@@ -26,6 +26,7 @@ import LoginScreen from "./Screens/LoginScreen";
 import UserProfileScreen from "./Screens/UserProfileScreen";
 import EditProfileScreen from "./Screens/EditProfileScreen";
 import ProfileScreen from "./Screens/ProfileScreen";
+import CommentsScreen from "./Screens/CommentsScreen";
 import ResetPasswordScreen from "./Screens/ResetPasswordScreen";
 const auth = getAuth();
 import RegisterScreen from "./Screens/RegisterScreen";
@@ -205,6 +206,7 @@ export default function App() {
                   name="Saved Projects"
                   component={SavedProjectsScreen}
                 />
+                <Stack.Screen name="Comments" component={CommentsScreen} />
               </Stack.Navigator>
             ) : (
               // If not logged in, show login screen and register screen

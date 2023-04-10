@@ -73,6 +73,21 @@ export default function Post({ project: initialProject, navigation }) {
     }
   };
 
+  const viewPostComments = async function () {
+    // const docRef = doc(db, "users", project.userID);
+    try {
+      navigation.navigate("Comments");
+      // const docSnap = await getDoc(docRef);
+      // navigation.navigate("Profile", {
+      //   profileInfo: docSnap.data(),
+      //   profileID: docSnap.id,
+      //   visitingOwnProfile: auth.currentUser.uid === project.userID,
+      // });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleDoubleTap = () => {
     setTapCount(tapCount + 1);
     setTimeout(() => setTapCount(0), 500); // reset tap count after 500ms
@@ -248,7 +263,11 @@ export default function Post({ project: initialProject, navigation }) {
             </TouchableOpacity>
           )}
 
-          <FontAwesome name="comment-o" style={styles.interactionIcon} />
+          <FontAwesome
+            name="comment-o"
+            style={styles.interactionIcon}
+            onPress={viewPostComments.bind(this, "Comments")}
+          />
           <FontAwesome
             name="share-alt"
             style={styles.interactionIcon}
@@ -321,7 +340,7 @@ export default function Post({ project: initialProject, navigation }) {
           </Text>
         </View> */}
 
-        <PostComments />
+        {/* <PostComments /> */}
       </View>
     </View>
   );
