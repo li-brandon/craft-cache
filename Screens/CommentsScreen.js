@@ -60,9 +60,9 @@ const CommentsScreen = ({ navigation, route }) => {
           style={styles.profileIcon}
         />
         <Text style={styles.commentText}>{item.comment}</Text>
-        <TouchableOpacity>
+        {/* <TouchableOpacity>
           <Text style={styles.replyButton}>Reply</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     );
   };
