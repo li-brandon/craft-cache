@@ -328,7 +328,7 @@ export default function Post({ project: initialProject, navigation }) {
         </View>
 
         {/* Project Status Section */}
-        {/* <View style={styles.projectStatusContainer}>
+        <View style={styles.projectStatusContainer}>
           <Text style={styles.projectStatusText}>
             Started: {project.startDate}
           </Text>
@@ -338,7 +338,7 @@ export default function Post({ project: initialProject, navigation }) {
           <Text style={styles.projectStatusText}>
             Status: {project.inProgress ? "In progress" : "Finished"}
           </Text>
-        </View> */}
+        </View>
 
         {/* <PostComments /> */}
       </View>
