@@ -35,7 +35,27 @@ const CommentsScreen = ({ navigation, route }) => {
   useEffect(() => {
     setUserID(profileID);
 
-    // TODO: Make a call and get all comments for this post
+    const fetchComments = async () => {
+      const q = query(
+        collection(db, "comments"),
+        where("projectName", "==", projectName)
+      );
+      const querySnapshot = await getDocs(q);
+
+      let existingComments = [];
+      querySnapshot.forEach((doc) => {
+        if (doc.data()) {
+          existingComments.push({
+            comment: doc.data().content,
+            icon: doc.data().profileIcon,
+          });
+        }
+      });
+
+      setComments(existingComments);
+    };
+
+    fetchComments().catch(console.error);
   }, []);
 
   const handleSubmitComment = async (comment, icon) => {
