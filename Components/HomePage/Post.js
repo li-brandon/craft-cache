@@ -54,10 +54,8 @@ export default function Post({ project: initialProject, navigation }) {
 
     return () => {
       unsubscribe();
-    }
+    };
   }, []);
-    
-
 
   const viewUserProfile = async function () {
     const docRef = doc(db, "users", project.userID);
@@ -67,6 +65,20 @@ export default function Post({ project: initialProject, navigation }) {
         profileInfo: docSnap.data(),
         profileID: docSnap.id,
         visitingOwnProfile: auth.currentUser.uid === project.userID,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const viewPostComments = async function () {
+    const docRef = doc(db, "users", project.userID);
+    try {
+      const docSnap = await getDoc(docRef);
+      navigation.navigate("Comments", {
+        profileIcon: docSnap.data().image,
+        profileID: docSnap.id,
+        name: project.name,
       });
     } catch (error) {
       console.log(error);
@@ -161,21 +173,20 @@ export default function Post({ project: initialProject, navigation }) {
 
       // first take care of case user unsaves a project
       if (savedProjects.includes(project.id)) {
-        // if so, remove the project from the array of saved projects 
+        // if so, remove the project from the array of saved projects
         const index = savedProjects.indexOf(project.id);
         savedProjects.splice(index, 1);
-      } else { // then take care of case user saves a project
+      } else {
+        // then take care of case user saves a project
         savedProjects.push(project.id);
       }
 
       setSaved(!saved); // update the saved state
       // update the user's document in the database
       await updateDoc(userRef, { savedProjects });
-    }
-    catch (error) {
+    } catch (error) {
       console.log(error);
     }
-
   };
 
   return (
@@ -246,7 +257,11 @@ export default function Post({ project: initialProject, navigation }) {
             </TouchableOpacity>
           )}
 
-          <FontAwesome name="comment-o" style={styles.interactionIcon} />
+          <FontAwesome
+            name="comment-o"
+            style={styles.interactionIcon}
+            onPress={viewPostComments.bind(this, "Comments")}
+          />
           <FontAwesome
             name="share-alt"
             style={styles.interactionIcon}
@@ -305,6 +320,8 @@ export default function Post({ project: initialProject, navigation }) {
             Description: {project.description}
           </Text>
         </View>
+
+        {/* Project Status Section */}
         <View style={styles.projectStatusContainer}>
           <Text style={styles.projectStatusText}>
             Started: {project.startDate}
