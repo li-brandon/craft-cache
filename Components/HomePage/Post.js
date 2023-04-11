@@ -72,15 +72,13 @@ export default function Post({ project: initialProject, navigation }) {
   };
 
   const viewPostComments = async function () {
-    // const docRef = doc(db, "users", project.userID);
+    const docRef = doc(db, "users", project.userID);
     try {
-      navigation.navigate("Comments");
-      // const docSnap = await getDoc(docRef);
-      // navigation.navigate("Profile", {
-      //   profileInfo: docSnap.data(),
-      //   profileID: docSnap.id,
-      //   visitingOwnProfile: auth.currentUser.uid === project.userID,
-      // });
+      const docSnap = await getDoc(docRef);
+      navigation.navigate("Comments", {
+        profileIcon: docSnap.data().image,
+        profileID: docSnap.id,
+      });
     } catch (error) {
       console.log(error);
     }

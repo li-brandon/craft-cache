@@ -10,6 +10,7 @@ import React, { useState, useEffect } from "react";
 import Post from "../Components/HomePage/Post";
 import { useFocusEffect } from "@react-navigation/native";
 import { auth, db } from "../firebase";
+
 import {
   collection,
   getDocs,
@@ -24,6 +25,7 @@ function HomePageScreen({ navigation }) {
   const [currentUser, setCurrentUser] = useState(null);
   const [refresh, setRefresh] = useState(false);
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     // get current user
     const unsubscribe = auth.onAuthStateChanged((user) => {

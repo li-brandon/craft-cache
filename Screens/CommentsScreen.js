@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -9,20 +9,56 @@ import {
   Image,
 } from "react-native";
 
-import hat from "../Components/assets/flower-bucket-hat.jpg";
+import { auth, db } from "../firebase";
 
-const PostComments = () => {
+import {
+  collection,
+  getDocs,
+  query,
+  where,
+  getDoc,
+  doc,
+  addDoc,
+} from "firebase/firestore";
+
+import userIcon from "../Components/assets/user-icon.png";
+
+const CommentsScreen = ({ navigation, route }) => {
+  const { profileIcon, profileID } = route.params;
+
   const [enteredComment, setEnteredComment] = useState("");
+  const [userID, setUserID] = useState("");
+
   const [comments, setComments] = useState([]);
 
-  const handleSubmitComment = (comment, profileIcon) => {
+  useEffect(() => {
+    setUserID(profileID);
+  }, []);
+
+  const handleSubmitComment = async (comment, icon) => {
+    const newComment = {
+      content: comment,
+      userID: userID,
+      profileIcon: icon,
+      timestamp: Date.now(),
+    };
+
+    try {
+      await addDoc(collection(db, "comments"), newComment);
+    } catch (error) {
+      console.log("Error adding comment: ", error);
+    }
+
     setComments([...comments, { comment, profileIcon }]);
   };
 
   const renderItem = ({ item }) => {
     return (
       <View style={styles.commentContainer}>
-        <Image source={item.profileIcon} style={styles.profileIcon} />
+        <Image
+          source={profileIcon ? { uri: profileIcon } : userIcon}
+          style={styles.profileIcon}
+        />
         <Text style={styles.commentText}>{item.comment}</Text>
         <TouchableOpacity>
           <Text style={styles.replyButton}>Reply</Text>
@@ -40,14 +76,17 @@ const PostComments = () => {
         style={styles.commentList}
       />
       <View style={styles.inputContainer}>
-        <Image source={hat} style={styles.profileIcon} />
+        <Image
+          source={profileIcon ? { uri: profileIcon } : userIcon}
+          style={styles.profileIcon}
+        />
         <TextInput
           placeholder="Add a comment..."
           style={styles.input}
           onChangeText={(newComment) => setEnteredComment(newComment)}
         />
         <TouchableOpacity
-          onPress={() => handleSubmitComment(enteredComment, hat)}
+          onPress={() => handleSubmitComment(enteredComment, profileIcon)}
         >
           <Text style={styles.postButton}>Post</Text>
         </TouchableOpacity>
@@ -108,4 +147,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PostComments;
+export default CommentsScreen;

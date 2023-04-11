@@ -415,9 +415,11 @@ const AddProjectScreen = ({ navigation }) => {
                         style={styles.dropDownPicker}
                         listItemContainerStyle={{ height: 30 }}
                         ListEmptyComponent={() => (
-                          <TouchableOpacity onPress={() => {
-                            navigation.navigate("Add Inventory");
-                          }}>
+                          <TouchableOpacity
+                            onPress={() => {
+                              navigation.navigate("Add Inventory");
+                            }}
+                          >
                             <Text
                               style={{
                                 padding: 10,
@@ -468,9 +470,11 @@ const AddProjectScreen = ({ navigation }) => {
                         listItemContainerStyle={{ height: 30 }}
                         style={styles.dropDownPicker}
                         ListEmptyComponent={() => (
-                          <TouchableOpacity onPress={() => {
-                            navigation.navigate("Add Inventory");
-                          }}>
+                          <TouchableOpacity
+                            onPress={() => {
+                              navigation.navigate("Add Inventory");
+                            }}
+                          >
                             <Text
                               style={{
                                 padding: 10,
