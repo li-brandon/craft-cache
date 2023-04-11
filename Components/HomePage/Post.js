@@ -25,8 +25,6 @@ import {
   updateDoc,
 } from "firebase/firestore";
 
-import PostComments from "./PostComments";
-
 export default function Post({ project: initialProject, navigation }) {
   const [project, setProject] = React.useState(initialProject);
   const [saved, setSaved] = React.useState(initialProject.saved);
@@ -339,8 +337,6 @@ export default function Post({ project: initialProject, navigation }) {
             Status: {project.inProgress ? "In progress" : "Finished"}
           </Text>
         </View>
-
-        {/* <PostComments /> */}
       </View>
     </View>
   );
