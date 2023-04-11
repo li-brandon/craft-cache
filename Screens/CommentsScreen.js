@@ -24,20 +24,24 @@ import {
 import userIcon from "../Components/assets/user-icon.png";
 
 const CommentsScreen = ({ navigation, route }) => {
-  const { profileIcon, profileID } = route.params;
+  const { profileIcon, profileID, name } = route.params;
 
   const [enteredComment, setEnteredComment] = useState("");
   const [userID, setUserID] = useState("");
+  const [projectName, setProjectName] = useState(name);
 
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
     setUserID(profileID);
+
+    // TODO: Make a call and get all comments for this post
   }, []);
 
   const handleSubmitComment = async (comment, icon) => {
     const newComment = {
       content: comment,
+      projectName: projectName,
       userID: userID,
       profileIcon: icon,
       timestamp: Date.now(),
@@ -49,7 +53,7 @@ const CommentsScreen = ({ navigation, route }) => {
       console.log("Error adding comment: ", error);
     }
 
-    setComments([...comments, { comment, profileIcon }]);
+    setComments([...comments, { comment, icon }]);
   };
 
   const renderItem = ({ item }) => {

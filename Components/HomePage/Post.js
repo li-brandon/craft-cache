@@ -78,6 +78,7 @@ export default function Post({ project: initialProject, navigation }) {
       navigation.navigate("Comments", {
         profileIcon: docSnap.data().image,
         profileID: docSnap.id,
+        name: project.name,
       });
     } catch (error) {
       console.log(error);
