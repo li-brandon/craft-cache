@@ -33,8 +33,6 @@ const CommentsScreen = ({ navigation, route }) => {
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
-    setUserID(profileID);
-
     const fetchComments = async () => {
       const q = query(
         collection(db, "comments"),
