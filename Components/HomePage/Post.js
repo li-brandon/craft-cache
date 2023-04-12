@@ -32,6 +32,7 @@ export default function Post({ project: initialProject, navigation }) {
   const [animationValue, setAnimationValue] = React.useState(
     new Animated.Value(0)
   );
+  const [profileIcon, setProfileIcon] = React.useState();
 
   React.useEffect(() => {
     // get current user
@@ -47,6 +48,7 @@ export default function Post({ project: initialProject, navigation }) {
             } else {
               setSaved(false);
             }
+            setProfileIcon(doc.data().image);
           }
         });
       }
@@ -76,7 +78,7 @@ export default function Post({ project: initialProject, navigation }) {
     try {
       const docSnap = await getDoc(docRef);
       navigation.navigate("Comments", {
-        profileIcon: docSnap.data().image,
+        profileIcon: profileIcon,
         profileID: docSnap.id,
         name: project.name,
       });
