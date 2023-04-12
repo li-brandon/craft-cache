@@ -78,7 +78,7 @@ const CommentsScreen = ({ navigation, route }) => {
     return (
       <View style={styles.commentContainer}>
         <Image
-          source={profileIcon ? { uri: profileIcon } : userIcon}
+          source={item.icon ? { uri: item.icon } : userIcon}
           style={styles.profileIcon}
         />
         <Text style={styles.commentText}>{item.comment}</Text>
