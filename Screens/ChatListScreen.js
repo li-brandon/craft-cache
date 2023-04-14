@@ -1,7 +1,18 @@
-import { View, Text, Button, StyleSheet, ScrollView } from "react-native";
+import {
+    View, Text, Button, StyleSheet, ScrollView,
+    TouchableOpacity
+} from "react-native";
 import ChatListItem from "../Components/ChatListPage";
 import chatList from "../Components/assets/chatData/chats.json"
+import { auth, db } from "../firebase";
 const ChatListScreen = ({ navigation, route }) => {
+    const userId = auth.currentUser.uid;
+    const ToChatDetailHandler = (UserReceive) => {
+        navigation.navigate("Chat Detail", {
+            userSend: userId,
+            userReceive: UserReceive
+        });
+    };
     console.log(route.params.userId);
     return (
         // <View style={styles.container}>
@@ -13,7 +24,9 @@ const ChatListScreen = ({ navigation, route }) => {
         >
             {
                 chatList.map((item) => (
-                    < ChatListItem chatInfo={item} />
+                    <TouchableOpacity onPress={ToChatDetailHandler.bind(this, item.id)}>
+                        <ChatListItem chatInfo={item} />
+                    </TouchableOpacity>
                 ))
             }
         </ScrollView >
