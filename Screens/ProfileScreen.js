@@ -110,8 +110,11 @@ const ProfileScreen = ({ navigation, route }) => {
     setNumFollowers(profileNumFollowers);
   };
 
-  const unfollowUser = () => {};
-
+  const unfollowUser = () => { };
+  const ChatListHandler = function () {
+    // going to the
+    navigation.navigate("ChatList")
+  };
   return (
     <View style={styles.container}>
       <Image
@@ -140,7 +143,16 @@ const ProfileScreen = ({ navigation, route }) => {
             <Text style={styles.messageButtonText}>Message</Text>
           </TouchableOpacity> */}
         </View>
+        <View style={styles.buttons}>
+          <TouchableOpacity
+            style={styles.followButton}
+            onPress={ChatListHandler}
+          >
+            <Text style={styles.followButtonText}>chat</Text>
+          </TouchableOpacity>
+        </View>
       </View>
+
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {publishedProjects.map((project, index) => (

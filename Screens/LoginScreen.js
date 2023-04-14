@@ -21,8 +21,8 @@ import { async } from "@firebase/util";
 import { LoginContext } from "../Contexts/LoginContext";
 
 const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("sun@gmail.com");
+  const [password, setPassword] = useState("111111");
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 

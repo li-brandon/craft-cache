@@ -32,7 +32,8 @@ const auth = getAuth();
 import RegisterScreen from "./Screens/RegisterScreen";
 import InventoryDetailScreen from "./Screens/InventoryDetailScreen";
 import AddInventoryScreen from "./Screens/AddInventoryScreen";
-
+import ChatListItem from "./Components/ChatListPage";
+import ChatListScreen from "./Screens/ChatListScreen";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -205,6 +206,10 @@ export default function App() {
                 <Stack.Screen
                   name="Saved Projects"
                   component={SavedProjectsScreen}
+                />
+                <Stack.Screen
+                  name="ChatList"
+                  component={ChatListScreen}
                 />
                 <Stack.Screen name="Comments" component={CommentsScreen} />
               </Stack.Navigator>
