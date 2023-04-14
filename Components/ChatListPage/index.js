@@ -1,25 +1,28 @@
 import { View, Text, Image, StyleSheet } from "react-native";
-
-const ChatListItem = () => {
+import dayjs from "dayjs";
+import relativeTime from "dayjs/plugin/relativeTime";
+dayjs.extend(relativeTime);
+const ChatListItem = ({ chatInfo }) => {
     return (
         <View style={styles.container}>
             {/* User Avatar */}
-            <Image
-                source={{
-                    uri: "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/lukas.jpeg",
-                }}
-                style={styles.image}
-            />
+            <Image source={{ uri: chatInfo.user.image }} style={styles.image} />
 
-            {/* Content Container */}
+            {/* content */}
             <View style={styles.content}>
-                {/* Row */}
                 <View style={styles.row}>
-                    <Text style={styles.name}>Lukas</Text>
-                    <Text style={styles.subTitle}>07:30</Text>
+                    <Text style={styles.name} numberOfLines={1}>
+                        {chatInfo.user.name}
+                    </Text>
+
+                    <Text style={styles.subTitle}>
+                        {dayjs(chatInfo.lastMessage.createdAt).fromNow()}
+                    </Text>
                 </View>
 
-                <Text style={styles.subTitle}>Oke</Text>
+                <Text style={styles.subTitle} numberOfLines={2}>
+                    {chatInfo.lastMessage.text}
+                </Text>
             </View>
         </View>
     );

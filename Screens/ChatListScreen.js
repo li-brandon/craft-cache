@@ -1,18 +1,18 @@
 import { View, Text, Button, StyleSheet, ScrollView } from "react-native";
 import ChatListItem from "../Components/ChatListPage";
-
-const chatList = [1, 2, 3, 4, 5];
+import chatList from "../Components/assets/chatData/chats.json"
 const ChatListScreen = ({ navigation }) => {
     return (
         // <View style={styles.container}>
         //     <ChatListItem />
         // </View>
         <ScrollView
-            contentContainerStyle={styles.container}
+            // contentContainerStyle={styles.container}
+            sytle={styles.container}
         >
             {
                 chatList.map((item) => (
-                    <ChatListItem />
+                    < ChatListItem chatInfo={item} />
                 ))
             }
         </ScrollView >
@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#fff",
-        alignItems: "center",
-        justifyContent: "center",
+        // alignItems: "center",
+        // justifyContent: "center",
     },
 });
