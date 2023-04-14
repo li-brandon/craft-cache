@@ -1,7 +1,8 @@
 import { View, Text, Button, StyleSheet, ScrollView } from "react-native";
 import ChatListItem from "../Components/ChatListPage";
 import chatList from "../Components/assets/chatData/chats.json"
-const ChatListScreen = ({ navigation }) => {
+const ChatListScreen = ({ navigation, route }) => {
+    console.log(route.params.userId);
     return (
         // <View style={styles.container}>
         //     <ChatListItem />

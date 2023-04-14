@@ -11,7 +11,7 @@ import {
 } from "react-native";
 
 import { useFocusEffect } from "@react-navigation/native";
-
+// import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import {
   collection,
   getDocs,
@@ -113,7 +113,8 @@ const ProfileScreen = ({ navigation, route }) => {
   const unfollowUser = () => { };
   const ChatListHandler = function () {
     // going to the
-    navigation.navigate("ChatList")
+    navigation.navigate("Chat Detail", { userSend: user.uid, userReceive: profileID })
+
   };
   return (
     <View style={styles.container}>
