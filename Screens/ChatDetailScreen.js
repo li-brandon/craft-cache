@@ -13,13 +13,12 @@ import MessageObject from "../models/MessageObject.js";
 
 const ChatScreen = ({ navigation, route }) => {
     navigation.setOptions({ title: "" });
-    // console.log(route.params.userSend);
-    // console.log(route.params.userReceive);
     userFrom = route.params.userSend;
     userTo = route.params.userReceive;
     const userId = auth.currentUser.uid;
     const [docRef, setDocRef] = useState(null);
     const [messages, setMessages] = useState([]);
+    const [refreshTime, setRefreshTime] = useState(0);
     const onSent = (input) => {
         const now = new Date();
         const msg = {
@@ -31,6 +30,7 @@ const ChatScreen = ({ navigation, route }) => {
         setDocRef(addDoc(collection(db, "messages"), msg));
     };
     useEffect(() => {
+
         const newMessages = [];
         const q = query(
             collection(db, "messages"),

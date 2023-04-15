@@ -1,20 +1,42 @@
 import { View, Text, Image, StyleSheet } from "react-native";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
+import { auth, db } from "../../firebase";
+import { collection, getDocs, query, where, orderBy, addDoc, getDoc, doc } from "firebase/firestore";
+import React, { useEffect, useState } from "react";
 dayjs.extend(relativeTime);
 const ChatListItem = ({ chatInfo }) => {
+    const userId = auth.currentUser.uid;
+    const [userImage, setUserImage] = useState("");
+    const [username, setUserName] = useState("");
+    // const [username,setUserName] = useState("");
+    useEffect(() => {
+        const receiverId = userId === chatInfo.userTo ? chatInfo.userFrom : chatInfo.userTo;
+        const docRef = doc(db, 'users', receiverId);
+        getDoc(docRef).then((doc) => {
+            const data = doc.data();
+            setUserImage(data.image);
+            setUserName(data.username);
+            // const chatInfo = {
+            //     image: data.image,
+            //     username: data.username,
+            //     createdAt: item.createdAt,
+            //     text: item.text,
+            // }
+        });
+    }, [username])
     return (
         <View style={styles.container}>
             {/* User Avatar */}
             <Image source={{
-                uri: "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/lukas.jpeg"
+                uri: userImage ? userImage : "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/1.jpg"
             }} style={styles.image} />
 
             {/* content */}
             <View style={styles.content}>
                 <View style={styles.row}>
                     <Text style={styles.name} numberOfLines={1}>
-                        {chatInfo.userFrom}
+                        {username ? username : "unknown"}
                     </Text>
 
                     <Text style={styles.subTitle}>
