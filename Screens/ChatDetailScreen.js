@@ -23,8 +23,8 @@ const ChatScreen = ({ navigation, route }) => {
         const now = new Date();
         const msg = {
             createdAt: now.toISOString(),
-            userFrom: userTo,
-            userTo: userFrom,
+            userFrom: userFrom,
+            userTo: userTo,
             text: input
         };
         setDocRef(addDoc(collection(db, "messages"), msg));
