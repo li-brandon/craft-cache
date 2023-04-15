@@ -2,13 +2,15 @@ import { View, Text, StyleSheet } from "react-native";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { GlobalStyles } from "../../../Constants/styles.js";
+
 dayjs.extend(relativeTime);
 
-const Message = ({ message }) => {
+const Message = ({ message, userId }) => {
     const isMyMessage = () => {
-        return message.user.id === "u1";
+        return message.userFrom === userId;
     };
-
+    const date = new Date(message.createdAt);
+    console.log("date", date);
     return (
         <View
             style={[
@@ -20,7 +22,7 @@ const Message = ({ message }) => {
             ]}
         >
             <Text>{message.text}</Text>
-            <Text style={styles.time}>{dayjs(message.createdAt).fromNow(true)}</Text>
+            <Text style={styles.time}>{dayjs(date).fromNow(true)}</Text>
         </View>
     );
 };

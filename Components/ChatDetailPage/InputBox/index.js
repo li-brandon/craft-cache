@@ -4,12 +4,8 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useState } from "react";
 
 
-const InputBox = () => {
+const InputBox = ({ onSent }) => {
     const [UserInput, setUserInput] = useState("");
-    const onSent = () => {
-        console.warn("Sent", UserInput);
-        setUserInput("");
-    };
     return (
         <View style={styles.container}>
             <AntDesign name="plus" size={24} color="royalblue" />
@@ -21,7 +17,10 @@ const InputBox = () => {
                 value={UserInput} />
             <MaterialIcons style={styles.send}
                 name="send" size={24} color="white"
-                onPress={onSent} />
+                onPress={() => {
+                    onSent(UserInput);
+                    setUserInput("");
+                }} />
         </View>
     );
 };

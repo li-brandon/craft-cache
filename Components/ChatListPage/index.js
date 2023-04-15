@@ -21,7 +21,7 @@ const ChatListItem = ({ chatInfo }) => {
                 </View>
 
                 <Text style={styles.subTitle} numberOfLines={2}>
-                    {chatInfo.lastMessage.text}
+                    {chatInfo.lastMessage.content}
                 </Text>
             </View>
         </View>
