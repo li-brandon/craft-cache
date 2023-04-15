@@ -11,7 +11,6 @@ const InputBox = ({ onSent }) => {
             <AntDesign name="plus" size={24} color="royalblue" />
             <TextInput style={styles.input}
                 multiline={true}
-                numberOfLines={4}
                 placeholder="Type a message"
                 onChangeText={(text) => { setUserInput(text) }}
                 value={UserInput} />

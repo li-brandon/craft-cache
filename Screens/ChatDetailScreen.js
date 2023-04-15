@@ -5,21 +5,22 @@ import {
 import React, { useEffect, useState } from "react";
 import bg from "../Components/assets/chatImages/BG.png";
 import Message from "../Components/ChatDetailPage/Message";
-// import messages from "../Components/assets/chatData/messages.json";
+
 import InputBox from "../Components/ChatDetailPage/InputBox";
 import { auth, db } from "../firebase";
-import { collection, getDocs, query, where, orderBy, addDoc } from "firebase/firestore";
+import { collection, getDocs, query, where, orderBy, addDoc, getDoc, doc } from "firebase/firestore";
 import MessageObject from "../models/MessageObject.js";
+
 const ChatScreen = ({ navigation, route }) => {
-    console.log(route.params.userSend);
-    console.log(route.params.userReceive);
+    navigation.setOptions({ title: "" });
+    // console.log(route.params.userSend);
+    // console.log(route.params.userReceive);
     userFrom = route.params.userSend;
     userTo = route.params.userReceive;
     const userId = auth.currentUser.uid;
     const [docRef, setDocRef] = useState(null);
     const [messages, setMessages] = useState([]);
     const onSent = (input) => {
-        console.warn("Sent", input, userFrom, userTo);
         const now = new Date();
         const msg = {
             createdAt: now.toISOString(),
@@ -74,7 +75,11 @@ const ChatScreen = ({ navigation, route }) => {
     }, [userId, docRef]);
     console.log("important", messages);
     useEffect(() => {
-        navigation.setOptions({ title: "FOR USERNAME" });
+        const docRef = doc(db, 'users', userTo);
+        getDoc(docRef).then((doc) => {
+            navigation.setOptions({ title: doc.data().username });
+        });
+
     }, [route.params]);
     return (
         <KeyboardAvoidingView
