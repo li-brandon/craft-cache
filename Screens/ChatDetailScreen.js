@@ -13,12 +13,67 @@ import MessageObject from "../models/MessageObject.js";
 
 const ChatScreen = ({ navigation, route }) => {
     navigation.setOptions({ title: "" });
+
     userFrom = route.params.userSend;
     userTo = route.params.userReceive;
     const userId = auth.currentUser.uid;
     const [docRef, setDocRef] = useState(null);
     const [messages, setMessages] = useState([]);
     const [refreshTime, setRefreshTime] = useState(0);
+    const [time, setTime] = useState(new Date());
+    const fetchData = () => {
+        // console.log("fetch")
+        const newMessages = [];
+        const q = query(
+            collection(db, "messages"),
+            where("userFrom", '==', userFrom),
+            where("userTo", '==', userTo),
+            orderBy("createdAt", "asc")
+        );
+        const q2 = query(
+            collection(db, "messages"),
+            where("userFrom", '==', userTo),
+            where("userTo", '==', userFrom),
+            orderBy("createdAt", "asc")
+        );
+        getDocs(q)
+            .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    newMessages.push(doc.data());
+                });
+            })
+            .catch((error) => {
+                console.warn(error);
+            });
+        getDocs(q2)
+            .then((querySnapshot) => {
+                querySnapshot.forEach((doc) => {
+                    newMessages.push(doc.data());
+                });
+                setMessages((prevMessages) => {
+                    const sortedMessages = [...newMessages].sort(
+                        (a, b) => {
+                            const date1 = new Date(a.createdAt);
+                            const date2 = new Date(b.createdAt);
+                            return date2.getTime() - date1.getTime();
+                        }
+                    );
+                    return sortedMessages;
+                });
+            })
+            .catch((error) => {
+                console.warn(error);
+            });
+    }
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setTime(new Date());
+            fetchData();
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, []);
+
     const onSent = (input) => {
         const now = new Date();
         const msg = {
@@ -30,7 +85,6 @@ const ChatScreen = ({ navigation, route }) => {
         setDocRef(addDoc(collection(db, "messages"), msg));
     };
     useEffect(() => {
-
         const newMessages = [];
         const q = query(
             collection(db, "messages"),
@@ -95,6 +149,7 @@ const ChatScreen = ({ navigation, route }) => {
                     inverted
                 />
                 <InputBox onSent={onSent} />
+                <Text>The current time is: {time.toLocaleTimeString()}</Text>
             </ImageBackground>
         </KeyboardAvoidingView>
     );
