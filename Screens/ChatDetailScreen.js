@@ -84,49 +84,50 @@ const ChatScreen = ({ navigation, route }) => {
         };
         setDocRef(addDoc(collection(db, "messages"), msg));
     };
-    useEffect(() => {
-        const newMessages = [];
-        const q = query(
-            collection(db, "messages"),
-            where("userFrom", '==', userFrom),
-            where("userTo", '==', userTo),
-            orderBy("createdAt", "asc")
-        );
-        const q2 = query(
-            collection(db, "messages"),
-            where("userFrom", '==', userTo),
-            where("userTo", '==', userFrom),
-            orderBy("createdAt", "asc")
-        );
-        getDocs(q)
-            .then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    newMessages.push(doc.data());
-                });
-            })
-            .catch((error) => {
-                console.warn(error);
-            });
-        getDocs(q2)
-            .then((querySnapshot) => {
-                querySnapshot.forEach((doc) => {
-                    newMessages.push(doc.data());
-                });
-                setMessages((prevMessages) => {
-                    const sortedMessages = [...newMessages].sort(
-                        (a, b) => {
-                            const date1 = new Date(a.createdAt);
-                            const date2 = new Date(b.createdAt);
-                            return date2.getTime() - date1.getTime();
-                        }
-                    );
-                    return sortedMessages;
-                });
-            })
-            .catch((error) => {
-                console.warn(error);
-            });
-    }, [userId, docRef]);
+    // useEffect(() => {
+    //     console.log("effect fetchtest")
+    //     const newMessages = [];
+    //     const q = query(
+    //         collection(db, "messages"),
+    //         where("userFrom", '==', userFrom),
+    //         where("userTo", '==', userTo),
+    //         orderBy("createdAt", "asc")
+    //     );
+    //     const q2 = query(
+    //         collection(db, "messages"),
+    //         where("userFrom", '==', userTo),
+    //         where("userTo", '==', userFrom),
+    //         orderBy("createdAt", "asc")
+    //     );
+    //     getDocs(q)
+    //         .then((querySnapshot) => {
+    //             querySnapshot.forEach((doc) => {
+    //                 newMessages.push(doc.data());
+    //             });
+    //         })
+    //         .catch((error) => {
+    //             console.warn(error);
+    //         });
+    //     getDocs(q2)
+    //         .then((querySnapshot) => {
+    //             querySnapshot.forEach((doc) => {
+    //                 newMessages.push(doc.data());
+    //             });
+    //             setMessages((prevMessages) => {
+    //                 const sortedMessages = [...newMessages].sort(
+    //                     (a, b) => {
+    //                         const date1 = new Date(a.createdAt);
+    //                         const date2 = new Date(b.createdAt);
+    //                         return date2.getTime() - date1.getTime();
+    //                     }
+    //                 );
+    //                 return sortedMessages;
+    //             });
+    //         })
+    //         .catch((error) => {
+    //             console.warn(error);
+    //         });
+    // }, [userId, docRef]);
     // console.log("important", messages);
     useEffect(() => {
         const docRef = doc(db, 'users', userTo);
