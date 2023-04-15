@@ -7,6 +7,7 @@ import ChatListItem from "../Components/ChatListPage";
 import chatList1 from "../Components/assets/chatData/chats.json"
 import { auth, db } from "../firebase";
 import { collection, getDocs, query, where, orderBy, addDoc, getDoc, doc } from "firebase/firestore";
+import { async } from "@firebase/util";
 const ChatListScreen = ({ navigation, route }) => {
     const userId = auth.currentUser.uid;
     const [chatList, setchatList] = useState([]);
@@ -82,9 +83,6 @@ const ChatListScreen = ({ navigation, route }) => {
                         }
                     })
 
-                    list.forEach(item => {
-                        console.log(item.userTo + "," + item.userFrom)
-                    })
                     return list;
                 });
             })
@@ -92,29 +90,26 @@ const ChatListScreen = ({ navigation, route }) => {
                 console.warn(error);
             });
     }, []);
+    // const getChatInfo = async (item) => {
+    //     receiverId = userId === item.userTo ? item.userFrom : item.userTo;
+    //     const docRef = doc(db, 'users', receiverId);
+    //     await getDoc(docRef).then((doc) => {
+    //         const data = doc.data();
+    //         const chatInfo = {
+    //             image: data.image,
+    //             username: data.username,
+    //             createdAt: item.createdAt,
+    //             text: item.text,
+    //         }
+    //     });
+    //     return chatInfo;
+    // }
     return (
-        // <View style={styles.container}>
-        //     <ChatListItem />
-        // </View>
         <ScrollView
-            // contentContainerStyle={styles.container}
             sytle={styles.container}
         >
             {
                 chatList.map((item) => {
-
-                    receiverId = userId === item.userTo ? item.userFrom : item.userTo;
-                    const docRef = doc(db, 'users', receiverId);
-                    getDoc(docRef).then((doc) => {
-                        const data = doc.data();
-                        const chatInfo = {
-                            image: data.image,
-                            username: data.username,
-                            createdAt: item.createdAt,
-                            text: item.text,
-                        }
-                    });
-
                     return (
                         <TouchableOpacity onPress={ToChatDetailHandler.bind(this, item)}>
                             <ChatListItem chatInfo={item} />
