@@ -73,7 +73,7 @@ const ChatScreen = ({ navigation, route }) => {
                 console.warn(error);
             });
     }, [userId, docRef]);
-    console.log("important", messages);
+    // console.log("important", messages);
     useEffect(() => {
         const docRef = doc(db, 'users', userTo);
         getDoc(docRef).then((doc) => {

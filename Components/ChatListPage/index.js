@@ -6,22 +6,24 @@ const ChatListItem = ({ chatInfo }) => {
     return (
         <View style={styles.container}>
             {/* User Avatar */}
-            <Image source={{ uri: chatInfo.user.image }} style={styles.image} />
+            <Image source={{
+                uri: "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/avatars/lukas.jpeg"
+            }} style={styles.image} />
 
             {/* content */}
             <View style={styles.content}>
                 <View style={styles.row}>
                     <Text style={styles.name} numberOfLines={1}>
-                        {chatInfo.user.name}
+                        {chatInfo.userFrom}
                     </Text>
 
                     <Text style={styles.subTitle}>
-                        {dayjs(chatInfo.lastMessage.createdAt).fromNow()}
+                        {dayjs(chatInfo.createdAt).fromNow()}
                     </Text>
                 </View>
 
                 <Text style={styles.subTitle} numberOfLines={2}>
-                    {chatInfo.lastMessage.content}
+                    {chatInfo.text}
                 </Text>
             </View>
         </View>
