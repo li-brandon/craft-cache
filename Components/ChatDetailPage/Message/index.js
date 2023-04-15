@@ -10,7 +10,7 @@ const Message = ({ message, userId }) => {
         return message.userFrom === userId;
     };
     const date = new Date(message.createdAt);
-    console.log("date", date);
+
     return (
         <View
             style={[
