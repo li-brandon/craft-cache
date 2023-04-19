@@ -11,7 +11,7 @@ import {
   Modal,
   TouchableWithoutFeedback,
 } from "react-native";
-
+import { Ionicons } from "@expo/vector-icons";
 import { useFocusEffect } from "@react-navigation/native";
 
 import {
@@ -52,7 +52,6 @@ const UserProfileScreen = ({ navigation, route }) => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const modalRef = useRef();
-
   useEffect(() => {
     // get current user
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -120,7 +119,16 @@ const UserProfileScreen = ({ navigation, route }) => {
       };
     }, [])
   );
-
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () =>
+        <Ionicons name="chatbubble-ellipses-outline"
+          size={24}
+          onPress={() => { navigation.navigate("Chat List", { userId: auth.currentUser.uid }) }}
+        >
+        </Ionicons>
+    });
+  }, [route.params]);
   const SignOutHandler = function (page) {
     // sign the user out and redirect to the login page
     signOut(auth).then(() => {
@@ -173,7 +181,7 @@ const UserProfileScreen = ({ navigation, route }) => {
           <Text style={styles.stat}>{numFollowing} Following</Text>
         </View>
 
-       
+
       </View>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {publishedProjects.map((project, index) => (

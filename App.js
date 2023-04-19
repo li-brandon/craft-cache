@@ -32,7 +32,9 @@ const auth = getAuth();
 import RegisterScreen from "./Screens/RegisterScreen";
 import InventoryDetailScreen from "./Screens/InventoryDetailScreen";
 import AddInventoryScreen from "./Screens/AddInventoryScreen";
-
+import ChatListItem from "./Components/ChatListPage";
+import ChatListScreen from "./Screens/ChatListScreen";
+import ChatScreen from "./Screens/ChatDetailScreen";
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -145,11 +147,11 @@ export default function App() {
               <Stack.Navigator
                 screenOptions={{
                   headerStyle: {
-                    backgroundColor: GlobalStyles.colors.primary500,
+                    backgroundColor: GlobalStyles.colors.primary100,
                   },
                   headerTintColor: "white",
                   tabBarStyle: {
-                    backgroundColor: GlobalStyles.colors.primary500,
+                    backgroundColor: GlobalStyles.colors.primary100,
                   },
                   tabBarActiveTintColor: GlobalStyles.colors.accent500,
                 }}
@@ -193,7 +195,12 @@ export default function App() {
                   name="Edit Profile"
                   component={EditProfileScreen}
                 />
-                <Stack.Screen name="Profile" component={ProfileScreen} />
+                <Stack.Screen name="Profile"
+                  component={ProfileScreen}
+                // options={{
+                //   headerRight: () => { },
+                // }}
+                />
                 <Stack.Screen
                   name="Add Inventory"
                   component={AddInventoryScreen}
@@ -205,6 +212,14 @@ export default function App() {
                 <Stack.Screen
                   name="Saved Projects"
                   component={SavedProjectsScreen}
+                />
+                <Stack.Screen
+                  name="Chat List"
+                  component={ChatListScreen}
+                />
+                <Stack.Screen
+                  name="Chat Detail"
+                  component={ChatScreen}
                 />
                 <Stack.Screen name="Comments" component={CommentsScreen} />
               </Stack.Navigator>

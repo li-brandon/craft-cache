@@ -11,7 +11,7 @@ import {
 } from "react-native";
 
 import { useFocusEffect } from "@react-navigation/native";
-
+// import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import {
   collection,
   getDocs,
@@ -110,8 +110,12 @@ const ProfileScreen = ({ navigation, route }) => {
     setNumFollowers(profileNumFollowers);
   };
 
-  const unfollowUser = () => {};
+  const unfollowUser = () => { };
+  const ChatListHandler = function () {
+    // going to the
+    navigation.navigate("Chat Detail", { userSend: user.uid, userReceive: profileID })
 
+  };
   return (
     <View style={styles.container}>
       <Image
@@ -136,11 +140,21 @@ const ProfileScreen = ({ navigation, route }) => {
           >
             <Text style={styles.followButtonText}>Follow</Text>
           </TouchableOpacity>
-          {/* <TouchableOpacity style={styles.messageButton}>
+          <TouchableOpacity style={styles.messageButton}
+            onPress={ChatListHandler}>
             <Text style={styles.messageButtonText}>Message</Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
         </View>
+        {/* <View style={styles.buttons}>
+          <TouchableOpacity
+            style={styles.followButton}
+            onPress={ChatListHandler}
+          >
+            <Text style={styles.followButtonText}>chat</Text>
+          </TouchableOpacity>
+        </View> */}
       </View>
+
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {publishedProjects.map((project, index) => (
