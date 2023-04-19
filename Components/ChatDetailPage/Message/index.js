@@ -22,7 +22,7 @@ const Message = ({ message, userId }) => {
             ]}
         >
             <Text>{message.text}</Text>
-            <Text style={styles.time}>{dayjs(date).fromNow(true)}</Text>
+            <Text style={styles.time}>{dayjs(date).fromNow(true)} ago</Text>
         </View>
     );
 };

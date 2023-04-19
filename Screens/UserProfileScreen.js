@@ -124,7 +124,7 @@ const UserProfileScreen = ({ navigation, route }) => {
       headerRight: () =>
         <Ionicons name="chatbubble-ellipses-outline"
           size={24}
-          onPress={() => { navigation.navigate("ChatList", { userId: auth.currentUser.uid }) }}
+          onPress={() => { navigation.navigate("Chat List", { userId: auth.currentUser.uid }) }}
         >
         </Ionicons>
     });

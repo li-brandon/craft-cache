@@ -150,7 +150,7 @@ const ChatScreen = ({ navigation, route }) => {
                     inverted
                 />
                 <InputBox onSent={onSent} />
-                <Text>The current time is: {time.toLocaleTimeString()}</Text>
+                {/* <Text>The current time is: {time.toLocaleTimeString()}</Text> */}
             </ImageBackground>
         </KeyboardAvoidingView>
     );

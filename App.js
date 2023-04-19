@@ -214,7 +214,7 @@ export default function App() {
                   component={SavedProjectsScreen}
                 />
                 <Stack.Screen
-                  name="ChatList"
+                  name="Chat List"
                   component={ChatListScreen}
                 />
                 <Stack.Screen
