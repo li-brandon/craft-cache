@@ -258,18 +258,17 @@ const AddProjectScreen = ({ navigation }) => {
     setImage(null);
   };
 
-  // onRefresh is called when the user pulls down to refresh the page
   const onRefresh = React.useCallback(async () => {
     setRefreshing(true);
     try {
       // fetch updated data here
-      fetchItemsFromInventory(user);
+      await fetchItemsFromInventory(user);
     } catch (e) {
       console.error(e);
     } finally {
       setRefreshing(false);
     }
-  }, [refreshing]);
+  }, [fetchItemsFromInventory, user]);
 
   return (
     <KeyboardAvoidingView
