@@ -106,6 +106,7 @@ const UserProfileScreen = ({ navigation, route }) => {
               tempProjects.push({ ...doc.data(), id: doc.id });
             });
             setPublishedProjects(tempProjects);
+            setNumPosts(tempProjects.length);
           });
         } else {
           console.log("No such document!");
@@ -119,6 +120,7 @@ const UserProfileScreen = ({ navigation, route }) => {
       };
     }, [])
   );
+
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -132,6 +134,7 @@ const UserProfileScreen = ({ navigation, route }) => {
       ),
     });
   }, [route.params]);
+
   const SignOutHandler = function (page) {
     // sign the user out and redirect to the login page
     signOut(auth).then(() => {
