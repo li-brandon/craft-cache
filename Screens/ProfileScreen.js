@@ -56,8 +56,8 @@ const ProfileScreen = ({ navigation, route }) => {
   useEffect(() => {
     // Set passed in profile info
     setUsername(profileInfo.username);
-    // setNumFollowers(profileInfo.numFollowers);
-    // setNumFollowing(profileInfo.numFollowing);
+    setNumFollowers(profileInfo.followers.length);
+    setNumFollowing(profileInfo.following.length);
     setSavedProjects(profileInfo.savedProjects);
     setBio(profileInfo.bio);
     setImage(profileInfo.image);
