@@ -121,12 +121,15 @@ const UserProfileScreen = ({ navigation, route }) => {
   );
   useEffect(() => {
     navigation.setOptions({
-      headerRight: () =>
-        <Ionicons name="chatbubble-ellipses-outline"
+      headerRight: () => (
+        <Ionicons
+          name="chatbubble-ellipses-outline"
           size={24}
-          onPress={() => { navigation.navigate("Chat List", { userId: auth.currentUser.uid }) }}
-        >
-        </Ionicons>
+          onPress={() => {
+            navigation.navigate("Chat List", { userId: auth.currentUser.uid });
+          }}
+        ></Ionicons>
+      ),
     });
   }, [route.params]);
   const SignOutHandler = function (page) {
@@ -180,8 +183,6 @@ const UserProfileScreen = ({ navigation, route }) => {
           <Text style={styles.stat}>{numFollowers} Followers</Text>
           <Text style={styles.stat}>{numFollowing} Following</Text>
         </View>
-
-
       </View>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {publishedProjects.map((project, index) => (
@@ -287,9 +288,11 @@ const styles = StyleSheet.create({
   },
   stats: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
+    alignItems: "center",
     width: "80%",
     marginBottom: 20,
+    marginLeft: 35,
   },
   stat: {
     fontSize: 16,

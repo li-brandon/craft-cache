@@ -110,11 +110,13 @@ const ProfileScreen = ({ navigation, route }) => {
     setNumFollowers(profileNumFollowers);
   };
 
-  const unfollowUser = () => { };
+  const unfollowUser = () => {};
   const ChatListHandler = function () {
     // going to the
-    navigation.navigate("Chat Detail", { userSend: user.uid, userReceive: profileID })
-
+    navigation.navigate("Chat Detail", {
+      userSend: user.uid,
+      userReceive: profileID,
+    });
   };
   return (
     <View style={styles.container}>
@@ -140,8 +142,10 @@ const ProfileScreen = ({ navigation, route }) => {
           >
             <Text style={styles.followButtonText}>Follow</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.messageButton}
-            onPress={ChatListHandler}>
+          <TouchableOpacity
+            style={styles.messageButton}
+            onPress={ChatListHandler}
+          >
             <Text style={styles.messageButtonText}>Message</Text>
           </TouchableOpacity>
         </View>
@@ -154,7 +158,6 @@ const ProfileScreen = ({ navigation, route }) => {
           </TouchableOpacity>
         </View> */}
       </View>
-
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {publishedProjects.map((project, index) => (
@@ -203,9 +206,11 @@ const styles = StyleSheet.create({
   },
   stats: {
     flexDirection: "row",
-    justifyContent: "space-between",
+    justifyContent: "space-around",
+    alignItems: "center",
     width: "80%",
     marginBottom: 20,
+    marginLeft: 35,
   },
   stat: {
     fontSize: 16,
