@@ -79,6 +79,7 @@ const ProfileScreen = ({ navigation, route }) => {
             tempProjects.push({ ...doc.data(), id: doc.id });
           });
           setPublishedProjects(tempProjects);
+          setNumPosts(tempProjects.length);
         });
       }
     });
