@@ -137,18 +137,24 @@ const ProfileScreen = ({ navigation, route }) => {
         </View>
 
         <View style={styles.buttons}>
-          <TouchableOpacity
-            style={styles.followButton}
-            onPress={followUser.bind(this, "Profile")}
-          >
-            <Text style={styles.followButtonText}>Follow</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.messageButton}
-            onPress={ChatListHandler}
-          >
-            <Text style={styles.messageButtonText}>Message</Text>
-          </TouchableOpacity>
+          {!visitingOwnProfile ? (
+            <>
+              <TouchableOpacity
+                style={styles.followButton}
+                onPress={followUser.bind(this, "Profile")}
+              >
+                <Text style={styles.followButtonText}>Follow</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.messageButton}
+                onPress={ChatListHandler}
+              >
+                <Text style={styles.messageButtonText}>Message</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <></>
+          )}
         </View>
         {/* <View style={styles.buttons}>
           <TouchableOpacity
