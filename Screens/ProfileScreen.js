@@ -10,7 +10,6 @@ import {
   FlatList,
 } from "react-native";
 
-import { useFocusEffect } from "@react-navigation/native";
 // import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import {
   collection,
@@ -24,12 +23,6 @@ import {
   arrayRemove,
 } from "firebase/firestore";
 
-import {
-  getAuth,
-  signOut,
-  sendPasswordResetEmail,
-  onAuthStateChanged,
-} from "firebase/auth";
 import { auth, db, resetByEmail } from "../firebase";
 import Project from "../Components/ProjectsPage/Project";
 import { MyContext } from "../Contexts/MyContext";
@@ -37,11 +30,13 @@ import { LoginContext } from "../Contexts/LoginContext";
 import userIcon from "../Components/assets/user-icon.png";
 
 const ProfileScreen = ({ navigation, route }) => {
-  const { profileInfo, profileID, visitingOwnProfile } = route.params;
+  const { profileInfo, profileID, visitingOwnProfile, currentUserID } =
+    route.params;
 
   const { projects, setProjects } = React.useContext(MyContext);
   const { loggedIn, setloggedIn } = React.useContext(LoginContext);
   const [user, setUser] = useState(null);
+  const [userID, setUserID] = useState(null);
   const userEmail = user ? user.email : null;
 
   const [username, setUsername] = useState("");
@@ -53,11 +48,14 @@ const ProfileScreen = ({ navigation, route }) => {
   const [bio, setBio] = useState("");
   const [image, setImage] = useState(null);
 
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [profileFollowers, setProfileFollowers] = useState([]);
+
   useEffect(() => {
     // Set passed in profile info
     setUsername(profileInfo.username);
-    // setNumFollowers(profileInfo.numFollowers);
-    // setNumFollowing(profileInfo.numFollowing);
+    setNumFollowers(profileInfo.followers.length);
+    setNumFollowing(profileInfo.following.length);
     setSavedProjects(profileInfo.savedProjects);
     setBio(profileInfo.bio);
     setImage(profileInfo.image);
@@ -65,6 +63,19 @@ const ProfileScreen = ({ navigation, route }) => {
     // Get current user info
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
+      setUserID(user.uid);
+
+      const profileFollowersId = profileInfo.followers.map((info) => info.id);
+      setProfileFollowers(profileFollowersId);
+
+      if (profileFollowersId.includes(user.uid)) {
+        setIsFollowing(true);
+        console.log("User is following this profile");
+      } else {
+        setIsFollowing(false);
+        console.log("User is not following this profile");
+      }
+
       // profileID is the ID of the profile when we click on a user's profile from a Post
       if (profileID) {
         // get all projects published by the profile user
@@ -83,35 +94,66 @@ const ProfileScreen = ({ navigation, route }) => {
         });
       }
     });
+
     return () => {
       unsubscribe();
     };
   }, []);
 
-  const followUser = async () => {
-    console.log(profileID);
-    console.log(user.uid);
-    // Add profile to the current user's following
-    const userDoc = doc(db, "users", user.uid);
-    await updateDoc(userDoc, {
-      following: arrayUnion(doc(db, "users", profileID)),
-    });
-
-    // Add current user reference to the profile's followers list
-    const profileDoc = doc(db, "users", profileID);
-    await updateDoc(profileDoc, {
-      followers: arrayUnion(doc(db, "users", user.uid)),
-    });
-
-    // Update the number of followers for the profile
+  const toggleFollow = async (userId) => {
+    let updatedProfileFollowers;
+    const userDoc = doc(db, "users", userId);
     const profileDocRef = doc(db, "users", profileID);
-    const profileDocSnap = await getDoc(profileDocRef);
-    const profileDocData = profileDocSnap.data();
-    const profileNumFollowers = profileDocData.followers.length;
-    setNumFollowers(profileNumFollowers);
+
+    try {
+      if (profileFollowers.includes(userId)) {
+        updatedProfileFollowers = profileFollowers.filter(
+          (profiles) => profiles !== userId
+        );
+
+        // Remove profile from the current user's following
+        await updateDoc(userDoc, {
+          following: arrayRemove(doc(db, "users", profileID)),
+        });
+
+        // Remove current user reference from the profile's followers list
+        await updateDoc(profileDocRef, {
+          followers: arrayRemove(doc(db, "users", userId)),
+        });
+
+        setIsFollowing(false);
+      } else {
+        updatedProfileFollowers = profileFollowers.concat(userId);
+        // Add profile to the current user's following
+        await updateDoc(userDoc, {
+          following: arrayUnion(doc(db, "users", profileID)),
+        });
+
+        // Add current user reference to the profile's followers list
+        await updateDoc(profileDocRef, {
+          followers: arrayUnion(doc(db, "users", userId)),
+        });
+        setIsFollowing(true);
+      }
+      setProfileFollowers(updatedProfileFollowers);
+    } catch (error) {
+      console.log("Error getting document:", error);
+    }
   };
 
-  const unfollowUser = () => {};
+  useEffect(() => {
+    const updateFollowerCount = async () => {
+      // Update the number of followers for the profile
+      const profileDocRef = doc(db, "users", profileID);
+      const profileDocSnap = await getDoc(profileDocRef);
+      const profileDocData = profileDocSnap.data();
+      const profileNumFollowers = profileDocData.followers.length;
+      setNumFollowers(profileNumFollowers);
+    };
+
+    updateFollowerCount().catch(console.error);
+  }, [profileFollowers]);
+
   const ChatListHandler = function () {
     // going to the
     navigation.navigate("Chat Detail", {
@@ -119,6 +161,7 @@ const ProfileScreen = ({ navigation, route }) => {
       userReceive: profileID,
     });
   };
+
   return (
     <View style={styles.container}>
       <Image
@@ -137,27 +180,33 @@ const ProfileScreen = ({ navigation, route }) => {
         </View>
 
         <View style={styles.buttons}>
-          <TouchableOpacity
-            style={styles.followButton}
-            onPress={followUser.bind(this, "Profile")}
-          >
-            <Text style={styles.followButtonText}>Follow</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.messageButton}
-            onPress={ChatListHandler}
-          >
-            <Text style={styles.messageButtonText}>Message</Text>
-          </TouchableOpacity>
+          {!visitingOwnProfile ? (
+            <>
+              <TouchableOpacity
+                style={styles.followButton}
+                onPress={toggleFollow.bind(this, userID)}
+              >
+                {isFollowing ? (
+                  <>
+                    <Text style={styles.followButtonText}>Unfollow</Text>
+                  </>
+                ) : (
+                  <>
+                    <Text style={styles.followButtonText}>Follow</Text>
+                  </>
+                )}
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.messageButton}
+                onPress={ChatListHandler}
+              >
+                <Text style={styles.messageButtonText}>Message</Text>
+              </TouchableOpacity>
+            </>
+          ) : (
+            <></>
+          )}
         </View>
-        {/* <View style={styles.buttons}>
-          <TouchableOpacity
-            style={styles.followButton}
-            onPress={ChatListHandler}
-          >
-            <Text style={styles.followButtonText}>chat</Text>
-          </TouchableOpacity>
-        </View> */}
       </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>

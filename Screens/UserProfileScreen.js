@@ -88,8 +88,8 @@ const UserProfileScreen = ({ navigation, route }) => {
         if (docSnap.exists()) {
           console.log("Document data:", docSnap.data());
           setUsername(docSnap.data().username);
-          setNumFollowers(docSnap.data().numFollowers);
-          setNumFollowing(docSnap.data().numFollowing);
+          setNumFollowers(docSnap.data().followers.length);
+          setNumFollowing(docSnap.data().following.length);
 
           setSavedProjects(docSnap.data().savedProjects);
           setBio(docSnap.data().bio);
