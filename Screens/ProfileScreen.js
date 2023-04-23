@@ -10,7 +10,6 @@ import {
   FlatList,
 } from "react-native";
 
-import { useFocusEffect } from "@react-navigation/native";
 // import { HeaderButtons, Item } from 'react-navigation-header-buttons';
 import {
   collection,
@@ -24,12 +23,6 @@ import {
   arrayRemove,
 } from "firebase/firestore";
 
-import {
-  getAuth,
-  signOut,
-  sendPasswordResetEmail,
-  onAuthStateChanged,
-} from "firebase/auth";
 import { auth, db, resetByEmail } from "../firebase";
 import Project from "../Components/ProjectsPage/Project";
 import { MyContext } from "../Contexts/MyContext";
@@ -107,46 +100,45 @@ const ProfileScreen = ({ navigation, route }) => {
     };
   }, []);
 
-  const toggleFollow = () => {
+  const toggleFollow = async (userId) => {
     let updatedProfileFollowers;
-    const userDoc = doc(db, "users", userID);
+    const userDoc = doc(db, "users", userId);
     const profileDocRef = doc(db, "users", profileID);
 
-    if (profileFollowers.includes(userID)) {
-      updatedProfileFollowers = profileFollowers.filter(
-        (profiles) => profiles != userID
-      );
+    try {
+      if (profileFollowers.includes(userId)) {
+        updatedProfileFollowers = profileFollowers.filter(
+          (profiles) => profiles !== userId
+        );
 
-      // Remove profile from the current user's following
-      updateDoc(userDoc, {
-        following: arrayRemove(doc(db, "users", profileID)),
-      });
+        // Remove profile from the current user's following
+        await updateDoc(userDoc, {
+          following: arrayRemove(doc(db, "users", profileID)),
+        });
 
-      // Remove current user reference from the profile's followers list
-      updateDoc(profileDocRef, {
-        followers: arrayRemove(doc(db, "users", userID)),
-      });
+        // Remove current user reference from the profile's followers list
+        await updateDoc(profileDocRef, {
+          followers: arrayRemove(doc(db, "users", userId)),
+        });
 
-      setIsFollowing(false);
-    } else {
-      // Add profile to the current user's following
-      updateDoc(userDoc, {
-        following: arrayUnion(doc(db, "users", profileID)),
-      });
+        setIsFollowing(false);
+      } else {
+        updatedProfileFollowers = profileFollowers.concat(userId);
+        // Add profile to the current user's following
+        await updateDoc(userDoc, {
+          following: arrayUnion(doc(db, "users", profileID)),
+        });
 
-      // Add current user reference to the profile's followers list
-      updateDoc(profileDocRef, {
-        followers: arrayUnion(doc(db, "users", userID)),
-      });
-      setIsFollowing(true);
+        // Add current user reference to the profile's followers list
+        await updateDoc(profileDocRef, {
+          followers: arrayUnion(doc(db, "users", userId)),
+        });
+        setIsFollowing(true);
+      }
+      setProfileFollowers(updatedProfileFollowers);
+    } catch (error) {
+      console.log("Error getting document:", error);
     }
-    setProfileFollowers(updatedProfileFollowers);
-
-    // // Update the number of followers for the profile
-    // const profileDocSnap = getDoc(profileDocRef);
-    // const profileDocData = profileDocSnap.data();
-    // const profileNumFollowers = profileDocData.followers.length;
-    // setNumFollowers(profileNumFollowers);
   };
 
   useEffect(() => {
@@ -169,6 +161,7 @@ const ProfileScreen = ({ navigation, route }) => {
       userReceive: profileID,
     });
   };
+
   return (
     <View style={styles.container}>
       <Image
@@ -191,7 +184,7 @@ const ProfileScreen = ({ navigation, route }) => {
             <>
               <TouchableOpacity
                 style={styles.followButton}
-                onPress={toggleFollow.bind(this)}
+                onPress={toggleFollow.bind(this, userID)}
               >
                 {isFollowing ? (
                   <>
@@ -214,14 +207,6 @@ const ProfileScreen = ({ navigation, route }) => {
             <></>
           )}
         </View>
-        {/* <View style={styles.buttons}>
-          <TouchableOpacity
-            style={styles.followButton}
-            onPress={ChatListHandler}
-          >
-            <Text style={styles.followButtonText}>chat</Text>
-          </TouchableOpacity>
-        </View> */}
       </View>
 
       <ScrollView contentContainerStyle={styles.contentContainer}>
