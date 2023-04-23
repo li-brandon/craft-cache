@@ -43,6 +43,7 @@ const ProfileScreen = ({ navigation, route }) => {
   const { projects, setProjects } = React.useContext(MyContext);
   const { loggedIn, setloggedIn } = React.useContext(LoginContext);
   const [user, setUser] = useState(null);
+  const [userID, setUserID] = useState(null);
   const userEmail = user ? user.email : null;
 
   const [username, setUsername] = useState("");
@@ -69,6 +70,7 @@ const ProfileScreen = ({ navigation, route }) => {
     // Get current user info
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
+      setUserID(user.uid);
 
       const profileFollowersId = profileInfo.followers.map((info) => info.id);
       setProfileFollowers(profileFollowersId);
@@ -105,29 +107,61 @@ const ProfileScreen = ({ navigation, route }) => {
     };
   }, []);
 
-  const followUser = async () => {
-    // Add profile to the current user's following
-    const userDoc = doc(db, "users", user.uid);
-    await updateDoc(userDoc, {
-      following: arrayUnion(doc(db, "users", profileID)),
-    });
-
-    // Add current user reference to the profile's followers list
-    const profileDoc = doc(db, "users", profileID);
-    await updateDoc(profileDoc, {
-      followers: arrayUnion(doc(db, "users", user.uid)),
-    });
-
-    // Update the number of followers for the profile
+  const toggleFollow = () => {
+    let updatedProfileFollowers;
+    const userDoc = doc(db, "users", userID);
     const profileDocRef = doc(db, "users", profileID);
-    const profileDocSnap = await getDoc(profileDocRef);
-    const profileDocData = profileDocSnap.data();
-    const profileNumFollowers = profileDocData.followers.length;
-    setNumFollowers(profileNumFollowers);
-    setIsFollowing(true);
+
+    if (profileFollowers.includes(userID)) {
+      updatedProfileFollowers = profileFollowers.filter(
+        (profiles) => profiles != userID
+      );
+
+      // Remove profile from the current user's following
+      updateDoc(userDoc, {
+        following: arrayRemove(doc(db, "users", profileID)),
+      });
+
+      // Remove current user reference from the profile's followers list
+      updateDoc(profileDocRef, {
+        followers: arrayRemove(doc(db, "users", userID)),
+      });
+
+      setIsFollowing(false);
+    } else {
+      // Add profile to the current user's following
+      updateDoc(userDoc, {
+        following: arrayUnion(doc(db, "users", profileID)),
+      });
+
+      // Add current user reference to the profile's followers list
+      updateDoc(profileDocRef, {
+        followers: arrayUnion(doc(db, "users", userID)),
+      });
+      setIsFollowing(true);
+    }
+    setProfileFollowers(updatedProfileFollowers);
+
+    // // Update the number of followers for the profile
+    // const profileDocSnap = getDoc(profileDocRef);
+    // const profileDocData = profileDocSnap.data();
+    // const profileNumFollowers = profileDocData.followers.length;
+    // setNumFollowers(profileNumFollowers);
   };
 
-  const unfollowUser = () => {};
+  useEffect(() => {
+    const updateFollowerCount = async () => {
+      // Update the number of followers for the profile
+      const profileDocRef = doc(db, "users", profileID);
+      const profileDocSnap = await getDoc(profileDocRef);
+      const profileDocData = profileDocSnap.data();
+      const profileNumFollowers = profileDocData.followers.length;
+      setNumFollowers(profileNumFollowers);
+    };
+
+    updateFollowerCount().catch(console.error);
+  }, [profileFollowers]);
+
   const ChatListHandler = function () {
     // going to the
     navigation.navigate("Chat Detail", {
@@ -157,7 +191,7 @@ const ProfileScreen = ({ navigation, route }) => {
             <>
               <TouchableOpacity
                 style={styles.followButton}
-                onPress={followUser.bind(this, "Profile")}
+                onPress={toggleFollow.bind(this)}
               >
                 {isFollowing ? (
                   <>
