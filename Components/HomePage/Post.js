@@ -67,6 +67,7 @@ export default function Post({ project: initialProject, navigation }) {
         profileInfo: docSnap.data(),
         profileID: docSnap.id,
         visitingOwnProfile: auth.currentUser.uid === project.userID,
+        currentUserID: auth.currentUser.uid,
       });
     } catch (error) {
       console.log(error);

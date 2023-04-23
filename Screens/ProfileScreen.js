@@ -37,7 +37,8 @@ import { LoginContext } from "../Contexts/LoginContext";
 import userIcon from "../Components/assets/user-icon.png";
 
 const ProfileScreen = ({ navigation, route }) => {
-  const { profileInfo, profileID, visitingOwnProfile } = route.params;
+  const { profileInfo, profileID, visitingOwnProfile, currentUserID } =
+    route.params;
 
   const { projects, setProjects } = React.useContext(MyContext);
   const { loggedIn, setloggedIn } = React.useContext(LoginContext);
@@ -53,6 +54,9 @@ const ProfileScreen = ({ navigation, route }) => {
   const [bio, setBio] = useState("");
   const [image, setImage] = useState(null);
 
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [profileFollowers, setProfileFollowers] = useState([]);
+
   useEffect(() => {
     // Set passed in profile info
     setUsername(profileInfo.username);
@@ -65,6 +69,18 @@ const ProfileScreen = ({ navigation, route }) => {
     // Get current user info
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
+
+      const profileFollowersId = profileInfo.followers.map((info) => info.id);
+      setProfileFollowers(profileFollowersId);
+
+      if (profileFollowersId.includes(user.uid)) {
+        setIsFollowing(true);
+        console.log("User is following this profile");
+      } else {
+        setIsFollowing(false);
+        console.log("User is not following this profile");
+      }
+
       // profileID is the ID of the profile when we click on a user's profile from a Post
       if (profileID) {
         // get all projects published by the profile user
@@ -89,8 +105,6 @@ const ProfileScreen = ({ navigation, route }) => {
   }, []);
 
   const followUser = async () => {
-    console.log(profileID);
-    console.log(user.uid);
     // Add profile to the current user's following
     const userDoc = doc(db, "users", user.uid);
     await updateDoc(userDoc, {
@@ -143,7 +157,15 @@ const ProfileScreen = ({ navigation, route }) => {
                 style={styles.followButton}
                 onPress={followUser.bind(this, "Profile")}
               >
-                <Text style={styles.followButtonText}>Follow</Text>
+                {isFollowing ? (
+                  <>
+                    <Text style={styles.followButtonText}>Unfollow</Text>
+                  </>
+                ) : (
+                  <>
+                    <Text style={styles.followButtonText}>Follow</Text>
+                  </>
+                )}
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.messageButton}
