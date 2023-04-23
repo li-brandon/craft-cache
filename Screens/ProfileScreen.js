@@ -99,6 +99,7 @@ const ProfileScreen = ({ navigation, route }) => {
         });
       }
     });
+
     return () => {
       unsubscribe();
     };
@@ -123,6 +124,7 @@ const ProfileScreen = ({ navigation, route }) => {
     const profileDocData = profileDocSnap.data();
     const profileNumFollowers = profileDocData.followers.length;
     setNumFollowers(profileNumFollowers);
+    setIsFollowing(true);
   };
 
   const unfollowUser = () => {};
