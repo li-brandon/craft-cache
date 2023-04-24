@@ -47,7 +47,7 @@ const UserProfileScreen = ({ navigation, route }) => {
   const [numPosts, setNumPosts] = useState("");
   const [publishedProjects, setPublishedProjects] = useState([]);
   const [savedProjects, setSavedProjects] = useState("");
-  const [bio, setBio] = useState("");
+  const [userBio, setUserBio] = useState("");
   const [image, setImage] = useState(null);
 
   const [modalVisible, setModalVisible] = useState(false);
@@ -92,7 +92,7 @@ const UserProfileScreen = ({ navigation, route }) => {
           setNumFollowing(docSnap.data().following.length);
 
           setSavedProjects(docSnap.data().savedProjects);
-          setBio(docSnap.data().bio);
+          setUserBio(docSnap.data().bio);
           setImage(docSnap.data().image);
           // publishedProjects isn't set up yet so we will just fetch all posts that are posted by current user
           const q = query(
@@ -179,13 +179,16 @@ const UserProfileScreen = ({ navigation, route }) => {
 
       <View style={styles.userInfo}>
         <Text style={styles.username}>{username}</Text>
-        <Text style={styles.bio}>Craft Cache Member</Text>
 
         <View style={styles.stats}>
           <Text style={styles.stat}>{numPosts} Posts</Text>
           <Text style={styles.stat}>{numFollowers} Followers</Text>
           <Text style={styles.stat}>{numFollowing} Following</Text>
         </View>
+
+        <Text style={styles.bio}>
+          {userBio == "" ? "Craft Cache Member" : userBio}
+        </Text>
       </View>
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {publishedProjects.map((project, index) => (
@@ -294,7 +297,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     width: "80%",
-    marginBottom: 20,
+    marginTop: 5,
+    marginBottom: 10,
     marginLeft: 35,
   },
   stat: {
