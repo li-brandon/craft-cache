@@ -45,7 +45,7 @@ const ProfileScreen = ({ navigation, route }) => {
   const [numPosts, setNumPosts] = useState("");
   const [publishedProjects, setPublishedProjects] = useState([]);
   const [savedProjects, setSavedProjects] = useState("");
-  const [bio, setBio] = useState("");
+  const [userBio, setUserBio] = useState("");
   const [image, setImage] = useState(null);
 
   const [isFollowing, setIsFollowing] = useState(false);
@@ -57,7 +57,7 @@ const ProfileScreen = ({ navigation, route }) => {
     setNumFollowers(profileInfo.followers.length);
     setNumFollowing(profileInfo.following.length);
     setSavedProjects(profileInfo.savedProjects);
-    setBio(profileInfo.bio);
+    setUserBio(profileInfo.bio);
     setImage(profileInfo.image);
 
     // Get current user info
@@ -178,7 +178,9 @@ const ProfileScreen = ({ navigation, route }) => {
           <Text style={styles.stat}>{numFollowing} Following</Text>
         </View>
 
-        <Text style={styles.bio}>Craft Cache Member</Text>
+        <Text style={styles.bio}>
+          {userBio == "" ? "Craft Cache Member" : userBio}
+        </Text>
 
         <View style={styles.buttons}>
           {!visitingOwnProfile ? (
