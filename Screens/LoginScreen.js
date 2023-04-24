@@ -7,7 +7,9 @@ import {
   View,
   Alert,
   ActivityIndicator,
+  Image,
 } from "react-native";
+
 import LoadingOverLay from "../Components/UI/LoadingOverLay";
 import React, { useContext, useEffect, useState } from "react";
 import { auth, db } from "../firebase";
@@ -16,9 +18,9 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
-import { GlobalStyles } from "../Constants/styles";
-import { async } from "@firebase/util";
+
 import { LoginContext } from "../Contexts/LoginContext";
+import yarn from "../Components/assets/yarn.png";
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -92,8 +94,8 @@ const LoginScreen = ({ navigation }) => {
   };
 
   const handleResetPassword = function () {
-    navigation.navigate("Reset Password")
-  }
+    navigation.navigate("Reset Password");
+  };
 
   // if (isFetching) {
   //   return <LoadingOverLay containerStyle={styles.container} />
@@ -120,8 +122,10 @@ const LoginScreen = ({ navigation }) => {
       )}
 
       <View style={styles.logoContainer}>
-        <Text style={styles.logo}>Sign In</Text>
+        <Text style={styles.logo}>Craft Cache</Text>
+        <Image style={styles.image} source={yarn} />
       </View>
+
       <View>
         <Text style={styles.textStyle}>{errorMessage}</Text>
       </View>
@@ -147,9 +151,10 @@ const LoginScreen = ({ navigation }) => {
       </View>
 
       <View style={styles.buttonContainer}>
-
-        <TouchableOpacity onPress={handleSignIn}
-          style={[styles.button, styles.buttonOutline]}>
+        <TouchableOpacity
+          onPress={handleSignIn}
+          style={[styles.button, styles.buttonOutline]}
+        >
           <Text style={styles.buttonOutlineText}>Sign In</Text>
         </TouchableOpacity>
         <TouchableOpacity
@@ -183,14 +188,22 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#FEB85B",
   },
   logoContainer: {
+    alignItems: "center",
+    justifyContent: "center",
     marginBottom: 20,
   },
   logo: {
     fontSize: 36,
     fontWeight: "bold",
-    color: "#0728f9",
+    color: "black",
+  },
+  image: {
+    width: 100,
+    height: 100,
+    marginTop: 20,
   },
   textStyle: {
     fontSize: 14,
@@ -243,11 +256,11 @@ const styles = StyleSheet.create({
   buttonOutline: {
     backgroundColor: "white",
     marginTop: 5,
-    borderColor: "#0728f9",
+    borderColor: "black",
     borderWidth: 2,
   },
   buttonOutlineText: {
-    color: "blue",
+    color: "black",
     fontWeight: "700",
     fontSize: 16,
   },
