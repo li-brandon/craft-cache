@@ -8,6 +8,7 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
+
 import LoadingOverLay from "../Components/UI/LoadingOverLay";
 import React, { useEffect, useState } from "react";
 import { auth, db, storage } from "../firebase";

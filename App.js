@@ -45,7 +45,7 @@ function ToManage(navigation) {
 function ToProfile(navigation) {
   return navigation.navigate("User Profile");
 }
-// const rightIcon = loggedIn ? "log-out-outline" : "log-in-outline";
+
 const FrontPage = function () {
   return (
     <Tab.Navigator
@@ -54,18 +54,11 @@ const FrontPage = function () {
         headerTintColor: GlobalStyles.colors.gray700,
         tabBarStyle: { backgroundColor: GlobalStyles.colors.primary50 },
         tabBarActiveTintColor: GlobalStyles.colors.gray700,
-        // headerRight: ({ tintColor }) => (
-        //   <IconButton
-        //     icon="log-in-outline"
-        //     color={tintColor}
-        //     size={24}
-        //     onPress={ToManage.bind(this, navigation)}
-        //   />
-        // ),
+
         headerLeft: ({ tintColor }) => (
           <IconButton
             icon="person-circle-outline"
-            color={tintColor}
+            color="black"
             size={24}
             onPress={ToProfile.bind(this, navigation)}
           />
@@ -147,11 +140,11 @@ export default function App() {
               <Stack.Navigator
                 screenOptions={{
                   headerStyle: {
-                    backgroundColor: GlobalStyles.colors.primary100,
+                    backgroundColor: GlobalStyles.colors.primary50,
                   },
-                  headerTintColor: "white",
+                  headerTintColor: "black",
                   tabBarStyle: {
-                    backgroundColor: GlobalStyles.colors.primary100,
+                    backgroundColor: GlobalStyles.colors.primary50,
                   },
                   tabBarActiveTintColor: GlobalStyles.colors.accent500,
                 }}
@@ -195,12 +188,7 @@ export default function App() {
                   name="Edit Profile"
                   component={EditProfileScreen}
                 />
-                <Stack.Screen name="Profile"
-                  component={ProfileScreen}
-                // options={{
-                //   headerRight: () => { },
-                // }}
-                />
+                <Stack.Screen name="Profile" component={ProfileScreen} />
                 <Stack.Screen
                   name="Add Inventory"
                   component={AddInventoryScreen}
@@ -213,14 +201,8 @@ export default function App() {
                   name="Saved Projects"
                   component={SavedProjectsScreen}
                 />
-                <Stack.Screen
-                  name="Chat List"
-                  component={ChatListScreen}
-                />
-                <Stack.Screen
-                  name="Chat Detail"
-                  component={ChatScreen}
-                />
+                <Stack.Screen name="Chat List" component={ChatListScreen} />
+                <Stack.Screen name="Chat Detail" component={ChatScreen} />
                 <Stack.Screen name="Comments" component={CommentsScreen} />
               </Stack.Navigator>
             ) : (
@@ -228,11 +210,11 @@ export default function App() {
               <Stack.Navigator
                 screenOptions={{
                   headerStyle: {
-                    backgroundColor: GlobalStyles.colors.primary500,
+                    backgroundColor: GlobalStyles.colors.primary50,
                   },
-                  headerTintColor: "white",
+                  headerTintColor: "black",
                   tabBarStyle: {
-                    backgroundColor: GlobalStyles.colors.primary500,
+                    backgroundColor: GlobalStyles.colors.primary50,
                   },
                   tabBarActiveTintColor: GlobalStyles.colors.accent500,
                 }}
