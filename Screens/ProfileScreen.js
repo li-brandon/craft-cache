@@ -171,13 +171,14 @@ const ProfileScreen = ({ navigation, route }) => {
 
       <View style={styles.userInfo}>
         <Text style={styles.username}>{username}</Text>
-        <Text style={styles.bio}>Craft Cache Member</Text>
 
         <View style={styles.stats}>
           <Text style={styles.stat}>{numPosts} Posts</Text>
           <Text style={styles.stat}>{numFollowers} Followers</Text>
           <Text style={styles.stat}>{numFollowing} Following</Text>
         </View>
+
+        <Text style={styles.bio}>Craft Cache Member</Text>
 
         <View style={styles.buttons}>
           {!visitingOwnProfile ? (
@@ -259,7 +260,8 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     alignItems: "center",
     width: "80%",
-    marginBottom: 20,
+    marginTop: 5,
+    marginBottom: 10,
     marginLeft: 35,
   },
   stat: {
