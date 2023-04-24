@@ -771,7 +771,7 @@ const styles = StyleSheet.create({
   },
 
   addProjectButton: {
-    backgroundColor: "#FF6F61",
+    backgroundColor: "#0FDB53",
     padding: 10,
     borderRadius: 5,
     marginTop: 10,
