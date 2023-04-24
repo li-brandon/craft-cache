@@ -140,11 +140,11 @@ export default function App() {
               <Stack.Navigator
                 screenOptions={{
                   headerStyle: {
-                    backgroundColor: GlobalStyles.colors.primary100,
+                    backgroundColor: GlobalStyles.colors.primary50,
                   },
                   headerTintColor: "black",
                   tabBarStyle: {
-                    backgroundColor: GlobalStyles.colors.primary100,
+                    backgroundColor: GlobalStyles.colors.primary50,
                   },
                   tabBarActiveTintColor: GlobalStyles.colors.accent500,
                 }}
@@ -210,11 +210,11 @@ export default function App() {
               <Stack.Navigator
                 screenOptions={{
                   headerStyle: {
-                    backgroundColor: GlobalStyles.colors.primary500,
+                    backgroundColor: GlobalStyles.colors.primary50,
                   },
                   headerTintColor: "black",
                   tabBarStyle: {
-                    backgroundColor: GlobalStyles.colors.primary500,
+                    backgroundColor: GlobalStyles.colors.primary50,
                   },
                   tabBarActiveTintColor: GlobalStyles.colors.accent500,
                 }}
