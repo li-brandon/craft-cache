@@ -52,6 +52,7 @@ const UserProfileScreen = ({ navigation, route }) => {
 
   const [modalVisible, setModalVisible] = useState(false);
   const modalRef = useRef();
+
   useEffect(() => {
     // get current user
     const unsubscribe = auth.onAuthStateChanged((user) => {
