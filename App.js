@@ -50,9 +50,9 @@ const FrontPage = function () {
   return (
     <Tab.Navigator
       screenOptions={({ navigation }) => ({
-        headerStyle: { backgroundColor: GlobalStyles.colors.primary50 },
+        // headerStyle: { backgroundColor: GlobalStyles.colors.primary50 },
         headerTintColor: GlobalStyles.colors.gray700,
-        tabBarStyle: { backgroundColor: GlobalStyles.colors.primary50 },
+        // tabBarStyle: { backgroundColor: GlobalStyles.colors.primary50 },
         tabBarActiveTintColor: GlobalStyles.colors.gray700,
 
         headerLeft: ({ tintColor }) => (
