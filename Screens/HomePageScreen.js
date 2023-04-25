@@ -146,7 +146,7 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 15,
     paddingTop: 8,
-    backgroundColor: "white",
+    backgroundColor: "#FEB85B",
   },
 });
 

@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 15,
-    backgroundColor: "white",
+    backgroundColor: "#FEB85B",
   },
 });
 
@@ -152,6 +152,7 @@ const outerStyles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    backgroundColor: "#FEB85B",
   },
   button: {
     backgroundColor: "#0FDB53",

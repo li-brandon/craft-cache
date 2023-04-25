@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, FlatList } from "react-native";
+import { View, Text, FlatList, StyleSheet } from "react-native";
 import { MEALS, CATEGORIES } from "../Data/dummy-data.js";
 import ItemGrids from "../Components/ExplorePage/ItemGrids.js";
 import { GlobalStyles } from "../Constants/styles.js";
@@ -85,15 +85,22 @@ function ExplorePageScreen({ navigation }) {
         placeholder="Search by project name"
         onChangeText={updateSearch}
         value={search}
-        containerStyle={{ backgroundColor: "#F5F5F5" }} // Set container background color
+        containerStyle={{ backgroundColor: "#FEB85B" }} // Set container background color
         inputContainerStyle={{ backgroundColor: "white" }}
       />
       <FlatList
         data={searchedProjects}
         renderItem={renderItem}
         numColumns={2}
+        style={styles.flatList}
       />
     </View>
   );
 }
 export default ExplorePageScreen;
+
+const styles = StyleSheet.create({
+  flatList: {
+    backgroundColor: "#FEB85B",
+  },
+});
