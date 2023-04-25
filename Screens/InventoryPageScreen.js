@@ -5,14 +5,18 @@ import {
   Text,
   StyleSheet,
   AsyncStorage,
+  Animated,
 } from "react-native";
+
 import React, {
   useState,
   useEffect,
   createContext,
   Button,
   useContext,
+  useRef,
 } from "react";
+
 import { useFocusEffect } from "@react-navigation/native";
 import Inventory from "../Components/InventoryPage/Inventory";
 import { MyContext } from "../Contexts/MyContext";
@@ -20,6 +24,8 @@ import { auth, db } from "../firebase";
 
 import { collection, getDocs, query, where } from "firebase/firestore";
 import AddInventoryScreen from "./AddInventoryScreen";
+
+import { PanGestureHandler, State } from "react-native-gesture-handler";
 
 function InventoryPageScreen({ navigation }) {
   const { inventory, setInventory } = useContext(MyContext);
@@ -59,6 +65,40 @@ function InventoryPageScreen({ navigation }) {
     }, [currentUser])
   );
 
+  const panRef = useRef(new Animated.ValueXY()).current; // Animated value for pan gesture
+
+  const onGestureEvent = (event) => {
+    // Handle swipe logic here
+    Animated.event([{ nativeEvent: { translationX: panRef.x } }], {
+      useNativeDriver: false,
+    })(event);
+  };
+
+  // Handler for handler state change event
+  const onHandlerStateChange = (event) => {
+    if (event.nativeEvent.state === State.END) {
+      // Swipe has ended, determine if it's a swipe to delete or not
+      if (event.nativeEvent.translationX < -50) {
+        // Swipe to delete detected, animate the deletion section
+        Animated.timing(panRef, {
+          toValue: { x: -200, y: 0 },
+          duration: 200,
+          useNativeDriver: false,
+        }).start(() => {
+          // Call a function to delete the item
+          console.log("Swipe to delete detected");
+          // Implement your own logic to delete the item here
+        });
+      } else {
+        // Not a swipe to delete, reset the animated value
+        Animated.spring(panRef, {
+          toValue: { x: 0, y: 0 },
+          useNativeDriver: false,
+        }).start();
+      }
+    }
+  };
+
   return (
     // TODO: Change ScrollView to FlatList
     <View style={outerStyles.container}>
@@ -70,16 +110,32 @@ function InventoryPageScreen({ navigation }) {
       >
         <Text style={outerStyles.buttonText}>Add Inventory</Text>
       </TouchableOpacity>
-      <ScrollView style={styles.container}>
-        {/* map over inventory and render Inventory component */}
-        {inventory.map((inventoryItem, index) => (
-          <Inventory
-            key={index}
-            inventoryItem={inventoryItem}
-            navigation={navigation}
-          />
-        ))}
-      </ScrollView>
+      <PanGestureHandler
+        onGestureEvent={onGestureEvent}
+        onHandlerStateChange={onHandlerStateChange}
+      >
+        {/* <Animated.ScrollView
+          style={[styles.container, { transform: [{ translateX: panRef.x }] }]}
+        >
+          {inventory.map((inventoryItem, index) => (
+            <Inventory
+              key={index}
+              inventoryItem={inventoryItem}
+              navigation={navigation}
+            />
+          ))}
+        </Animated.ScrollView> */}
+        <ScrollView style={styles.container}>
+          {/* map over inventory and render Inventory component */}
+          {inventory.map((inventoryItem, index) => (
+            <Inventory
+              key={index}
+              inventoryItem={inventoryItem}
+              navigation={navigation}
+            />
+          ))}
+        </ScrollView>
+      </PanGestureHandler>
     </View>
   );
 }
@@ -109,74 +165,19 @@ const outerStyles = StyleSheet.create({
     fontWeight: "bold",
     textAlign: "center",
   },
+  deleteSection: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    bottom: 0,
+    width: 200,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "red",
+  },
+  deleteText: {
+    color: "white",
+  },
 });
 
 export default InventoryPageScreen;
-
-// import React, { useRef } from "react";
-// import {
-//   View,
-//   Text,
-//   TouchableOpacity,
-//   Animated,
-//   PanResponder,
-//   StyleSheet,
-// } from "react-native";
-
-// const SlideToDelete = () => {
-//   const pan = useRef(new Animated.ValueXY()).current;
-//   const panResponder = useRef(
-//     PanResponder.create({
-//       onMoveShouldSetPanResponderCapture: () => true,
-//       onPanResponderMove: Animated.event(
-//         [
-//           null,
-//           { dx: pan.x }, // Update pan.x as the user swipes
-//         ],
-//         { useNativeDriver: false }
-//       ),
-//       onPanResponderRelease: () => {
-//         // Add logic here for when the swipe is released, e.g. trigger delete action
-//         // You can use the value of pan.x to determine if the swipe was enough to trigger the delete action
-//         // Reset the pan value after the swipe is released
-//         Animated.spring(pan, {
-//           toValue: { x: 0, y: 0 },
-//           useNativeDriver: false,
-//         }).start();
-//       },
-//     })
-//   ).current;
-
-//   return (
-//     <View style={styles.container}>
-//       <Animated.View
-//         style={[styles.itemContainer, { transform: [{ translateX: pan.x }] }]} // Apply translation to the item based on pan.x value
-//         {...panResponder.panHandlers} // Pass panHandlers to enable pan gestures
-//       >
-//         <TouchableOpacity onPress={() => console.log("Item clicked")}>
-//           <Text style={styles.itemText}>Swipe to delete</Text>
-//         </TouchableOpacity>
-//       </Animated.View>
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   itemContainer: {
-//     backgroundColor: "red",
-//     height: 50,
-//     justifyContent: "center",
-//     paddingHorizontal: 16,
-//   },
-//   itemText: {
-//     color: "white",
-//     fontSize: 18,
-//   },
-// });
-
-// export default SlideToDelete;
