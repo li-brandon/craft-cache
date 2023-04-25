@@ -4,48 +4,123 @@ import React, { useState } from "react";
 const InventoryDetail = ({ inventoryItem }) => {
   const [inventoryItemState, setInventoryItemState] = useState(inventoryItem);
 
+  const handleDeleteProject = async () => {
+    // prompt user to confirm deletion
+    Alert.alert(
+      "Delete Project",
+      "Are you sure you want to delete this project?",
+      [
+        {
+          text: "Cancel",
+          onPress: () => console.log("Cancel Pressed"),
+          style: "cancel",
+        },
+        {
+          text: "OK",
+          // delete project from database after user confirms deletion
+          onPress: () => {
+            try {
+              const projectRef = doc(
+                collection(db, "projects"),
+                projectState.id
+              );
+              deleteDoc(projectRef);
+              navigation.navigate("Front Page");
+            } catch (error) {
+              console.error(error);
+            }
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  const postOrUnpostProject = async () => {
+    // if project is posted, unpost it
+    if (projectState.posted) {
+      try {
+        const projectRef = doc(collection(db, "projects"), projectState.id);
+        await updateDoc(projectRef, {
+          posted: false,
+          timePosted: null,
+        });
+
+        // update UI to show that project is not posted
+        setProjectState({
+          ...projectState,
+          posted: false,
+        });
+      } catch (error) {
+        console.error("Error unposting project: ", error);
+      }
+    } else {
+      // if project is not posted, post it
+      try {
+        const projectRef = doc(collection(db, "projects"), projectState.id);
+        await updateDoc(projectRef, {
+          posted: true,
+          timePosted: new Date(),
+        });
+
+        // update UI to show that project is posted
+        setProjectState({
+          ...projectState,
+          posted: true,
+        });
+      } catch (error) {
+        console.error("Error posting project: ", error);
+      }
+    }
+  };
+
   return (
-    <View>
-      <View style={styles.inventoryItem}>
-        <View>
-          <View style={styles.inventoryItemName}>
-            <Text style={styles.inventoryItemNameText}>
-              {inventoryItemState.name}
+    <View style={styles.inventoryItem}>
+      <View style={styles.inventoryItemName}>
+        <Text style={styles.inventoryItemNameText}>
+          {inventoryItemState.name}
+        </Text>
+      </View>
+      <View style={styles.inventoryItemInfoAndImage}>
+        <View style={styles.imageContainer}>
+          <Image
+            style={styles.image}
+            source={{ uri: inventoryItemState.image }}
+          />
+        </View>
+        <View style={styles.postStatus}>
+          <Text style={styles.inventoryItemStatusText}>
+            Last Updated: {inventoryItemState.lastUpdated}
+          </Text>
+        </View>
+        <View style={styles.inventoryItemStatusAndPostStatus}>
+          <View style={styles.inventoryItemInfo}>
+            <Text style={styles.inventoryItemInfoText}>
+              Brand: {inventoryItemState.brand}
+            </Text>
+            <Text style={styles.inventoryItemInfoText}>
+              Size: {inventoryItemState.size}
+            </Text>
+            <Text style={styles.inventoryItemInfoText}>
+              Categorie(s): {inventoryItemState.category}
+            </Text>
+            <Text style={styles.inventoryItemInfoText}>
+              Count: {inventoryItemState.count}
+            </Text>
+            <Text style={styles.inventoryItemInfoText}>
+              Description: {inventoryItemState.description}
             </Text>
           </View>
-          <View style={styles.inventoryItemInfoAndImage}>
-            <View style={styles.imageContainer}>
-              <Image
-                style={styles.image}
-                source={{ uri: inventoryItemState.image }}
-              />
-            </View>
-            <View style={styles.postStatus}>
-              <Text style={styles.inventoryItemStatusText}>
-                Last Updated: {inventoryItemState.lastUpdated}
-              </Text>
-            </View>
-            <View style={styles.inventoryItemStatusAndPostStatus}>
-              <View style={styles.inventoryItemInfo}>
-                <Text style={styles.inventoryItemInfoText}>
-                  Brand: {inventoryItemState.brand}
-                </Text>
-                <Text style={styles.inventoryItemInfoText}>
-                  Size: {inventoryItemState.size}
-                </Text>
-                <Text style={styles.inventoryItemInfoText}>
-                  Categorie(s): {inventoryItemState.category}
-                </Text>
-                <Text style={styles.inventoryItemInfoText}>
-                  Count: {inventoryItemState.count}
-                </Text>
-                <Text style={styles.inventoryItemInfoText}>
-                  Description: {inventoryItemState.description}
-                </Text>
-              </View>
-            </View>
-          </View>
         </View>
+      </View>
+
+      <View style={styles.buttons}>
+        <Button title="Delete Project" onPress={handleDeleteProject} />
+        <Button
+          // title={projectState.posted ? "Unpost Project" : "Post Project"}
+          title="Hi"
+          onPress={postOrUnpostProject}
+        />
       </View>
     </View>
   );
@@ -119,5 +194,10 @@ const styles = StyleSheet.create({
   postStatusText: {
     fontSize: 17,
     fontWeight: "bold",
+  },
+  buttons: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginTop: 30,
   },
 });
