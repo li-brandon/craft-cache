@@ -66,6 +66,7 @@ const RegisterScreen = ({ navigation }) => {
             image: "",
             following: [],
             followers: [],
+            inventory: [],
           });
           clearFields();
           Alert.alert("User registered successfully");
