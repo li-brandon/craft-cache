@@ -7,10 +7,17 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import React, { useState } from "react";
+
+import React, { useState, useEffect } from "react";
 
 import { auth, db, storage } from "../../firebase";
-import { collection, doc, deleteDoc } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  deleteDoc,
+  updateDoc,
+  arrayRemove,
+} from "firebase/firestore";
 
 import { useNavigation } from "@react-navigation/native";
 
@@ -18,9 +25,26 @@ const InventoryDetail = ({ inventoryItem }) => {
   const [inventoryItemState, setInventoryItemState] = useState(inventoryItem);
   const [inventoryItemID, setInventoryItemID] = useState(inventoryItem.id);
 
+  const [user, setUser] = useState(null);
+  const [userID, setUserID] = useState(null);
+
   const navigation = useNavigation();
 
+  useEffect(() => {
+    // Get current user info
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setUser(user);
+      setUserID(user.uid);
+    });
+
+    return () => {
+      unsubscribe();
+    };
+  }, []);
+
   const handleDeleteItem = async () => {
+    const userDocRef = doc(db, "users", userID);
+
     // Prompt user to confirm deletion
     Alert.alert(
       "Delete Item",
@@ -42,6 +66,14 @@ const InventoryDetail = ({ inventoryItem }) => {
               );
               deleteDoc(projectRef);
               navigation.goBack();
+            } catch (error) {
+              console.error(error);
+            }
+
+            try {
+              updateDoc(userDocRef, {
+                inventory: arrayRemove(doc(db, "inventory", inventoryItemID)),
+              });
             } catch (error) {
               console.error(error);
             }

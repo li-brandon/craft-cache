@@ -1,9 +1,10 @@
 import { ScrollView, Text, StyleSheet, AsyncStorage, View } from "react-native";
 import React, { useEffect, useState, createContext, useContext } from "react";
+import { auth, db, storage } from "../firebase";
 import InventoryDetail from "../Components/InventoryDetailPage/InventoryDetail";
 import { MyContext } from "../Contexts/MyContext";
 
-function InventoryDetailScreen({ route }) {
+const InventoryDetailScreen = ({ route }) => {
   const { inventoryItem } = route.params;
 
   return (
@@ -11,7 +12,7 @@ function InventoryDetailScreen({ route }) {
       <InventoryDetail inventoryItem={inventoryItem} />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
