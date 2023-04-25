@@ -5,17 +5,26 @@ import {
   Image,
   Button,
   TouchableOpacity,
+  Alert,
 } from "react-native";
 import React, { useState } from "react";
 
+import { auth, db, storage } from "../../firebase";
+import { collection, doc, deleteDoc } from "firebase/firestore";
+
+import { useNavigation } from "@react-navigation/native";
+
 const InventoryDetail = ({ inventoryItem }) => {
   const [inventoryItemState, setInventoryItemState] = useState(inventoryItem);
+  const [inventoryItemID, setInventoryItemID] = useState(inventoryItem.id);
+
+  const navigation = useNavigation();
 
   const handleDeleteItem = async () => {
-    // prompt user to confirm deletion
+    // Prompt user to confirm deletion
     Alert.alert(
-      "Delete Project",
-      "Are you sure you want to delete this project?",
+      "Delete Item",
+      "Are you sure you want to delete this item?",
       [
         {
           text: "Cancel",
@@ -24,15 +33,15 @@ const InventoryDetail = ({ inventoryItem }) => {
         },
         {
           text: "OK",
-          // delete project from database after user confirms deletion
+          // Delete item from database after user confirms deletion
           onPress: () => {
             try {
               const projectRef = doc(
-                collection(db, "projects"),
-                projectState.id
+                collection(db, "inventory"),
+                inventoryItemID
               );
               deleteDoc(projectRef);
-              navigation.navigate("Front Page");
+              navigation.goBack();
             } catch (error) {
               console.error(error);
             }
