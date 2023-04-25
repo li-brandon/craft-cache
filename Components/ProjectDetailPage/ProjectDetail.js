@@ -23,7 +23,10 @@ import {
   deleteDoc,
   query,
   where,
+  arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
+
 import DropDownPicker from "react-native-dropdown-picker";
 
 const ProjectDetail = ({ project, navigation }) => {
@@ -162,6 +165,8 @@ const ProjectDetail = ({ project, navigation }) => {
    * Updates the state of the project to whether project is posted in the database
    */
   const postOrUnpostProject = async () => {
+    const userDocRef = doc(db, "users", projectState.userID);
+
     // if project is posted, unpost it
     if (projectState.posted) {
       try {
@@ -175,6 +180,10 @@ const ProjectDetail = ({ project, navigation }) => {
         setProjectState({
           ...projectState,
           posted: false,
+        });
+
+        await updateDoc(userDocRef, {
+          publishedProjects: arrayRemove(doc(db, "projects", projectState.id)),
         });
       } catch (error) {
         console.error("Error unposting project: ", error);
@@ -192,6 +201,10 @@ const ProjectDetail = ({ project, navigation }) => {
         setProjectState({
           ...projectState,
           posted: true,
+        });
+
+        await updateDoc(userDocRef, {
+          publishedProjects: arrayUnion(doc(db, "projects", projectState.id)),
         });
       } catch (error) {
         console.error("Error posting project: ", error);
