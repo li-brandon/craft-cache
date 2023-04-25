@@ -36,6 +36,7 @@ const AddInventoryScreen = ({ navigation }) => {
   const [category, setCategory] = useState("");
   const [count, setCount] = useState("");
   const [size, setSize] = useState("");
+  const [unit, setUnit] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState(null);
   const [imageUri, setImageUri] = useState(null);
@@ -70,6 +71,7 @@ const AddInventoryScreen = ({ navigation }) => {
       !count ||
       !description ||
       !size ||
+      !unit ||
       !image ||
       !selectedValue
     ) {
@@ -89,6 +91,7 @@ const AddInventoryScreen = ({ navigation }) => {
       category: category.split(","), // split categories string into array
       count: count,
       size: size,
+      unit: unit,
       description: description,
       userID: userID,
       image: image,
@@ -180,6 +183,7 @@ const AddInventoryScreen = ({ navigation }) => {
     setCategory("");
     setCount("");
     setSize("");
+    setUnit("");
     setDescription("");
     setImage(null);
   };
@@ -250,6 +254,22 @@ const AddInventoryScreen = ({ navigation }) => {
           placeholder="ex: 5mm | 45 inches wide | aran weight"
           value={size}
           onChangeText={(text) => setSize(text)}
+        />
+        <View
+          style={{
+            flexDirection: "row",
+            alignItems: "center",
+            marginRight: 5,
+          }}
+        >
+          <Text style={styles.InventoryInputHeaderText}>Unit Measurement</Text>
+          <Text style={styles.requiredAsterisk}>*</Text>
+        </View>
+        <TextInput
+          style={styles.input}
+          placeholder="ex: mm, inches, lbs"
+          value={unit}
+          onChangeText={(text) => setUnit(text)}
         />
         <View
           style={{
