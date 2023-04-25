@@ -39,6 +39,7 @@ function ExplorePageScreen({ navigation }) {
             tempProjects.push({ ...doc.data(), id: doc.id });
           });
           setProjects(tempProjects);
+          setSearchedProjects(tempProjects); // this makes sure projects are shown right away
         })
         .catch((error) => {
           console.log("Error getting documents: ", error);
