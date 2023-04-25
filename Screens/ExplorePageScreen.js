@@ -7,8 +7,11 @@ import { useFocusEffect } from "@react-navigation/native";
 import { auth, db } from "../firebase";
 import { collection, getDocs, query, where } from "firebase/firestore";
 
+import { SearchBar } from "react-native-elements";
+
 function ExplorePageScreen({ navigation }) {
   const [projects, setProjects] = useState([]);
+  const [searchedProjects, setSearchedProjects] = useState([]);
   const [currentUser, setCurrentUser] = useState(null);
   const [refresh, setRefresh] = useState(false);
 
@@ -26,7 +29,6 @@ function ExplorePageScreen({ navigation }) {
 
   useFocusEffect(
     React.useCallback(() => {
-
       const tempProjects = [];
       const q = query(collection(db, "projects"), where("posted", "==", true));
 
@@ -60,6 +62,37 @@ function ExplorePageScreen({ navigation }) {
       />
     );
   }
-  return <FlatList data={projects} renderItem={renderItem} numColumns={2} />;
+
+  const [search, setSearch] = useState("");
+
+  const updateSearch = (search) => {
+    setSearch(search);
+
+    handleSearchChange(search);
+  };
+
+  const handleSearchChange = (search) => {
+    const filteredProjects = projects.filter((project) =>
+      project.name.includes(search)
+    );
+    setSearchedProjects(filteredProjects);
+  };
+
+  return (
+    <View>
+      <SearchBar
+        placeholder="Search by project name"
+        onChangeText={updateSearch}
+        value={search}
+        containerStyle={{ backgroundColor: "#F5F5F5" }} // Set container background color
+        inputContainerStyle={{ backgroundColor: "white" }}
+      />
+      <FlatList
+        data={searchedProjects}
+        renderItem={renderItem}
+        numColumns={2}
+      />
+    </View>
+  );
 }
 export default ExplorePageScreen;
