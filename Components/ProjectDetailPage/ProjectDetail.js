@@ -659,11 +659,28 @@ const ProjectDetail = ({ project, navigation }) => {
         {/* Only show buttons if the project belongs to current signed in user and if edit mode is on */}
         {showButtons && (
           <View style={styles.buttons}>
-            <Button title="Delete Project" onPress={handleDeleteProject} />
-            <Button
+            <TouchableOpacity
+              title="Delete Project"
+              style={styles.deleteButton}
+              onPress={handleDeleteProject}
+            >
+              <Text style={styles.buttonText}>Delete Project</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
               title={projectState.posted ? "Unpost Project" : "Post Project"}
+              style={styles.postButton}
               onPress={postOrUnpostProject}
-            />
+            >
+              {projectState.posted ? (
+                <>
+                  <Text style={styles.buttonText}>Unpost Project</Text>
+                </>
+              ) : (
+                <>
+                  <Text style={styles.buttonText}>Post Project</Text>
+                </>
+              )}
+            </TouchableOpacity>
           </View>
         )}
       </ScrollView>
@@ -852,5 +869,23 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 10,
     backgroundColor: "#F5F5F5",
+  },
+  deleteButton: {
+    backgroundColor: "#FE5B5B",
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  postButton: {
+    backgroundColor: "#0FDB53",
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
