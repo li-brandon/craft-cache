@@ -12,6 +12,7 @@ import {
   Keyboard,
   ScrollView,
 } from "react-native";
+
 import React, { useState, useEffect } from "react";
 import { auth, db } from "../../firebase";
 import {
@@ -208,7 +209,8 @@ const ProjectDetail = ({ project, navigation }) => {
     // if "DONE" button is pressed, update project in database
 
     // first check that all required fields are filled in
-    if (edit) { // this means that DONE button was pressed
+    if (edit) {
+      // this means that DONE button was pressed
       if (
         !projectState.name ||
         !projectState.pattern ||

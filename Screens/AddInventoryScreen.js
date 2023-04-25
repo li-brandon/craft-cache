@@ -11,9 +11,18 @@ import {
   Keyboard,
   ScrollView,
 } from "react-native";
+
 import { MyContext } from "../Contexts/MyContext";
 import { auth, db, storage } from "../firebase";
-import { collection, addDoc } from "firebase/firestore";
+import {
+  collection,
+  addDoc,
+  arrayUnion,
+  arrayRemove,
+  doc,
+  updateDoc,
+} from "firebase/firestore";
+
 import { ref, getDownloadURL, uploadBytes } from "firebase/storage";
 import * as ImagePicker from "expo-image-picker";
 import { manipulateAsync, SaveFormat } from "expo-image-manipulator";
@@ -21,7 +30,7 @@ import { Picker } from "@react-native-picker/picker";
 
 const AddInventoryScreen = ({ navigation }) => {
   // States
-  const [user, setUser] = useState(null);
+  const [userID, setUserID] = useState(null);
   const [name, setName] = useState("");
   const [brand, setBrand] = useState("");
   const [category, setCategory] = useState("");
@@ -37,7 +46,7 @@ const AddInventoryScreen = ({ navigation }) => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        setUser(user.uid);
+        setUserID(user.uid);
       } else {
         // Redirect to login screen if user is not logged in
         navigation.navigate("Login");
@@ -69,7 +78,7 @@ const AddInventoryScreen = ({ navigation }) => {
     }
 
     // Check if user has logged in
-    if (!user) {
+    if (!userID) {
       Alert.alert("Please log in to add a project");
       return;
     }
@@ -81,13 +90,15 @@ const AddInventoryScreen = ({ navigation }) => {
       count: count,
       size: size,
       description: description,
-      userID: user,
+      userID: userID,
       image: image,
       toolOrMaterial: selectedValue,
     };
 
     const date = getCurrentDate();
     newInventory.lastUpdated = date;
+
+    const userDoc = doc(db, "users", userID);
 
     try {
       // Upload the image to storage and get the download URL
@@ -96,8 +107,14 @@ const AddInventoryScreen = ({ navigation }) => {
         const downloadURL = await getDownloadURL(snapshot.ref);
         newInventory.image = downloadURL;
       }
+
       // Add the new project to Firestore
-      await addDoc(collection(db, "inventory"), newInventory);
+      const newDocRef = await addDoc(collection(db, "inventory"), newInventory);
+
+      await updateDoc(userDoc, {
+        inventory: arrayUnion(doc(db, "inventory", newDocRef.id)),
+      });
+
       clearFields();
       Alert.alert("Inventory added successfully");
       navigation.navigate("Inventory");
@@ -143,28 +160,6 @@ const AddInventoryScreen = ({ navigation }) => {
       }
     }
   };
-
-  // TODO: Implement camera functionality
-  // takePhoto launches the camera and allows the user to take a photo with the camera
-  // const takePhoto = async () => {
-  //   const result = await ImagePicker.launchCameraAsync({
-  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
-  //     allowsEditing: true,
-  //     aspect: [4, 3],
-  //     quality: 1,
-  //   });
-
-  //   // If the user didn't cancel the camera, upload the image to storage and set the image in state
-  //   if (!result.canceled) {
-  //     const uri = result.assets[0].uri; // Get the uri of the image
-  //     const imageRef = ref(storage, "projectImages/" + uri.split("/").pop());
-  //     setImageUri(uri);
-  //     setImageRef(imageRef);
-  //     setImage(uri);
-  //   } else {
-  //     alert("Camera permission is required to take a photo.");
-  //   }
-  // };
 
   // getCurrentDate returns the current date in the format MM/DD/YYYY
   const getCurrentDate = () => {
@@ -374,7 +369,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   button: {
-    backgroundColor: "#FF6F61",
+    backgroundColor: "#0FDB53",
     padding: 10,
     borderRadius: 5,
   },
