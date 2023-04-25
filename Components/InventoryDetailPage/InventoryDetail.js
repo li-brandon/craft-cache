@@ -4,7 +4,7 @@ import React, { useState } from "react";
 const InventoryDetail = ({ inventoryItem }) => {
   const [inventoryItemState, setInventoryItemState] = useState(inventoryItem);
 
-  const handleDeleteProject = async () => {
+  const handleDeleteItem = async () => {
     // prompt user to confirm deletion
     Alert.alert(
       "Delete Project",
@@ -34,44 +34,6 @@ const InventoryDetail = ({ inventoryItem }) => {
       ],
       { cancelable: false }
     );
-  };
-
-  const postOrUnpostProject = async () => {
-    // if project is posted, unpost it
-    if (projectState.posted) {
-      try {
-        const projectRef = doc(collection(db, "projects"), projectState.id);
-        await updateDoc(projectRef, {
-          posted: false,
-          timePosted: null,
-        });
-
-        // update UI to show that project is not posted
-        setProjectState({
-          ...projectState,
-          posted: false,
-        });
-      } catch (error) {
-        console.error("Error unposting project: ", error);
-      }
-    } else {
-      // if project is not posted, post it
-      try {
-        const projectRef = doc(collection(db, "projects"), projectState.id);
-        await updateDoc(projectRef, {
-          posted: true,
-          timePosted: new Date(),
-        });
-
-        // update UI to show that project is posted
-        setProjectState({
-          ...projectState,
-          posted: true,
-        });
-      } catch (error) {
-        console.error("Error posting project: ", error);
-      }
-    }
   };
 
   return (
@@ -115,12 +77,7 @@ const InventoryDetail = ({ inventoryItem }) => {
       </View>
 
       <View style={styles.buttons}>
-        <Button title="Delete Project" onPress={handleDeleteProject} />
-        <Button
-          // title={projectState.posted ? "Unpost Project" : "Post Project"}
-          title="Hi"
-          onPress={postOrUnpostProject}
-        />
+        <Button title="Delete Item" onPress={handleDeleteItem} />
       </View>
     </View>
   );
