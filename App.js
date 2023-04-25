@@ -50,9 +50,9 @@ const FrontPage = function () {
   return (
     <Tab.Navigator
       screenOptions={({ navigation }) => ({
-        // headerStyle: { backgroundColor: GlobalStyles.colors.primary50 },
+        headerStyle: { backgroundColor: "#FEB85B" },
         headerTintColor: GlobalStyles.colors.gray700,
-        // tabBarStyle: { backgroundColor: GlobalStyles.colors.primary50 },
+        tabBarStyle: { backgroundColor: "#FEB85B" },
         tabBarActiveTintColor: GlobalStyles.colors.gray700,
 
         headerLeft: ({ tintColor }) => (
@@ -140,11 +140,11 @@ export default function App() {
               <Stack.Navigator
                 screenOptions={{
                   headerStyle: {
-                    backgroundColor: GlobalStyles.colors.primary50,
+                    backgroundColor: "#FEB85B",
                   },
                   headerTintColor: "black",
                   tabBarStyle: {
-                    backgroundColor: GlobalStyles.colors.primary50,
+                    backgroundColor: "#FEB85B",
                   },
                   tabBarActiveTintColor: GlobalStyles.colors.accent500,
                 }}
@@ -210,11 +210,11 @@ export default function App() {
               <Stack.Navigator
                 screenOptions={{
                   headerStyle: {
-                    backgroundColor: GlobalStyles.colors.primary50,
+                    backgroundColor: "#FEB85B",
                   },
                   headerTintColor: "black",
                   tabBarStyle: {
-                    backgroundColor: GlobalStyles.colors.primary50,
+                    backgroundColor: "#FEB85B",
                   },
                   tabBarActiveTintColor: GlobalStyles.colors.accent500,
                 }}
