@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, Image, Button } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  Button,
+  TouchableOpacity,
+} from "react-native";
 import React, { useState } from "react";
 
 const InventoryDetail = ({ inventoryItem }) => {
@@ -77,7 +84,12 @@ const InventoryDetail = ({ inventoryItem }) => {
       </View>
 
       <View style={styles.buttons}>
-        <Button title="Delete Item" onPress={handleDeleteItem} />
+        <TouchableOpacity
+          style={styles.deleteItemButton}
+          onPress={handleDeleteItem}
+        >
+          <Text style={styles.buttonText}>Delete Item</Text>
+        </TouchableOpacity>
       </View>
     </View>
   );
@@ -153,8 +165,19 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   buttons: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 18,
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  deleteItemButton: {
+    backgroundColor: "#FE5B5B",
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 10,
   },
 });
